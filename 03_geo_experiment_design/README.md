@@ -28,8 +28,8 @@ Placebo experiments on historical data; no real experiment is run.
 4. **Designs compared.** Difference in means; year-over-year difference; regression adjustment on the same months a
    year earlier and the last three months (ANCOVA, the idea behind CUPED); a volume-weighted version; and the same
    estimators within matched pairs of metros.
-5. **Inference check.** For the two regression-adjusted estimators, randomization inference (199 re-randomizations
-   per draw) alongside the t-test.
+5. **Inference check.** For the two regression-adjusted estimators, randomization inference (2,000 draws for
+   2-month tests, 199 re-randomizations each) alongside the t-test.
 
 ## Results
 
