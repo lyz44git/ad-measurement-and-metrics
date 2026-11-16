@@ -38,6 +38,8 @@ Source: [`out/lift_study_sizing.json`](out/lift_study_sizing.json).
 | 10,000 | 94% | 97% | 94.6% | 5.1% / 4.8% |
 | 20,000 | 99.9% | 100% | 95.5% | 5.7% / 4.9% |
 
+![Power and A/A false-positive rate by users per arm](out/fig_power_by_sample_size.png)
+
 The smallest size on this grid with at least 80% power is 10,000 users per arm. The Bayesian rule detects more often
 because it is one-sided.
 

@@ -55,6 +55,8 @@ Sources: [`out/mmm_summary.json`](out/mmm_summary.json) (weekly), [`out/mmm_summ
 | Revenue / total spend, median across converged brands | 5.9 | 6.4 |
 | Media share of revenue, median across brands | 61% | 43% |
 
+![Estimated against known channel ROAS in the recovery test, weekly and daily data](out/fig_roas_recovery.png)
+
 - **The pre-specified forecasting rule was not met** in either run: the interval of the mean wMAPE difference
   includes 0.
 - Weekly brand-level ROAS is not identified (recovery 0.01). Daily data make it recoverable in rank (0.75), with wide
@@ -71,8 +73,8 @@ python code/run_mmm.py data_raw/conjura_mmm_data.csv out W 14   # weekly (plan),
 python code/run_mmm.py data_raw/conjura_mmm_data.csv out D 14   # daily, about 2 minutes
 ```
 
-With the versions in `requirements-mmm.txt`, repeated runs gave identical draws. MCMC draws change with small
-floating-point differences, so other versions or machines can give somewhat different numbers (deviation 2).
+MCMC draws depend on package versions and hardware, so numbers can differ slightly from those in `out/`; the
+versions used are in `requirements-mmm.txt`.
 
 `tests/` checks the adstock and saturation transforms, the brand eligibility rule and the recovery simulation on
 synthetic data; it needs only the root `requirements.txt`.

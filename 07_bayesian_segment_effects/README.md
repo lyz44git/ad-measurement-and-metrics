@@ -48,6 +48,8 @@ estimate and interval agree to three decimals. Conversion lift +0.115 pp.
 | Benchmark lift of the 20 segments picked (pp; all segments 0.96, best possible 4.03) | 3.68 | n/a | 3.78 |
 | Coverage of 90% intervals | 87.5% | n/a | 96% |
 
+![RMSE of segment estimates by sample, and one sample's estimates against the benchmark](out/fig_segment_error.png)
+
 - **The pre-specified rule was met.** The multilevel model had the lower RMSE in 10 of 10 samples; mean paired
   difference −0.297 pp (95% CI −0.349 to −0.245), a 27% reduction.
 - Its top-20 picks had a benchmark lift at least as high as the no-pooling picks in 9 of 10 samples.

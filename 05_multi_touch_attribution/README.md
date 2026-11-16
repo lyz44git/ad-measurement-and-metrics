@@ -50,6 +50,8 @@ Among the 64,159 multi-touch conversions of test users (349,355 touches, 5.4 per
 | Linear | 29% | 56% |
 | Time decay (half-life 7.9 days) | 39% | 59% |
 
+![Share of conversion credit by recency of the touch and on clicked touches, by rule](out/fig_credit_by_rule.png)
+
 - 65.2% of converting paths have more than one touch, and last touch gives no credit to 81.6% of the touches in
   multi-touch converting paths. Clicked impressions are 52% of those touches.
 - Moving from last touch to time decay shifts 3.6% of conversion credit between campaigns, since few conversions span
