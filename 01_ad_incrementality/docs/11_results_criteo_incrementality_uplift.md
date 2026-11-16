@@ -1,6 +1,6 @@
 # Results: Criteo Uplift v2.1 — incrementality, CATE learners, held-out targeting test (2026-11-12)
 
-Label: **analysis of a public randomized advertising experiment** (Diemert et al. 2018). I did not design or run it.
+Label: **analysis of a public randomized advertising experiment** (Diemert et al. 2018), designed and run by Criteo.
 Plan hashed before the run (`logs/10_plan_hash.txt`). Code `code/10_run_criteo.py`, `code/upliftkit/`. Run log
 `logs/10_run_criteo.log` (408 s). Outputs `out/criteo/`. Tests `logs/10_pytest.log` (15 passed).
 The dataset pools several tests with non-uniform subsampling: absolute lift is not a population effect.
