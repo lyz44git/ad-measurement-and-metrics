@@ -2,6 +2,10 @@
 
 [![tests](https://github.com/lyz44git/ad-measurement-and-metrics/actions/workflows/tests.yml/badge.svg)](https://github.com/lyz44git/ad-measurement-and-metrics/actions/workflows/tests.yml)
 
+<img src="figures/figure1.png" alt="Four-panel figure: ad effect by decile of predicted uplift; observational estimators against the experimental benchmark; minimum detectable effect by number of metros; cohort repeat-purchase rates." width="100%">
+
+**Figure 1 | Headline results of studies 01–04.** **a**, Effect of the ads on the visit rate by decile of predicted uplift among 4.19M held-out users: realized effect with 95% CI (filled), T-learner prediction (open) and the average effect (dashed). **b**, Effect of exposure on the visit rate from three observational estimators against the range of the experimental benchmark (shaded); exposure-based attribution credited 68% more conversions than the experiment found incremental. **c**, Smallest effect detectable with 80% power in a 2-month market-level test, from 5,000 placebo tests per design on 151 U.S. metros. **d**, Monthly repeat-purchase rate of new-account cohorts under a 12-month look-back; a 3-month look-back would have labelled 1,036 accounts new, 62% of which had bought in the prior year. Drawn by [`figures/make_figure1.py`](figures/make_figure1.py) from the result files in each study folder.
+
 Analyses of public advertising and e-commerce data: an experiment readout, validation of an attribution metric,
 power analysis for market-level tests, and customer retention metrics.
 
