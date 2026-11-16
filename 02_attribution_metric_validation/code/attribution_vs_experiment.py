@@ -1,12 +1,16 @@
-"""Exposure-attributed outcomes vs experimental incrementality on the Criteo Uplift v2.1 experiment (see ../README.md)."""
+"""Exposure-attributed outcomes vs experimental incrementality on the Criteo Uplift v2.1 experiment.
+
+Usage: python code/attribution_vs_experiment.py [path to criteo-research-uplift-v2.1.csv.gz]
+Reads the regression-adjusted benchmark from study 01's output; writes out/attribution_vs_experiment.json.
+"""
+import sys, json
 from pathlib import Path
-import json, duckdb, numpy as np
+import duckdb, numpy as np
 from sklearn.ensemble import HistGradientBoostingClassifier as HGB
 from sklearn.model_selection import KFold
 ROOT = Path(__file__).resolve().parents[1]
-import sys
-# path to criteo-research-uplift-v2.1.csv.gz (not stored in this repo; see ../README.md)
-SRC = sys.argv[1] if len(sys.argv) > 1 else str(ROOT.parent / "01_ad_incrementality" / "data_raw" / "criteo_uplift_v2.1" / "criteo-research-uplift-v2.1.csv.gz")
+STUDY01 = ROOT.parent / "01_ad_incrementality"
+SRC = sys.argv[1] if len(sys.argv) > 1 else str(STUDY01 / "data_raw" / "criteo_uplift_v2.1" / "criteo-research-uplift-v2.1.csv.gz")
 con = duckdb.connect()
 con.execute(f"create table t as select * from read_csv_auto('{SRC}')")
 a = con.execute("select treatment, count(*) n, sum(exposure) e, sum(visit) v, sum(conversion) c, sum(visit*exposure) ve, sum(conversion*exposure) ce from t group by 1 order by 1").fetchall()
@@ -36,8 +40,9 @@ for tr, te in KFold(2, shuffle=True, random_state=20261115).split(Xs):
 dml = float((rD * rY).sum() / (rD ** 2).sum()); psi = rD * (rY - dml * rD)
 se_dml = float(np.sqrt((psi ** 2).mean() / (rD ** 2).mean() ** 2 / len(idx)))
 cace = res["visit"]["cace"]
+cace_adj = json.loads((STUDY01 / "out" / "criteo" / "a_incrementality.json").read_text())["cace_visit_adjusted"]["est"]
 res["per_exposed_user_visit_effect"] = {"naive": float(naive), "naive_se": float(se_naive), "ols_adjusted": ols, "ols_se": se_ols,
-    "dml": dml, "dml_se": se_dml, "dml_n": len(idx), "cace_unadjusted": cace, "cace_adjusted_from_ad_demo": 0.21460888061784308,
+    "dml": dml, "dml_se": se_dml, "dml_n": len(idx), "cace_unadjusted": cace, "cace_adjusted_study_01": cace_adj,
     "ratio_to_cace": {"naive": float(naive / cace), "ols": ols / cace, "dml": dml / cace},
     "visit_rate_exposed": float(Y[D == 1].mean()), "visit_rate_unexposed_treated": float(Y[D == 0].mean())}
 json.dump(res, open(ROOT / "out" / "attribution_vs_experiment.json", "w"), indent=1); print(json.dumps(res, indent=1))

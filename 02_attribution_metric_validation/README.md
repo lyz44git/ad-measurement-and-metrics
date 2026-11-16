@@ -1,33 +1,58 @@
-# 02. Validating an attribution metric against an experiment
+# 02 · Validating an attribution metric against a randomized experiment
 
-**Question.** An exposure-based attribution metric credits the ad with every visit or conversion by a user who saw
-it. How far is that from what the ad actually caused, and can statistical adjustment close the gap when no experiment
-is available?
+## Question
 
-**Data.** The same Criteo experiment as project 01 (13,979,592 users). Pass the path to the `.csv.gz` file as the
-first argument, or place it as described in `../01_ad_incrementality/README.md`.
+An exposure-based attribution metric credits the ad with every visit or conversion by a user who saw it. How far is
+that from what the ad actually caused, and can covariate adjustment close the gap when no experiment is available?
 
-**What I did.** The analysis was specified before the run as a descriptive comparison with no decision rule:
-- Attributed outcomes: visits and conversions among exposed users in the ad arm.
-- Incremental outcomes: the intent-to-treat effect times the number of users in the ad arm.
-- Per-exposed-user effect on visits three ways: naive exposed-minus-unexposed difference; OLS with covariates;
-  cross-fitted double machine learning on 2,000,000 users. Benchmark: the experimental effect on exposed users.
+## Data
 
-**What I found** (`out/attribution_vs_experiment.json`).
+The Criteo experiment used in [study 01](../01_ad_incrementality): 13,979,592 users, of whom 428,212 in the ad arm
+were exposed. Pass the path to `criteo-research-uplift-v2.1.csv.gz` as the first argument, or place the file as
+described in study 01.
+
+## Method
+
+A descriptive comparison with no decision rule.
+
+1. **Attributed outcomes.** Visits and conversions by exposed users in the ad arm.
+2. **Incremental outcomes.** The intent-to-treat effect multiplied by the number of users in the ad arm.
+3. **Per-exposed-user effect on visits, three ways:** the naive exposed-minus-unexposed difference; OLS with the 12
+   features as covariates (HC1 standard errors); and cross-fitted double machine learning with gradient-boosted
+   nuisance models on a random 2,000,000 users.
+4. **Benchmark.** The experimental effect on exposed users from study 01, unadjusted and regression-adjusted.
+
+## Results
+
+Source: [`out/attribution_vs_experiment.json`](out/attribution_vs_experiment.json).
 
 | | Exposure-attributed | Incremental (experiment) | Overstatement |
 |---|---|---|---|
 | Visits | 177,510 | 122,895 | 44% |
 | Conversions | 23,031 | 13,687 | 68% |
 
-Per-exposed-user effect on visits: naive 38.0 points; OLS-adjusted 25.5; double machine learning 24.6. The
-experimental figure is 28.7 unadjusted and 21.5 regression-adjusted, so both adjusted observational estimates fall
-inside the experimental range and the naive one does not.
+| Per-exposed-user effect on visits | pp |
+|---|---|
+| Naive difference | 38.0 |
+| OLS with covariates | 25.5 |
+| Double machine learning | 24.6 |
+| Experimental benchmark (unadjusted / regression-adjusted) | 28.7 / 21.5 |
 
-**Run.**
+- Attribution credits the ad with 44% more visits and 68% more conversions than it caused.
+- The naive estimate lies above the experimental range; both covariate-adjusted estimates fall inside it.
+
+## Reproduce
+
 ```bash
-python code/attribution_vs_experiment.py /path/to/criteo-research-uplift-v2.1.csv.gz
+python code/attribution_vs_experiment.py /path/to/criteo-research-uplift-v2.1.csv.gz   # about 1 minute
 ```
 
-**Does not show.** Multi-touch or cross-channel attribution: the data have one exposure flag per user and no touch
-paths. The experimental benchmark assumes assignment affects visits only through exposure.
+Study 01 must have been run first, since its output supplies the adjusted benchmark. The double machine learning
+estimate can differ in the third decimal between runs because the gradient-boosting fits are multi-threaded
+(24.60 and 24.63 pp in two runs).
+
+## Scope
+
+- Single-channel, user-level attribution: the data have one exposure flag per user and no touch paths, so this is not
+  multi-touch or cross-channel attribution.
+- The experimental benchmark assumes assignment affects visits only through exposure.
