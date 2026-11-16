@@ -1,1 +1,2 @@
 f6d6bb794ab39813e858e45558d6817bd5d73dc6fb68b31724832cce7f783c60  docs/10_plan_criteo_incrementality_uplift.md   (SHA-256, recorded 2026-11-12 before the run)
+f894e58342d88159e9c168c07c427d36237f59b3e5c07deaa0b36ebd9f437849  docs/10_plan_criteo_incrementality_uplift.md   (SHA-256 after a one-sentence wording edit on 2026-11-16; data, split, estimators and decision rules unchanged; the version with the hash above is at commit 8a2650f)

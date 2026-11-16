@@ -2,7 +2,7 @@
 
 Date: 2026-11-12. Continues steps 1–2 of this folder's README plan (2026-10-31) and reuses the workflow of the
 randomized-price reanalysis (hashed plan, seeded routines, pytest checks). Public randomized advertising experiment
-(Diemert et al. 2018). I did not design or run the experiment. Dataset documentation: several tests pooled with
+(Diemert et al. 2018). The experiment was designed and run by the dataset's authors. Dataset documentation: several tests pooled with
 non-uniform subsampling, so absolute lift is not interpretable as a population effect; method comparisons are.
 
 ## Data and split
