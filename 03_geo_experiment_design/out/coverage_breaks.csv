@@ -1,0 +1,8 @@
+source,unit,min_ratio_to_median,month_of_min,max_ratio_to_median,months_flagged
+Zillow newly pending listings,"Orlando, FL",0.242,2018-12,2.006,1
+Zillow newly pending listings,"Oklahoma City, OK",0.03,2018-03,1.453,3
+Zillow newly pending listings,"Richmond, VA",0.188,2018-01,1.864,4
+Zillow newly pending listings,"Fayetteville, AR",0.146,2025-09,14.793,5
+Zillow newly pending listings,"Reno, NV",0.172,2019-12,1.706,1
+Zillow newly pending listings,"Waco, TX",0.169,2018-07,1.629,1
+Zillow newly pending listings,"Port Angeles, WA",0.211,2019-02,2.337,1

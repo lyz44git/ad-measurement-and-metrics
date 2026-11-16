@@ -1,0 +1,9 @@
+source,metros,test_months,estimator,inference,draws,permutations,false_positive_rate,mde_80_pct,false_positive_rate_t_test,mde_80_pct_t_test
+Zillow newly pending listings,20,2,CR: ANCOVA (CUPED),randomization,2000,199,0.043,16.5,0.0506,16.3
+Zillow newly pending listings,20,2,CR: volume-weighted ANCOVA,randomization,2000,199,0.05,19.0,0.0908,16.6
+Zillow newly pending listings,50,2,CR: ANCOVA (CUPED),randomization,2000,199,0.061,9.5,0.046,9.700000000000001
+Zillow newly pending listings,50,2,CR: volume-weighted ANCOVA,randomization,2000,199,0.053,12.3,0.0818,11.3
+Zillow newly pending listings,100,2,CR: ANCOVA (CUPED),randomization,2000,199,0.0475,6.6000000000000005,0.049,6.7
+Zillow newly pending listings,100,2,CR: volume-weighted ANCOVA,randomization,2000,199,0.0575,8.799999999999999,0.0632,8.200000000000001
+Zillow newly pending listings,150,2,CR: ANCOVA (CUPED),randomization,2000,199,0.051,5.3,0.0486,5.3
+Zillow newly pending listings,150,2,CR: volume-weighted ANCOVA,randomization,2000,199,0.042,6.9,0.0572,6.9

@@ -1,0 +1,9 @@
+[     15s] loaded 13,979,592 rows
+[     35s] stage A done: visit ITT 0.01034, adjusted 0.00773, assignment AUC 0.5091
+[     51s] response fitted
+[     71s] T fitted
+[    112s] X fitted
+[    184s] DR fitted
+[    215s] CF fitted
+[    277s] validation Qini: {'response': 30.731, 't_learner': 30.323, 'x_learner': 20.335, 'dr_learner': 13.534, 'causal_forest': 29.853} -> selected t_learner
+[    408s] stage C done; all outputs written

@@ -1,0 +1,35 @@
+{
+ "draws_per_cell": 5000,
+ "metros_grid": [
+  20,
+  50,
+  100,
+  200
+ ],
+ "test_months": [
+  1,
+  2,
+  3
+ ],
+ "break_rule": [
+  0.25,
+  4.0
+ ],
+ "pools": [
+  {
+   "source": "Zillow newly pending listings",
+   "units_with_any_data": 900,
+   "complete_series": 372,
+   "min_mean_first12": 100,
+   "above_size_threshold": 158,
+   "coverage_breaks_dropped": 7,
+   "pool": 151,
+   "pool_share_of_all_volume": 0.62,
+   "first_month": "2018-01",
+   "last_month": "2026-09",
+   "months": 105,
+   "median_pool_monthly_volume": 343.0
+  }
+ ],
+ "runtime_s": 17
+}

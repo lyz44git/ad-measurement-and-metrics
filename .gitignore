@@ -1,0 +1,9 @@
+# data and model files never enter the repository
+data_raw/
+derived/
+models/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+.venv/

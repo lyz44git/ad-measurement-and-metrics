@@ -1,0 +1,1 @@
+b6af1d407c415bd0baaffb81e86434e10ee935e5510bfc1139f81f2255d981c1  design/analysis_plan.md   (SHA-256, recorded before the extension script was run)

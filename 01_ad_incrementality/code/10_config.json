@@ -1,0 +1,9 @@
+{
+  "plan": "docs/10_plan_criteo_incrementality_uplift.md",
+  "data": "data_raw/criteo_uplift_v2.1/criteo-research-uplift-v2.1.csv.gz",
+  "seed": 20261112,
+  "bootstrap": 200,
+  "lgbm": {"n_estimators": 200, "learning_rate": 0.05, "num_leaves": 63, "min_child_samples": 200,
+           "subsample": 0.5, "subsample_freq": 1, "colsample_bytree": 0.8, "n_jobs": 16, "random_state": 0},
+  "causal_forest": {"subsample": 300000, "n_estimators": 200, "min_samples_leaf": 50, "n_jobs": 4}
+}

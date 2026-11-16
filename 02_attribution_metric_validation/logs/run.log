@@ -1,0 +1,45 @@
+{
+ "n_control": 2096937,
+ "n_treated": 11882655,
+ "exposed_treated": 428212,
+ "exposure_share": 0.036036727482199896,
+ "exposed_control": 0,
+ "visit": {
+  "itt": 0.010342403129198284,
+  "incremental": 122895.20825518364,
+  "attributed": 177510,
+  "share_of_attributed_incremental": 0.6923283660367509,
+  "attributed_over_incremental": 1.4444013116558005,
+  "cace": 0.28699618005843747,
+  "treated_total": 576824,
+  "share_of_treated_outcomes_attributed": 0.30773684867481244
+ },
+ "conversion": {
+  "itt": 0.0011518730521316279,
+  "incremental": 13687.310082277148,
+  "attributed": 23031,
+  "share_of_attributed_incremental": 0.5942994260899287,
+  "attributed_over_incremental": 1.6826534842533756,
+  "cace": 0.031963863885825596,
+  "treated_total": 36711,
+  "share_of_treated_outcomes_attributed": 0.6273596469722972
+ },
+ "per_exposed_user_visit_effect": {
+  "naive": 0.3796766010720702,
+  "naive_se": 0.0007547872474856523,
+  "ols_adjusted": 0.2554848225541417,
+  "ols_se": 0.0006990331722689512,
+  "dml": 0.24596239630415567,
+  "dml_se": 0.0017148679394978913,
+  "dml_n": 2000000,
+  "cace_unadjusted": 0.28699618005843747,
+  "cace_adjusted_from_ad_demo": 0.21460888061784308,
+  "ratio_to_cace": {
+   "naive": 1.3229325944155819,
+   "ols": 0.8902028678643753,
+   "dml": 0.8570232407068046
+  },
+  "visit_rate_exposed": 0.4145376589166114,
+  "visit_rate_unexposed_treated": 0.034861057844541195
+ }
+}

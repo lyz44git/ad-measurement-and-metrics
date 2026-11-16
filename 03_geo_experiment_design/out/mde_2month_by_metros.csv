@@ -1,0 +1,7 @@
+source,estimator,20,50,100,150
+Zillow newly pending listings,CR: ANCOVA (CUPED),16.3,9.7,6.7,5.3
+Zillow newly pending listings,CR: volume-weighted ANCOVA,16.6,11.3,8.2,6.9
+Zillow newly pending listings,CR: year-over-year difference,22.0,13.7,9.5,7.6
+Zillow newly pending listings,MP: pair ANCOVA,19.6,10.0,6.8,5.4
+Zillow newly pending listings,MP: pair difference,45.7,15.0,8.7,6.7
+Zillow newly pending listings,MP: pair year-over-year difference,23.2,13.8,9.5,7.5

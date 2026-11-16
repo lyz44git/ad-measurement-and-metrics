@@ -1,0 +1,260 @@
+{
+ "E1": {
+  "cutoff": "2010-12-01",
+  "holdout": "2010-12-01..2011-11-30",
+  "n_accounts": 4239,
+  "share_any_purchase": 0.638829912715263,
+  "holdout_sales_total": 6776786.9,
+  "bgnbd_params": {
+   "r": 0.9061436164770804,
+   "alpha": 10.75037461130683,
+   "a": 0.16119478141565596,
+   "b": 97.14936859836888
+  },
+  "gg_params": {
+   "p": 2.1809643128970824,
+   "q": 3.605710573155046,
+   "gamma": 505.3333694686711
+  },
+  "eval": {
+   "past_sales": {
+    "spearman": 0.6208749852041494,
+    "auc_any": 0.7524030692136032,
+    "top10_capture": 0.6022213152371665,
+    "agg_ratio": 1.2293938783880012,
+    "spearman_ci": [
+     0.5967823799832137,
+     0.6416008792518973
+    ],
+    "auc_any_ci": [
+     0.7363938197760388,
+     0.7658770073500197
+    ],
+    "top10_capture_ci": [
+     0.5506789985188615,
+     0.659815771925544
+    ],
+    "agg_ratio_ci": [
+     1.1387885553944415,
+     1.3303522403092753
+    ]
+   },
+   "bgnbd_gg": {
+    "spearman": 0.5835315061691939,
+    "auc_any": 0.7400349690830661,
+    "top10_capture": 0.6076798903031759,
+    "agg_ratio": 1.298200799664742,
+    "spearman_ci": [
+     0.5590406946528924,
+     0.6041909840083228
+    ],
+    "auc_any_ci": [
+     0.723563742627718,
+     0.7531770382397734
+    ],
+    "top10_capture_ci": [
+     0.5531747216144141,
+     0.6617717604240365
+    ],
+    "agg_ratio_ci": [
+     1.1976511949199509,
+     1.4117860404167526
+    ]
+   }
+  },
+  "paired_diff_bgnbd_minus_past": {
+   "spearman": {
+    "observed": -0.037343479034955496,
+    "ci": [
+     -0.05607738895140418,
+     -0.020186525579274157
+    ]
+   },
+   "auc_any": {
+    "observed": -0.01236810013053713,
+    "ci": [
+     -0.02613233432465575,
+     0.0006433230433645418
+    ]
+   },
+   "top10_capture": {
+    "observed": 0.005458575066009441,
+    "ci": [
+     -0.011098605226992719,
+     0.01455611762128549
+    ]
+   }
+  },
+  "rule_met": false,
+  "calibration_deciles": [
+   {
+    "pred": 382.1672600163008,
+    "actual": 199.43030660377357
+   },
+   {
+    "pred": 528.9403363194297,
+    "actual": 388.5449292452831
+   },
+   {
+    "pred": 706.0816539754242,
+    "actual": 341.6429952830189
+   },
+   {
+    "pred": 913.6356816947598,
+    "actual": 412.4464858490566
+   },
+   {
+    "pred": 1097.3854160806075,
+    "actual": 433.3923113207548
+   },
+   {
+    "pred": 1299.3431818203853,
+    "actual": 629.7254373522459
+   },
+   {
+    "pred": 1544.617329935891,
+    "actual": 715.591863207547
+   },
+   {
+    "pred": 1896.3749772490096,
+    "actual": 1123.7692216981134
+   },
+   {
+    "pred": 2714.125588774052,
+    "actual": 2015.7830188679245
+   },
+   {
+    "pred": 9669.520828660952,
+    "actual": 9724.146603773583
+   }
+  ],
+  "top_decile_actual_share_bgnbd": 0.6076798903031759
+ },
+ "E2": {
+  "cutoff": "2011-06-01",
+  "n_active_12m": 4324,
+  "n_high_value": 1442,
+  "sales12_threshold": 1119.66,
+  "high_value_share_of_sales12": 0.8402133665663727,
+  "repurchase_rate": 0.8349514563106796,
+  "auc_model": 0.7901916580585723,
+  "auc_model_ci": [
+   0.7590520499069787,
+   0.8203659022702983
+  ],
+  "auc_recency": 0.752170635696139,
+  "auc_recency_ci": [
+   0.7144763585736155,
+   0.7868259536804024
+  ],
+  "auc_diff": 0.03802102236243332,
+  "auc_diff_ci": [
+   0.0034447625233540173,
+   0.07144702250735002
+  ],
+  "by_tercile": [
+   {
+    "tercile": "low",
+    "n": 481,
+    "repurchase_rate": 0.6548856548856549,
+    "ci": [
+     0.6123994657902737,
+     0.697371843981036
+    ],
+    "median_recency_d": 134.0,
+    "median_purchase_days": 4.0,
+    "share_of_group_sales12": 0.1871695028170562
+   },
+   {
+    "tercile": "mid",
+    "n": 480,
+    "repurchase_rate": 0.8875,
+    "ci": [
+     0.8592319471399249,
+     0.915768052860075
+    ],
+    "median_recency_d": 43.0,
+    "median_purchase_days": 8.0,
+    "share_of_group_sales12": 0.18016793068140458
+   },
+   {
+    "tercile": "high",
+    "n": 481,
+    "repurchase_rate": 0.9625779625779626,
+    "ci": [
+     0.9456164255474393,
+     0.9795394996084859
+    ],
+    "median_recency_d": 15.0,
+    "median_purchase_days": 15.0,
+    "share_of_group_sales12": 0.6326625665015392
+   }
+  ]
+ },
+ "E3": {
+  "cohorts": "2010-12..2011-05",
+  "n_new_accounts": 708,
+  "repeat_rate_all": 0.4731638418079096,
+  "top_quartile_share_of_later_sales": 0.5886695177846774,
+  "top_quartile_share_ci": [
+   0.4785277954202389,
+   0.6841020581010623
+  ],
+  "spearman_first_vs_later": 0.2883517406336063,
+  "spearman_ci": [
+   0.2099861915347524,
+   0.3613527928071487
+  ],
+  "by_quartile": [
+   {
+    "quartile": 1,
+    "n": 177,
+    "median_first_month_sales": 111.25,
+    "repeat_rate": 0.3502824858757062,
+    "mean_later_sales": 132.60598870056498,
+    "share_of_later_sales": 0.081135978224231
+   },
+   {
+    "quartile": 2,
+    "n": 177,
+    "median_first_month_sales": 207.66,
+    "repeat_rate": 0.4350282485875706,
+    "mean_later_sales": 222.38129943502827,
+    "share_of_later_sales": 0.13606568183869494
+   },
+   {
+    "quartile": 3,
+    "n": 177,
+    "median_first_month_sales": 328.2,
+    "repeat_rate": 0.5084745762711864,
+    "mean_later_sales": 317.2777966101695,
+    "share_of_later_sales": 0.1941288221523967
+   },
+   {
+    "quartile": 4,
+    "n": 177,
+    "median_first_month_sales": 689.5699999999999,
+    "repeat_rate": 0.5988700564971752,
+    "mean_later_sales": 962.1022033898305,
+    "share_of_later_sales": 0.5886695177846774
+   }
+  ]
+ },
+ "E4": {
+  "engine": "duckdb 1.5.2",
+  "segment_cells_compared": 36,
+  "segment_max_abs_diff": 1.1102230246251565e-16,
+  "cohort_cells_compared": 56,
+  "cohort_max_abs_diff_vs_4dp_rounded": 4.9606299212578975e-05,
+  "top_segment_sql": {
+   "rband": "recent<=60d",
+   "vtile": 3,
+   "n": 719,
+   "share_accounts": 0.2647275405007364,
+   "share_sales": 0.7246367138228954,
+   "repeat_rate": 0.9165507649513213
+  },
+  "n_lines": 794163,
+  "n_accounts_rfm": 2716
+ }
+}

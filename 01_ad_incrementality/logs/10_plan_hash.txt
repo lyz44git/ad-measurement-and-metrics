@@ -1,0 +1,1 @@
+f6d6bb794ab39813e858e45558d6817bd5d73dc6fb68b31724832cce7f783c60  docs/10_plan_criteo_incrementality_uplift.md   (SHA-256, recorded 2026-11-12 before the run)
