@@ -1,8 +1,13 @@
-# 04 · Customer metrics and retention on retail transactions
+# 04 · Customer metric definitions and retention on retail transactions
+
+> **Takeaway.** A 3-month look-back overstates customer acquisition: 62% of the accounts it labels new had bought in
+> the prior year, so acquisition metrics here use a 12-month look-back. For retention outreach among high-value
+> accounts, a purchase-model score ranks who will return better than recency alone (AUC 0.79 against 0.75). For
+> ranking customer value a year ahead, a simple past-sales rule is enough.
 
 ## Questions
 
-1. Does the "new customer" metric count returning buyers as new?
+1. Does the "new customer" metric count returning buyers as new, and do the metric tables reproduce in SQL?
 2. Which high-value customers are least likely to buy again?
 3. Does a purchase model rank future customer value better than a simple past-sales rule?
 
@@ -18,27 +23,45 @@ Download `online_retail_II.xlsx` from the UCI repository into `data_raw/` (git-i
 
 ## Method
 
-1. **Cleaning and audit** (`10_ltv_load.py`).
-2. **Purchase and spend models** (`11_btyd.py`, `btyd_impl.py`): BG/NBD for purchase frequency and Gamma-Gamma for
-   spend per purchase, implemented from the published likelihoods and checked by parameter recovery on simulated data.
-3. **Segments and model comparison** (`12_ltv_segments.py`): recency-by-value rule segments and k-means selected by
-   bootstrap stability, validated on the following six months; the purchase model and a LightGBM model compared with
-   a last-6-months sales rule out of time.
-4. **Extensions** (`14_ltv_extension.py`), run under [`design/analysis_plan.md`](design/analysis_plan.md), fixed
-   before the run (SHA-256 in `logs/plan_hash.txt`); deviations in [`design/deviations.md`](design/deviations.md):
-   a 12-month holdout of the purchase model, retention risk among high-value accounts, early value of new accounts,
-   and a SQL rebuild of the main tables.
+1. **Cleaning and audit** (`10_ltv_load.py`): duplicates, missing IDs, credit notes and non-merchandise codes counted
+   and removed, with every count written to the audit file.
+2. **Metric definitions** (`12_ltv_segments.py`, `14_ltv_extension.py`): the new-customer definition is tested for
+   contamination by returning buyers under different look-back windows; cohorts and segments are then defined once
+   and rebuilt in SQL to confirm that both implementations give the same tables.
+3. **Retention risk and early value** (`14_ltv_extension.py`): a ranking of high-value accounts by expected
+   purchases, and first-month value of new accounts, both evaluated on later months.
+4. **Purchase and spend models** (`btyd_impl.py`, checked by `11_btyd.py`): BG/NBD for purchase frequency and
+   Gamma-Gamma for spend per purchase, implemented from the published likelihoods and checked by parameter recovery
+   on simulated data. Compared out of time with a last-6-months sales rule and a LightGBM model.
+
+Step 14 was run under [`design/analysis_plan.md`](design/analysis_plan.md), fixed before the run (SHA-256 in
+`logs/plan_hash.txt`); deviations are in [`design/deviations.md`](design/deviations.md).
 
 ## Results
 
 Sources: [`out/12_ltv_segments.json`](out/12_ltv_segments.json),
 [`out/14_ltv_extension.json`](out/14_ltv_extension.json).
 
+### Metric definitions
+
 **New-customer definition.** With a 3-month look-back, 1,036 accounts would be labelled new, of which 640 (62%) had
-bought in the prior 12 months. Cohorts here use a 12-month look-back.
+bought in the prior 12 months. Cohorts here use a 12-month look-back:
+
+```sql
+-- an account is new in a month if it bought in that month and on no day of the previous 12 months
+SELECT a.cid, a.mon FROM m a
+WHERE NOT EXISTS (SELECT 1 FROM days d
+                  WHERE d.cid = a.cid AND d.day < a.mon AND d.day >= a.mon - INTERVAL 12 MONTH)
+```
 
 **SQL reconciliation.** The segment table and the cohort repeat-rate matrix, rebuilt in DuckDB SQL
-([`out/14_sql_queries.sql`](out/14_sql_queries.sql)), match the Python results in all 92 cells.
+([`out/14_sql_queries.sql`](out/14_sql_queries.sql)), match the Python results in all 92 cells. The first run did
+not: `NTILE(3)` and rank-based terciles placed three boundary accounts in different groups, which is recorded in the
+deviations file and fixed in the published SQL.
+
+![Monthly repeat-purchase rate of new-account cohorts](out/fig/fig6_cohort_retention.png)
+
+### Retention and early value
 
 **Retention risk.** Among the 1,442 accounts in the top third of 12-month sales (84% of those sales), the purchase
 model ranks repeat buyers better than recency alone:
@@ -58,7 +81,9 @@ bottom quartile.
 **High-value segment.** Accounts that bought in the last 60 days and were in the top third of 6-month sales made up
 26.5% of 2,716 active accounts and produced 72.5% of their next-six-month sales; 91.7% bought again.
 
-**Purchase model against a simple rule.**
+![Rule segments: share of accounts and of next-six-month sales](out/fig/fig5_segments.png)
+
+### Purchase model against a simple rule
 
 | Holdout | Spearman, purchase model | Spearman, past-sales rule | Top-decile share of actual sales, model / rule |
 |---|---|---|---|
@@ -68,10 +93,6 @@ bottom quartile.
 The model ranks better on the 6-month holdout. **On the 12-month holdout the pre-specified rule was not met**: the
 past-sales rule ranks better (Spearman difference −0.037, 95% CI −0.056 to −0.020). A LightGBM model on a fixed
 6-month look-back did not differ from the rule on any metric.
-
-![Rule segments: share of accounts and of next-six-month sales](out/fig/fig5_segments.png)
-
-![Monthly repeat-purchase rate of new-account cohorts](out/fig/fig6_cohort_retention.png)
 
 ## Reproduce
 
@@ -84,6 +105,9 @@ python code/12_ltv_segments.py derived out code
 python code/13_ltv_figs.py out
 python code/14_ltv_extension.py derived out code
 ```
+
+`tests/` checks the purchase and spend models on simulated customers and runs the published SQL against an
+independent pandas implementation on synthetic purchases.
 
 ## Scope
 

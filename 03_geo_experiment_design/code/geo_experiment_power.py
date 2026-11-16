@@ -35,8 +35,8 @@ from scipy.stats import t as tdist
 import matplotlib.pyplot as plt
 print = functools.partial(print, flush=True)
 
-ZFILE = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "data_raw" / "Metro_new_pending_uc_sfrcondo_month.csv"
-OUT = ROOT / "out"; OUT.mkdir(parents=True, exist_ok=True)
+DEFAULT_ZFILE = ROOT / "data_raw" / "Metro_new_pending_uc_sfrcondo_month.csv"
+OUT = ROOT / "out"
 NS, DS, R = [20, 50, 100, 200], [1, 2, 3], 5000
 DELTA = np.round(np.arange(0, 0.5005, 0.001), 3)
 BREAK_LO, BREAK_HI = 0.25, 4.0
@@ -68,8 +68,8 @@ def screen(Y, source, min_mean):
     return pool, B, summ
 
 
-def load_zillow():
-    z = pd.read_csv(ZFILE)
+def load_zillow(zfile=DEFAULT_ZFILE):
+    z = pd.read_csv(zfile)
     z = z[z.RegionType.eq("msa")]
     dc = [c for c in z.columns if c[:2] in ("19", "20")]
     Y = z.set_index("RegionName")[dc].astype(float)
@@ -192,43 +192,49 @@ def ri_check(pool, source, seed, D=2, draws=2000, perms=199):
 
 
 # ------------------------------------------------------------------ run
-pools, breaks, summs, results, ris = {}, [], [], [], []
-for loader, seed in [(load_zillow, 11)]:
-    pool, B, summ = loader()
-    pools[summ["source"]] = pool; breaks.append(B); summs.append(summ)
-    results.append(simulate(pool, summ["source"], seed))
-    ris.append(ri_check(pool, summ["source"], seed + 100))
-RES = pd.concat(results, ignore_index=True)
-RES.to_csv(OUT / "design_summary.csv", index=False)
-RI = pd.concat(ris, ignore_index=True)
-tt = RES[(RES.test_months == 2) & RES.estimator.isin(RI.estimator.unique())][["source", "metros", "estimator",
-                                                                            "false_positive_rate", "mde_80_pct"]]
-RI = RI.merge(tt, on=["source", "metros", "estimator"], suffixes=("", "_t_test"))
-RI.to_csv(OUT / "randomization_inference_check.csv", index=False)
-print(RI.round(3).to_string(index=False))
-pd.concat(breaks).to_csv(OUT / "coverage_breaks.csv", index=False)
-pd.DataFrame(summs).to_csv(OUT / "pool_summary.csv", index=False)
-mde2 = RES[RES.test_months == 2].pivot_table(index=["source", "estimator"], columns="metros", values="mde_80_pct")
-mde2.round(1).to_csv(OUT / "mde_2month_by_metros.csv")
-print(mde2.round(1).to_string())
-print(RES.groupby(["source", "estimator"]).false_positive_rate.agg(["min", "max"]).round(3).to_string())
+def main(zfile=DEFAULT_ZFILE):
+    OUT.mkdir(parents=True, exist_ok=True)
+    pools, breaks, summs, results, ris = {}, [], [], [], []
+    for seed in [11]:
+        pool, B, summ = load_zillow(zfile)
+        pools[summ["source"]] = pool; breaks.append(B); summs.append(summ)
+        results.append(simulate(pool, summ["source"], seed))
+        ris.append(ri_check(pool, summ["source"], seed + 100))
+    RES = pd.concat(results, ignore_index=True)
+    RES.to_csv(OUT / "design_summary.csv", index=False)
+    RI = pd.concat(ris, ignore_index=True)
+    tt = RES[(RES.test_months == 2) & RES.estimator.isin(RI.estimator.unique())][["source", "metros", "estimator",
+                                                                                "false_positive_rate", "mde_80_pct"]]
+    RI = RI.merge(tt, on=["source", "metros", "estimator"], suffixes=("", "_t_test"))
+    RI.to_csv(OUT / "randomization_inference_check.csv", index=False)
+    print(RI.round(3).to_string(index=False))
+    pd.concat(breaks).to_csv(OUT / "coverage_breaks.csv", index=False)
+    pd.DataFrame(summs).to_csv(OUT / "pool_summary.csv", index=False)
+    mde2 = RES[RES.test_months == 2].pivot_table(index=["source", "estimator"], columns="metros", values="mde_80_pct")
+    mde2.round(1).to_csv(OUT / "mde_2month_by_metros.csv")
+    print(mde2.round(1).to_string())
+    print(RES.groupby(["source", "estimator"]).false_positive_rate.agg(["min", "max"]).round(3).to_string())
 
-# ------------------------------------------------------------------ figure: MDE vs metros, 2-month test
-figstyle.apply()
-SHOW = ["CR: year-over-year difference", "CR: ANCOVA (CUPED)", "MP: pair ANCOVA"]
-fig, ax = plt.subplots(figsize=(5.6, 4.0))
-src = next(iter(pools))
-d = RES[(RES.source == src) & (RES.test_months == 2)]
-for i, k in enumerate(SHOW):
-    g = d[d.estimator == k].sort_values("metros")
-    ax.plot(g.metros, g.mde_80_pct, marker="o", color=figstyle.SERIES[i], label=k)
-xt = sorted(d.metros.unique()); ax.set_xscale("log"); ax.set_xticks(xt); ax.set_xticklabels([str(n) for n in xt]); ax.minorticks_off()
-ax.set_xlabel("Metros in the test (half treated)"); ax.set_ylabel("Minimum detectable effect, % (80% power)")
-ax.set_title(f"{src}: 2-month test"); ax.legend(loc="upper right")
-figstyle.note(fig, "Placebo experiments on historical data (5,000 draws per point); two-sided 5% tests. Newly pending "
-              "listings, metro monthly 2018-01..2026-09 (largest point = all eligible metros). Data Provided by Zillow Group.")
-fig.tight_layout(); fig.savefig(OUT / "fig1_mde_by_metros.png")
+    # ------------------------------------------------------------------ figure: MDE vs metros, 2-month test
+    figstyle.apply()
+    SHOW = ["CR: year-over-year difference", "CR: ANCOVA (CUPED)", "MP: pair ANCOVA"]
+    fig, ax = plt.subplots(figsize=(5.6, 4.0))
+    src = next(iter(pools))
+    d = RES[(RES.source == src) & (RES.test_months == 2)]
+    for i, k in enumerate(SHOW):
+        g = d[d.estimator == k].sort_values("metros")
+        ax.plot(g.metros, g.mde_80_pct, marker="o", color=figstyle.SERIES[i], label=k)
+    xt = sorted(d.metros.unique()); ax.set_xscale("log"); ax.set_xticks(xt); ax.set_xticklabels([str(n) for n in xt]); ax.minorticks_off()
+    ax.set_xlabel("Metros in the test (half treated)"); ax.set_ylabel("Minimum detectable effect, % (80% power)")
+    ax.set_title(f"{src}: 2-month test"); ax.legend(loc="upper right")
+    figstyle.note(fig, "Placebo experiments on historical data (5,000 draws per point); two-sided 5% tests. Newly pending "
+                  "listings, metro monthly 2018-01..2026-09 (largest point = all eligible metros). Data Provided by Zillow Group.")
+    fig.tight_layout(); fig.savefig(OUT / "fig1_mde_by_metros.png")
 
-json.dump({"draws_per_cell": R, "metros_grid": NS, "test_months": DS, "break_rule": [BREAK_LO, BREAK_HI],
-           "pools": summs, "runtime_s": round(time.time() - t0)}, open(OUT / "meta.json", "w"), indent=1, default=str)
-print(f"done in {time.time() - t0:.0f}s")
+    json.dump({"draws_per_cell": R, "metros_grid": NS, "test_months": DS, "break_rule": [BREAK_LO, BREAK_HI],
+               "pools": summs, "runtime_s": round(time.time() - t0)}, open(OUT / "meta.json", "w"), indent=1, default=str)
+    print(f"done in {time.time() - t0:.0f}s")
+
+
+if __name__ == "__main__":
+    main(Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_ZFILE)

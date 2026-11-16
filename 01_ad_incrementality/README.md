@@ -1,5 +1,9 @@
 # 01 · Ad incrementality on a 14.0M-user randomized experiment
 
+> **Takeaway.** The ads raised the visit rate by about one percentage point, and three quarters of the incremental
+> visits came from one fifth of users. A plain response model finds those users as well as the uplift models do, so
+> on this evidence uplift modelling does not earn its extra complexity for targeting.
+
 ## Question
 
 How many site visits and conversions did the ads cause, compared with what would have happened without them?
@@ -53,7 +57,7 @@ Full tables: [`docs/11_results_criteo_incrementality_uplift.md`](docs/11_results
 
 ```bash
 python code/10_run_criteo.py        # about 7 minutes on 16 cores; writes out/criteo/ and models/
-python -m pytest code/tests -q      # service tests are skipped until models/ exists
+python -m pytest code/tests -q      # runs on simulated data; service tests are skipped until models/ exists
 ```
 
 ## Scope

@@ -1,5 +1,9 @@
 # 03 · Sizing market-level (geo) experiments
 
+> **Takeaway.** Analyse market-level tests with regression adjustment on pre-period volume rather than year-over-year
+> growth (detectable effect 6.7% against 9.5% at 100 metros), plan for effects of 5% or more, skip matched pairs, and
+> use randomization inference when the target is total volume.
+
 ## Question
 
 When a change can only be randomized by market (metro), for example because prices or processes are set per market,
@@ -63,7 +67,8 @@ Minimum detectable effect with 80% power, 2-month test:
 python code/geo_experiment_power.py /path/to/Metro_new_pending_uc_sfrcondo_month.csv   # about 20 seconds
 ```
 
-The script is seeded; a re-run reproduces `out/` exactly.
+The script is seeded; a re-run reproduces `out/` exactly. `tests/test_geo_power.py` runs the same simulation on
+synthetic panels.
 
 ## Scope
 

@@ -1,5 +1,9 @@
 # 02 · Validating an attribution metric against a randomized experiment
 
+> **Takeaway.** Exposure-based attribution should not drive budget decisions without an experimental calibration: it
+> overstates incremental conversions by 68%. Where no experiment is available, covariate adjustment brings the
+> estimate back inside the experimental range in this data.
+
 ## Question
 
 An exposure-based attribution metric credits the ad with every visit or conversion by a user who saw it. How far is
@@ -46,6 +50,9 @@ Source: [`out/attribution_vs_experiment.json`](out/attribution_vs_experiment.jso
 ```bash
 python code/attribution_vs_experiment.py /path/to/criteo-research-uplift-v2.1.csv.gz   # about 1 minute
 ```
+
+`code/attribution_vs_experiment.py` exposes the estimators as functions; `tests/test_attribution.py` checks them on
+simulated data with a known effect and confounded exposure.
 
 Study 01 must have been run first, since its output supplies the adjusted benchmark. The double machine learning
 estimate can differ in the third decimal between runs because the gradient-boosting fits are multi-threaded
