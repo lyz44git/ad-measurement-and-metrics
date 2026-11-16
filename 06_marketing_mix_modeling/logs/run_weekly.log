@@ -1,0 +1,63 @@
+brands in file 93 eligible 34
+{
+ "freq": "W",
+ "brands_in_file": 93,
+ "eligible": 34,
+ "converged": 30,
+ "weeks_median": 148.0,
+ "weeks_total": 5172,
+ "wmape_mean": {
+  "mmm": 0.30933034363407114,
+  "b0": 0.2968913016756542,
+  "naive": 0.3434776261500295
+ },
+ "wmape_median": {
+  "mmm": 0.1876666341109021,
+  "b0": 0.216605153592225,
+  "naive": 0.31796561808600143
+ },
+ "mmm_better_than_b0": 19,
+ "mmm_better_than_naive": 20,
+ "diff_mean": 0.012439041958416877,
+ "diff_ci": [
+  -0.06355962827906055,
+  0.10188689954013401
+ ],
+ "rule_met": false,
+ "roas_median": {
+  "google": 4.372078259217485,
+  "meta": 3.5006336808838046,
+  "blended": 5.884141851490568
+ },
+ "roas_iqr": {
+  "google": [
+   2.2468981268167374,
+   6.1986276219655245
+  ],
+  "meta": [
+   1.524955479320619,
+   5.732658123857107
+  ]
+ },
+ "media_share_median": {
+  "google": 0.2922360683462283,
+  "meta": 0.22454419731654646,
+  "total": 0.6059692612548964
+ },
+ "brands_google_mroas_higher": 15,
+ "realloc_median": 0.008703211777128149,
+ "realloc_brands_ci_above_0": 11,
+ "adstock_median": {
+  "google": 0.26038704812526703,
+  "meta": 0.27286073565483093
+ },
+ "total_spend": 915428609.8684094,
+ "recovery": {
+  "n_brands": 20,
+  "n_converged": 18,
+  "spearman": 0.010296010296010296,
+  "coverage90": 0.8888888888888888,
+  "median_abs_rel_err": 0.34735113874104206
+ },
+ "seconds": 99
+}

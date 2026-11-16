@@ -1,0 +1,49 @@
+{
+ "truth_lift": 0.010342403129198284,
+ "rate_control": 0.03820095691954503,
+ "rate_treated": 0.048543360048743316,
+ "studies_per_n": 2000,
+ "by_n": {
+  "1000": {
+   "power_z": 0.19,
+   "power_z_positive": 0.1895,
+   "coverage95": 0.959,
+   "bayes_detect": 0.2935,
+   "aa_false_positive_z": 0.053,
+   "aa_false_positive_bayes": 0.0435
+  },
+  "2500": {
+   "power_z": 0.432,
+   "power_z_positive": 0.432,
+   "coverage95": 0.9445,
+   "bayes_detect": 0.558,
+   "aa_false_positive_z": 0.0475,
+   "aa_false_positive_bayes": 0.0435
+  },
+  "5000": {
+   "power_z": 0.731,
+   "power_z_positive": 0.731,
+   "coverage95": 0.9525,
+   "bayes_detect": 0.823,
+   "aa_false_positive_z": 0.0505,
+   "aa_false_positive_bayes": 0.055
+  },
+  "10000": {
+   "power_z": 0.944,
+   "power_z_positive": 0.944,
+   "coverage95": 0.9455,
+   "bayes_detect": 0.967,
+   "aa_false_positive_z": 0.0505,
+   "aa_false_positive_bayes": 0.048
+  },
+  "20000": {
+   "power_z": 0.999,
+   "power_z_positive": 0.999,
+   "coverage95": 0.955,
+   "bayes_detect": 1.0,
+   "aa_false_positive_z": 0.057,
+   "aa_false_positive_bayes": 0.049
+  }
+ },
+ "smallest_n_power80": 10000
+}

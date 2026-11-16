@@ -1,0 +1,49 @@
+{
+  "target": "inventory",
+  "base": "arima",
+  "vintage": "v1_20261109",
+  "pap_sha256": "e551b5625e394e78e0428d83eeeb55dc714cea6087fe49df4dbb991ad5effba0",
+  "data_window": [
+    "2018-03",
+    "2026-09"
+  ],
+  "n_origins": 24,
+  "first_origin": "2023-11",
+  "last_origin": "2025-10",
+  "n_metros_in_file": 927,
+  "n_members": 809,
+  "n_nodes": 873,
+  "n_leaves": 810,
+  "nodes_per_level": {
+    "US": 1,
+    "division": 9,
+    "state": 51,
+    "metro": 809
+  },
+  "cells_carried_forward_full_data": 4,
+  "remainder_share_of_us_full_data": [
+    0.09834919420174836,
+    0.1567924944708705
+  ],
+  "shrinkage_lambda_range": [
+    0.3261020604190711,
+    0.3654567398758706
+  ],
+  "train_months_range": [
+    68,
+    91
+  ],
+  "coverage_break_flags_first_training_window": {
+    "level_shifts": 1,
+    "spikes": 1,
+    "members_flagged": 2
+  },
+  "crosswalk": {
+    "members": 809,
+    "matched": 777,
+    "matched_metro": 346,
+    "matched_micro": 431,
+    "state_agrees_with_cbsa_first_state": 777
+  },
+  "runtime_secs": 491.2
+}

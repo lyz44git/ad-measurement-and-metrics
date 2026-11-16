@@ -1,0 +1,2 @@
+1d098fd9fa2d08ef8e9fe0b302889e9d07519c5c740eb0e3ca171666cb85c821  design/analysis_plan.md
+Sun Nov 15 17:33:36 CST 2026

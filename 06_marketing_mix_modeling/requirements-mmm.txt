@@ -1,0 +1,8 @@
+# Extra packages for code/run_mmm.py; versions used to produce out/ (Python 3.13.9). The tests need only the root
+# requirements.txt.
+numpyro==0.22.0
+jax==0.12.0.1
+jaxlib==0.12.0.1
+numpy==2.5.4
+pandas==3.1.1
+scipy==1.18.1

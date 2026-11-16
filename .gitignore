@@ -2,6 +2,8 @@
 data_raw/
 derived/
 models/
+tmp/
+data_external/
 __pycache__/
 *.pyc
 .pytest_cache/

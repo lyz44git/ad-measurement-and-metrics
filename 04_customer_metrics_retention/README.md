@@ -81,6 +81,11 @@ bottom quartile.
 **High-value segment.** Accounts that bought in the last 60 days and were in the top third of 6-month sales made up
 26.5% of 2,716 active accounts and produced 72.5% of their next-six-month sales; 91.7% bought again.
 
+**Clustering check.** K-means on recency, frequency, spend and return behaviour, with the number of clusters chosen by
+bootstrap out-of-bag stability, selects two clusters (adjusted Rand index 0.92 on average, 10th percentile 0.89). Its
+high-value cluster is 36.8% of accounts and produced 76.5% of next-six-month sales, close to the rule above
+([`out/12_ltv_segments.json`](out/12_ltv_segments.json)).
+
 ![Rule segments: share of accounts and of next-six-month sales](out/fig/fig5_segments.png)
 
 ### Purchase model against a simple rule

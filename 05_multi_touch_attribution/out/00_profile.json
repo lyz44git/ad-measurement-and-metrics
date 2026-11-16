@@ -1,0 +1,18 @@
+{
+ "rows": 16468027,
+ "users": 6142256,
+ "campaigns": 675,
+ "days": 30.916655092592592,
+ "conv_rows": 806196,
+ "conversions": 435810,
+ "conv_attributed": 236331,
+ "share_conv_multi_touch": 0.3231178724673596,
+ "share_conv_multi_campaign": 0.006560198251531631,
+ "touches_per_conv_mean": 1.8498795346595993,
+ "touches_per_conv_median": 1.0,
+ "touches_p90": 3.0,
+ "share_conv_with_click": 1.0,
+ "click_rate": 0.3611582006757701,
+ "conv_per_user_max": 107,
+ "users_converting": 327860
+}

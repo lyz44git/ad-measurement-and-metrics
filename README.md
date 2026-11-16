@@ -7,7 +7,8 @@
 **Figure 1 | Headline results of studies 01–04.** **a**, Effect of the ads on the visit rate by decile of predicted uplift among 4.19M held-out users: realized effect with 95% CI (filled), T-learner prediction (open) and the average effect (dashed). **b**, Effect of exposure on the visit rate from three observational estimators against the range of the experimental benchmark (shaded); exposure-based attribution credited 68% more conversions than the experiment found incremental. **c**, Smallest effect detectable with 80% power in a 2-month market-level test, from 5,000 placebo tests per design on 151 U.S. metros. **d**, Monthly repeat-purchase rate of new-account cohorts under a 12-month look-back; a 3-month look-back would have labelled 1,036 accounts new, 62% of which had bought in the prior year. Drawn by [`figures/make_figure1.py`](figures/make_figure1.py) from the result files in each study folder.
 
 Analyses of public advertising and e-commerce data: an experiment readout, validation of an attribution metric,
-power analysis for market-level tests, and customer retention metrics.
+power analysis for market-level tests, customer retention metrics, multi-touch attribution, marketing mix models,
+segment-level effects from small samples, lift-study sizing and hierarchical forecasting.
 
 | Study | Question | Key result |
 |---|---|---|
@@ -15,6 +16,11 @@ power analysis for market-level tests, and customer retention metrics.
 | [`02_attribution_metric_validation`](02_attribution_metric_validation) | Can an exposure-based attribution metric be trusted as a measure of ad impact? | It credited 44% more visits and 68% more conversions than the experiment says were incremental. Covariate adjustment moved the per-exposed-user effect from a naive 38.0 points to 24.6-25.5, inside the experimental range of 21.5-28.7. |
 | [`03_geo_experiment_design`](03_geo_experiment_design) | If a change can only be randomized by market, how large a test is needed, and does the usual t-test keep its 5% false-positive rate? | Across 5,000 placebo tests per design on 151 U.S. metros, adjusting for pre-period volume lowered the smallest detectable change in a two-month, 100-metro test from 9.5% to 6.7%. For the volume-weighted estimate the t-test rejected a true null 5.7-9.1% of the time; randomization inference brought it back to about 5%. |
 | [`04_customer_metrics_retention`](04_customer_metrics_retention) | Does the "new customer" metric count returning buyers as new, and which high-value customers are least likely to return? | A 3-month look-back would have labelled 1,036 accounts new, 62% of which had bought in the prior year. A purchase-model score ranked repeat buyers with AUC 0.79 against 0.75 for recency alone. |
+| [`05_multi_touch_attribution`](05_multi_touch_attribution) | When a user sees several ads before converting, how much does the credit rule change which touch gets credit? | On 6.1M display-ad user paths, 65% of converting paths had several touches and last touch gave no credit to 82% of the touches in them; a time-decay rule fitted to observed delays (half-life 7.9 days) left 39% of the credit on the last touch. |
+| [`06_marketing_mix_modeling`](06_marketing_mix_modeling) | Can a marketing mix model recover each channel's return from a brand's own spend and revenue? | For 31 e-commerce brands, daily data raised the rank correlation between known and estimated channel ROAS in a recovery test from 0.01 (weekly) to 0.75. Media terms did not reliably improve holdout forecasts. |
+| [`07_bayesian_segment_effects`](07_bayesian_segment_effects) | Can segment-level ad effects be read from a 2% sample? | A Bayesian multilevel model cut the error of 100 segment estimates by 27% against separate per-segment estimates (0.79 against 1.08 points), in 10 of 10 samples. An HTML report is generated from the model output. |
+| [`08_lift_study_sizing`](08_lift_study_sizing) | How many users per arm does a survey-scale lift study need? | Power to detect a one-point lift on a 3.8% base rate rose from 19% at 1,000 users per arm to 94% at 10,000, with false-positive rates near 5%. |
+| [`09_hierarchical_forecasting`](09_hierarchical_forecasting) | Can a metric be forecast at national, state and metro levels so that the levels add up, without losing accuracy? | Separate forecasts of for-sale inventory disagreed across levels by 3.5-5.2%. Bottom-up reconciliation removed the gap with error at or below the unreconciled forecasts in 11 of 12 cases; MinT-shrink cut state and metro error by 7-10% with one base model but not with another. |
 
 Where a conclusion depends on a decision rule, the analysis plan was fixed before the run and its SHA-256 is recorded
 in the study's `logs/` folder. Results that did not support the more complex method are reported alongside the rest.
@@ -22,13 +28,16 @@ in the study's `logs/` folder. Results that did not support the more complex met
 ## Data sources and terms
 
 Data are not included in this repository. The experiment analysed in studies 01 and 02 was designed, run and released
-by Criteo; studies 03 and 04 use public Zillow and UCI data.
+by Criteo; studies 03 and 04 use public Zillow and UCI data, study 05 Criteo's attribution dataset, and study 06 a
+public marketing mix dataset released by Conjura.
 
 | Data | Used in | Terms |
 |---|---|---|
-| Criteo Uplift Prediction Dataset v2.1 (Diemert, Betlei, Renaudin and Amini 2018, AdKDD) | 01, 02 | Research, non-commercial use. The data pool several tests with non-uniform subsampling, so absolute lifts are not population effects. |
-| Zillow Research, metro newly pending listings | 03 | Data Provided by Zillow Group. Only derived simulation results are stored here. |
+| Criteo Uplift Prediction Dataset v2.1 (Diemert, Betlei, Renaudin and Amini 2018, AdKDD) | 01, 02, 07, 08 | Research, non-commercial use. The data pool several tests with non-uniform subsampling, so absolute lifts are not population effects. |
+| Zillow Research, metro newly pending listings (03), for-sale inventory and new listings (09) | 03, 09 | Data Provided by Zillow Group. Only derived simulation results and aggregate error tables are stored here. |
 | UCI Machine Learning Repository, Online Retail II (id 502) | 04 | CC BY 4.0. |
+| Criteo Attribution Modeling for Bidding Dataset (Diemert, Meynet, Galland and Lefortier 2017, AdKDD) | 05 | CC BY-NC-SA 4.0. The derived results in `05_multi_touch_attribution/out/` are shared under the same licence. |
+| Conjura, Multi-Region Marketing Mix Modelling (MMM) Dataset for Several eCommerce Brands (Figshare 25314841) | 06 | CC BY 4.0. |
 
 **Use.** This is a non-commercial research project. The data and all derived outputs in this repository are used
 for research only.
@@ -57,6 +66,7 @@ pip install -r requirements.txt
 ```
 
 Tested with Python 3.13 on macOS. Studies 01 and 02 load the full Criteo file and need about 16 GB of memory.
+Studies 06 and 07 also need NumPyro and JAX: `pip install -r 06_marketing_mix_modeling/requirements-mmm.txt`.
 
 ## Tests
 
@@ -66,12 +76,14 @@ pytest -q
 
 The tests run on simulated data, so they need none of the datasets. They check that the estimators recover a known
 effect and do not detect one that is absent, that false-positive rates stay near 5% under a true null, that the
-purchase and spend models recover known parameters, and that the published SQL agrees with an independent pandas
-implementation. They run on every push (see the badge above).
+purchase and spend models recover known parameters, that the published SQL agrees with an independent pandas
+implementation, that each attribution rule gives a conversion exactly one unit of credit, and that the adstock and
+saturation transforms behave as specified. They run on every push (see the badge above).
 
 ## Licence
 
-Code is released under the MIT licence (see `LICENSE`). The datasets keep their own terms, listed above.
+Code is released under the MIT licence (see `LICENSE`). The datasets keep their own terms, listed above; the derived
+results of study 05 follow CC BY-NC-SA 4.0.
 
 ## Notes
 
