@@ -26,6 +26,9 @@ by Criteo; studies 03 and 04 use public Zillow and UCI data.
 | Zillow Research, metro newly pending listings | 03 | Data Provided by Zillow Group. Only derived simulation results are stored here. |
 | UCI Machine Learning Repository, Online Retail II (id 502) | 04 | CC BY 4.0. |
 
+**Use.** This is a non-commercial research project. The data and all derived outputs in this repository are used
+for research only.
+
 ## Repository layout
 
 Study folders share this structure (not every study needs every folder):
