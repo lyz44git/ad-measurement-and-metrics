@@ -51,3 +51,8 @@ Tested with Python 3.13 on macOS. Studies 01 and 02 load the full Criteo file an
 ## Licence
 
 Code is released under the MIT licence (see `LICENSE`). The datasets keep their own terms, listed above.
+
+## Notes
+
+Developed with an AI-assisted coding workflow. The research questions, analysis plans and interpretation of results
+were led by the author. All results are reproducible from the scripts and public data referenced in each study.
