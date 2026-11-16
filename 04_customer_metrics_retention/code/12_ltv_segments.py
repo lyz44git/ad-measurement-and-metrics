@@ -14,7 +14,7 @@
 #    contamination of a 3-month burn-in rule measured at a pseudo data start.
 import sys, json
 import numpy as np, pandas as pd
-from sklearn.cluster import KMeans   # import before lightgbm (OpenMP runtime conflict -> segfault on this machine)
+from sklearn.cluster import KMeans   # import before lightgbm: their OpenMP runtimes can conflict and crash on some macOS setups
 from sklearn.metrics import silhouette_score, adjusted_rand_score, roc_auc_score
 import lightgbm as lgb
 from scipy import stats
