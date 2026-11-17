@@ -1,9 +1,10 @@
 # 04 · Customer metric definitions and retention on retail transactions
 
-> **Takeaway.** A 3-month look-back overstates customer acquisition: 62% of the accounts it labels new had bought in
-> the prior year, so acquisition metrics here use a 12-month look-back. For retention outreach among high-value
-> accounts, a purchase-model score ranks who will return better than recency alone (AUC 0.79 against 0.75). For
-> ranking customer value a year ahead, a simple past-sales rule is enough.
+> **Takeaway.** The "new customer" count depends on its definition: of the 1,036 accounts this retailer would label
+> new under a 3-month look-back, 640 (62%) had bought in the prior 12 months, so acquisition metrics here use a
+> 12-month look-back. Among high-value accounts, a purchase-model score ranks who buys again within six months better
+> than recency alone (AUC 0.79 against 0.75). For ranking sales over the next 12 months, a simple past-sales rule did
+> better than the purchase model in this one holdout.
 
 ## Questions
 

@@ -4,7 +4,7 @@ Both studies read the same randomized experiment (Criteo, 14.0M users).
 
 | Study | Question | Key result |
 |---|---|---|
-| [`01a_ad_incrementality`](01a_ad_incrementality) | How many site visits did the ads cause, as opposed to visits that would have happened anyway? | In Criteo's 14.0M-user randomized experiment, ads raised the visit rate from 3.82% to 4.85% (+1.03 points; +0.77 after regression adjustment) and the conversion rate from 0.19% to 0.31%. |
+| [`01a_ad_incrementality`](01a_ad_incrementality) | How many site visits did the ads cause, as opposed to visits that would have happened anyway? | In Criteo's 14.0M-user randomized experiment, assignment to the ad arm raised the visit rate from 3.82% to 4.85% (+1.03 points; +0.77 after regression adjustment) and the conversion rate from 0.19% to 0.31%. A pre-specified uplift model did not rank users for targeting better than a plain response model. |
 | [`01b_bayesian_segment_effects`](01b_bayesian_segment_effects) | Can segment-level ad effects be read from a 2% sample? | A Bayesian multilevel model cut the error of 100 segment estimates by 27% against separate per-segment estimates (0.79 against 1.08 points), in 10 of 10 samples. |
 
 ## Main figure of each study

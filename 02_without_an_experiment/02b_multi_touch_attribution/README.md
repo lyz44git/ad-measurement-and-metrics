@@ -7,8 +7,8 @@
 
 ## Question
 
-When a user sees several ads before converting, how should the conversion be credited across those touches, and how
-much does the choice of rule change the answer?
+When a user sees several ads before converting, how much does the choice of credit rule change which touches get
+credit? The rules split credit; none of them is validated against an experiment here.
 
 ## Data
 

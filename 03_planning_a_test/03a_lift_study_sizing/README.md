@@ -1,9 +1,11 @@
 # 03a · Sizing user-level lift studies, with and without covariate adjustment
 
-> **Takeaway.** An unadjusted readout needs about 6,500 users per arm to detect a one-point lift on a 3.8% base rate
-> with 80% power: power is 19% at 1,000 per arm, 73% at 5,000 and 94% at 10,000. Adjusting the readout for a model
-> prediction of the outcome, built from user features recorded before the ad, cuts its sampling variance by about 31%
-> and the required sample to about 4,400 per arm, with false-positive rates still near 5%.
+> **Takeaway.** For a one-point lift in site visits on a 3.8% base rate, an unadjusted readout needs about 6,500 users
+> per arm for 80% power (calculated; on the simulated grid, power is 73% at 5,000 and 94% at 10,000 per arm).
+> Adjusting the readout for the 12 user features recorded before the ad cuts the required sample to about 4,700, and
+> adjusting for a model prediction built from them to about 4,400, with false-positive rates still near 5%. Most of
+> the saving comes from the adjustment itself; the model adds a little more. A conversion endpoint, with its lower base
+> rate, would need its own calculation.
 
 ## Question
 

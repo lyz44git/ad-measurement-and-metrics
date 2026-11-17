@@ -7,7 +7,7 @@
 ## Question
 
 A small experiment sample gives noisy segment-level effects. Does partial pooling across segments give estimates
-closer to the truth than estimating each segment on its own, or than giving every segment the overall effect?
+closer to a benchmark (the segment effect on the other 98% of users) than estimating each segment on its own, or than giving every segment the overall effect?
 
 ## Data
 

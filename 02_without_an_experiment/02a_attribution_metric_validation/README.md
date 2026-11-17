@@ -1,9 +1,10 @@
 # 02a · Validating an attribution metric against a randomized experiment
 
-> **Takeaway.** Exposure-based attribution should not drive budget decisions without an experimental calibration: it
-> overstates incremental conversions by 68%. Where no experiment is available, covariate adjustment removes most of
-> the bias in this data: the per-exposed-user effect falls from 38.0 points to about 25, between the two experimental
-> estimates (21.5 and 28.7).
+> **Takeaway.** On the same experiment, exposure-based attribution credited 23,031 conversions in the ad arm, while
+> the experiment puts the conversions caused by the ads at 13,687: 68% more. Attribution counts should not drive
+> budget decisions without an experimental calibration. Without an experiment, covariate adjustment moved the
+> per-exposed-user visit effect from a naive 38.0 points to 24.6-25.5, between the two experimental estimates (21.5
+> and 28.7); this comparison cannot say how much of the bias was removed.
 
 ## Question
 

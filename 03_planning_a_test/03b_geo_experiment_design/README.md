@@ -1,8 +1,10 @@
 # 03b · Sizing market-level (geo) experiments
 
-> **Takeaway.** Analyze market-level tests with regression adjustment on pre-period volume rather than year-over-year
-> growth (detectable effect 6.7% against 9.5% at 100 metros), plan for effects of 5% or more, skip matched pairs, and
-> use randomization inference when the target is total volume.
+> **Takeaway.** In placebo tests on historical metro listing counts, regression adjustment on pre-period volume
+> lowered the smallest detectable effect of a two-month, 100-metro test from 9.5% (year-over-year growth) to 6.7%;
+> matched pairs added nothing once the estimate was adjusted. When the target is total volume, randomization inference
+> kept the false-positive rate between 4.2% and 5.8%, where the t-test reached 9.1%, at the cost of a larger detectable
+> effect (8.8%). These results hold for the metros, windows and designs tested here.
 
 ## Question
 

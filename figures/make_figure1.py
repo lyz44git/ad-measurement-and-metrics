@@ -1,4 +1,10 @@
-"""Figure 1 of the README: the experiment readout with three supporting panels, drawn from the result files.
+"""Figure 1 of the README: one panel per step of the argument, in reading order, drawn from the result files.
+
+a 01a  what the randomized experiment measured
+b 02a  what exposure-based attribution credits on the same experiment
+c 02c  when a marketing mix model can measure a channel (simulation on real spend)
+d 03a  how large the next user-level test must be
+e 04   how the "new customer" count depends on its definition
 
 Usage: python figures/make_figure1.py   (writes figures/figure1.png)
 """
@@ -9,20 +15,24 @@ from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import matplotlib.ticker
-from matplotlib.colors import LinearSegmentedColormap
 
 ROOT = Path(__file__).resolve().parents[1]
 INK, INK2, AXIS = "#111111", "#5a5a5a", "#333333"
-BLUE, RED, GREEN, GREY, SKY = "#0072B2", "#D55E00", "#009E73", "#9a9a9a", "#56B4E9"
-SEQ = LinearSegmentedColormap.from_list("seq", ["#f6f1e4", "#8fd0c0", "#2b83ba", "#0b2a66"])
-HERO = [0.075, 0.095, 0.385, 0.815]             # large left panel
-X0, W, H, ROWS = 0.60, 0.385, 0.20, (0.735, 0.41, 0.085)   # three stacked panels on the right
+BLUE, RED, GREY, LIGHT = "#0072B2", "#D55E00", "#9a9a9a", "#d9dde1"
 
+S01A = "01_with_an_experiment/01a_ad_incrementality"
+S02A = "02_without_an_experiment/02a_attribution_metric_validation"
+S02C = "02_without_an_experiment/02c_marketing_mix_modeling"
+S03A = "03_planning_a_test/03a_lift_study_sizing"
+S04 = "04_customer_metrics_retention"
 
-def rows(path):
-    with open(path) as f:
-        return list(csv.DictReader(f))
+TOP, BOT, H_TOP, H_BOT = 0.575, 0.125, 0.29, 0.25
+PANELS = {"a": [0.105, TOP, 0.36, H_TOP], "b": [0.625, TOP, 0.355, H_TOP],
+          "c": [0.145, BOT, 0.18, H_BOT], "d": [0.435, BOT, 0.215, H_BOT], "e": [0.775, BOT, 0.205, H_BOT]}
+TITLES = {"a": "Experiment: what the ads caused", "b": "Attribution on the same users",
+          "c": "Marketing mix model: when it can measure", "d": "Next test: users needed per arm",
+          "e": "Metric definition: who counts as new"}
+STUDY = {"a": "01a", "b": "02a", "c": "02c", "d": "03a", "e": "04"}
 
 
 def style():
@@ -31,144 +41,112 @@ def style():
         "xtick.labelsize": 6.5, "ytick.labelsize": 6.5, "text.color": INK, "axes.labelcolor": INK,
         "axes.edgecolor": AXIS, "xtick.color": AXIS, "ytick.color": AXIS, "axes.linewidth": 0.5,
         "xtick.major.width": 0.5, "ytick.major.width": 0.5, "xtick.major.size": 2.2, "ytick.major.size": 2.2,
-        "xtick.minor.size": 1.2, "ytick.minor.size": 1.2, "xtick.minor.width": 0.4, "ytick.minor.width": 0.4,
         "axes.spines.top": False, "axes.spines.right": False, "figure.facecolor": "white",
         "savefig.facecolor": "white"})
-
-
-def detach(ax):
-    """Axes drawn slightly away from the data, as in journal figures."""
-    for side in ("left", "bottom"):
-        ax.spines[side].set_position(("outward", 3))
-
-
-def letter(fig, ax, s, title, x=0.497):
-    box = ax.get_position()
-    fig.text(x, box.y1 + 0.022, s, fontsize=8, fontweight="bold", va="baseline")
-    fig.text(x + 0.016, box.y1 + 0.022, title, fontsize=7.5, va="baseline")
-
-
-def leader(ax, xy, xytext, text, **kw):
-    ax.annotate(text, xy=xy, xytext=xytext, fontsize=6.5, va="center",
-                arrowprops=dict(arrowstyle="-", lw=0.5, color=AXIS, shrinkA=1.5, shrinkB=2), **kw)
 
 
 def load(rel):
     return json.loads((ROOT / rel).read_text())
 
 
+def header(fig, ax, k, x_shift=0.0):
+    """Panel letter, title and the study it comes from, above the axes."""
+    box = ax.get_position()
+    x = PANELS[k][0] - 0.095 + x_shift
+    fig.text(x, box.y1 + 0.075, k, fontsize=8, fontweight="bold", va="baseline")
+    fig.text(x + 0.018, box.y1 + 0.075, TITLES[k], fontsize=7.5, va="baseline")
+    fig.text(x + 0.018, box.y1 + 0.045, f"study {STUDY[k]}", fontsize=6.3, color=INK2, va="baseline")
+
+
+def hbars(ax, labels, values, colors, fmt, xmax):
+    y = list(range(len(values)))[::-1]
+    ax.barh(y, values, color=colors, height=0.58, lw=0)
+    for yy, v in zip(y, values):
+        ax.text(v + xmax * 0.015, yy, fmt(v), va="center", fontsize=6.5)
+    ax.set_yticks(y, labels); ax.tick_params(axis="y", length=0)
+    ax.set_xlim(0, xmax); ax.spines["left"].set_visible(False)
+    ax.spines["bottom"].set_position(("outward", 3))
+    return y
+
+
 def draw():
-    fig = plt.figure(figsize=(7.2, 5.0), dpi=300)
+    fig = plt.figure(figsize=(7.2, 4.7), dpi=300)
+    ax = {k: fig.add_axes(v) for k, v in PANELS.items()}
 
-    # ---- a: realized ad effect by decile of predicted uplift, held-out users
-    tg = load("01_with_an_experiment/01a_ad_incrementality/out/criteo/c_targeting.json")
-    inc = load("01_with_an_experiment/01a_ad_incrementality/out/criteo/a_incrementality.json")
-    cal, itt = tg["calibration_selected"], tg["test_overall_itt"]
-    a = fig.add_axes(HERO)
-    x = [r["decile"] for r in cal]
-    y = [100 * r["realized"] for r in cal]
-    se = [196 * r["se"] for r in cal]
-    a.axhline(0, color=AXIS, lw=0.5)
-    a.fill_between(x[:2], [0, 0], y[:2], color=BLUE, alpha=0.10, lw=0)
-    a.fill_between(x, [v - s for v, s in zip(y, se)], [v + s for v, s in zip(y, se)], color=BLUE, alpha=0.22, lw=0)
-    a.plot(x, [100 * r["predicted"] for r in cal], color=GREY, lw=0.9, marker="o", ms=3.2, mfc="white", mew=0.9)
-    a.plot(x, y, color=BLUE, lw=1.4, marker="o", ms=3.8, mfc="white", mew=1.2)
-    avg = 100 * itt["est"]
-    a.axhline(avg, color=INK2, lw=0.6, ls=(0, (3, 3)))
-    a.text(3.3, avg + 0.13, f"average effect {avg:.2f} pp", ha="left", fontsize=6.5, color=INK2)
-    leader(a, (1, y[0]), (1.9, y[0] + 0.55), f"Top decile: +{y[0]:.1f} pp,\n{y[0] / avg:.1f}× the average", linespacing=1.15)
-    leader(a, (1.55, 1.6), (2.7, 2.45),
-           f'Top fifth of users:\n{100 * tg["test"]["t_learner"]["share_incremental_top20"]:.0f}% of incremental visits',
-           linespacing=1.15)
-    leader(a, (10, 100 * cal[-1]["predicted"]), (7.2, -0.75), "Predicted (T-learner)", ha="right")
-    leader(a, (10, y[-1]), (8.9, 2.0), "Realized,\n95% interval", linespacing=1.15, ha="center")
-    a.set_xticks(x); a.set_xlim(0.6, 10.4); a.set_ylim(-1.15, 7.3)
-    a.set_xlabel("Decile of predicted uplift (1 = highest)"); a.set_ylabel("Effect of the ads on visit rate (pp)")
-    detach(a)
-    fig.text(0.012, 0.957, "a", fontsize=8, fontweight="bold", va="baseline")
-    fig.text(0.028, 0.957, f'The ad effect is concentrated: {(itt["n1"] + itt["n0"]) / 1e6:.2f}M held-out users',
-             fontsize=7.5, va="baseline")
-
-    # inset: the experiment readout for all users, ad arm against control (control = 100)
-    ins = a.inset_axes([0.40, 0.56, 0.58, 0.30])
+    # ---- a: the experiment readout, ad arm against control (control = 100), with 95% intervals
+    inc = load(f"{S01A}/out/criteo/a_incrementality.json")
+    a = ax["a"]
     for i, (name, key) in enumerate((("Conversion rate", "conversion"), ("Visit rate", "visit"))):
-        c0, est = inc[key]["itt"]["control_mean"], inc[key]["itt"]["est"]
-        idx = 100 * (c0 + est) / c0
-        ins.plot([100, idx], [i, i], color="#d9dde1", lw=2.6, solid_capstyle="round", zorder=1)
-        ins.plot(100, i, marker="o", ms=4.2, mfc="white", mec=GREY, mew=1.0, zorder=2)
-        ins.plot(idx, i, marker="o", ms=4.8, color=BLUE, zorder=3)
-        ins.text(98, i + 0.36, f"{name}: {100 * c0:.2f}% → {100 * (c0 + est):.2f}%", fontsize=6.3, va="center")
-        ins.text(idx + 3, i, f"+{idx - 100:.0f}%", fontsize=6.5, va="center", fontweight="bold")
-    ins.set_xlim(96, 178); ins.set_ylim(-0.5, 1.75); ins.set_yticks([]); ins.set_xticks([100, 125, 150])
-    ins.set_xlabel(f'Ad arm, control = 100 ({inc["n"] / 1e6:.1f}M users)', fontsize=6.3, labelpad=1.5)
-    ins.tick_params(labelsize=6, length=1.8, pad=1.5); ins.spines["left"].set_visible(False); ins.set_facecolor("none")
+        r = inc[key]["itt"]
+        c0, est, se = r["control_mean"], r["est"], r["se"]
+        idx, half = 100 * (c0 + est) / c0, 100 * 1.96 * se / c0
+        a.plot([100, idx], [i, i], color=LIGHT, lw=3.0, solid_capstyle="round", zorder=1)
+        a.plot([idx - half, idx + half], [i, i], color=BLUE, lw=0.9, zorder=2)
+        a.plot(100, i, marker="o", ms=4.6, mfc="white", mec=GREY, mew=1.0, zorder=3)
+        a.plot(idx, i, marker="o", ms=5.2, color=BLUE, zorder=4)
+        a.text(99, i + 0.34, f"{name}: {100 * c0:.2f}% → {100 * (c0 + est):.2f}%", fontsize=6.5, va="center")
+        a.text(idx + half + 2.5, i, f"+{idx - 100:.0f}%", fontsize=6.8, va="center", fontweight="bold")
+    a.set_xlim(95, 178); a.set_ylim(-0.5, 1.75); a.set_yticks([]); a.set_xticks([100, 125, 150, 175])
+    a.set_xlabel(f'Ad arm against control (control = 100), {inc["n"] / 1e6:.1f}M randomized users', labelpad=2)
+    a.spines["left"].set_visible(False); a.spines["bottom"].set_position(("outward", 3))
+    header(fig, a, "a")
 
-    b, c, d = (fig.add_axes([X0, yy, W, H]) for yy in ROWS)
+    # ---- b: conversions credited by attribution against conversions caused, same experiment
+    at = load(f"{S02A}/out/attribution_vs_experiment.json")["conversion"]
+    b = ax["b"]
+    vals = [at["attributed"], at["incremental"]]
+    hbars(b, ["Credited by exposure-\nbased attribution", "Caused by the ads\n(experiment)"], vals, [RED, BLUE],
+          lambda v: f"{v:,.0f}", 30000)
+    b.text(vals[0] + 4200, 1, f"+{100 * (at['attributed_over_incremental'] - 1):.0f}%", va="center", fontsize=6.8,
+           fontweight="bold", color=RED)
+    b.set_xticks([0, 10000, 20000, 30000], ["0", "10,000", "20,000", "30,000"])
+    b.set_xlabel("Conversions in the ad arm", labelpad=2)
+    header(fig, b, "b", x_shift=-0.02)
 
-    # ---- b: effect of exposure, observational estimators against the two experimental estimates
-    at = load("02_without_an_experiment/02a_attribution_metric_validation/out/attribution_vs_experiment.json")
-    pe = at["per_exposed_user_visit_effect"]
-    lo, hi = 100 * pe["cace_adjusted_study_01"], 100 * pe["cace_unadjusted"]
-    b.axvspan(lo, hi, color=BLUE, alpha=0.10, lw=0)
-    b.text((lo + hi) / 2, 2.62, "two experimental\nestimates", ha="center", va="center", fontsize=6.5, color=INK2,
-           linespacing=1.05)
-    est = [("Naive difference", pe["naive"], RED), ("OLS + covariates", pe["ols_adjusted"], BLUE),
-           ("Double ML", pe["dml"], BLUE)]
-    for i, (name, v, col) in enumerate(est):
-        b.plot(100 * v, 2 - i, marker="o", ms=5, color=col)
-        b.text(100 * v + 0.8, 2 - i, f"{100 * v:.1f}", va="center", fontsize=6.5, fontweight="bold" if i == 0 else "normal")
-    b.annotate("", xy=(hi + 0.3, 2), xytext=(100 * pe["naive"] - 0.7, 2),
-               arrowprops=dict(arrowstyle="<|-|>", lw=0.5, color=INK2, mutation_scale=5))
-    b.text((hi + 100 * pe["naive"]) / 2, 2.3, "overstatement", ha="center", fontsize=6.3, color=INK2)
-    b.set_yticks([2, 1, 0], [e[0] for e in est]); b.tick_params(axis="y", length=0)
-    b.set_ylim(-0.55, 3.05); b.set_xlim(19, 41.5); b.set_xticks([20, 25, 30, 35, 40])
-    b.set_xlabel("Effect of exposure on visit rate (pp)", labelpad=2)
-    b.spines["left"].set_visible(False); b.spines["bottom"].set_position(("outward", 3))
-    over = 100 * (at["conversion"]["attributed_over_incremental"] - 1)
-    letter(fig, b, "b", f"Attribution overstates: {over:.0f}% more conversions than the experiment")
+    # ---- c: recovery error of a per-brand model by signal-to-noise index, held-out daily simulation
+    t1 = load(f"{S02C}/out/detectability.json")["tests"]["T1"]
+    hi, lo = t1["index_2_or_more"], t1["index_below_2"]
+    c = ax["c"]
+    hbars(c, [f"Index 2 or more\n({hi['n']} brand-channels)", f"Index below 2\n({lo['n']})"],
+          [100 * hi["median_err"], 100 * lo["median_err"]], [BLUE, GREY], lambda v: f"{v:.0f}%", 62)
+    share = {}
+    with open(ROOT / S02C / "out/detectability.csv") as f:
+        for r in csv.DictReader(f):
+            if r["sim"] == "brand_shapes":
+                share.setdefault(r["freq"], []).append(float(r["index"]) >= 2)
+    w, d = (100 * sum(share[k]) / len(share[k]) for k in ("W", "D"))
+    c.set_xlabel("Median error of the channel's\nestimated return", labelpad=2)
+    c.set_ylim(-0.6, 2.05)
+    c.text(62, 1.95, f"Index 2 or more: {w:.0f}% of\nbrand-channels weekly, {d:.0f}% daily", ha="right", va="top",
+           fontsize=6.2, color=INK2, linespacing=1.15)
+    header(fig, c, "c", x_shift=-0.04)
 
-    # ---- c: minimum detectable effect by design and test length
-    keys = {"CR: year-over-year difference": ("Year-over-year", GREY), "CR: ANCOVA (CUPED)": ("Regression-adjusted", BLUE)}
-    mde = {(k, m): {} for k in keys for m in (1, 2, 3)}
-    for r in rows(ROOT / "03_planning_a_test/03b_geo_experiment_design/out/design_summary.csv"):
-        if r["estimator"] in keys:
-            mde[(r["estimator"], int(r["test_months"]))][int(r["metros"])] = float(r["mde_80_pct"])
-    xs = [20, 50, 100, 150]
-    yo, ad = mde[("CR: year-over-year difference", 2)], mde[("CR: ANCOVA (CUPED)", 2)]
-    c.fill_between(xs, [ad[m] for m in xs], [yo[m] for m in xs], color=BLUE, alpha=0.08, lw=0)
-    for k, (name, col) in keys.items():
-        for months in (1, 3):
-            c.plot(xs, [mde[(k, months)][m] for m in xs], color=col, lw=0.6, alpha=0.55)
-        c.plot(xs, [mde[(k, 2)][m] for m in xs], color=col, lw=1.3, marker="o", ms=3, mfc="white", mew=1.0)
-        c.text(152, mde[(k, 2)][150] + (3.9 if col == GREY else -2.6), name, fontsize=6.5, va="center", ha="right")
-    c.text(100, yo[100] + 4.6, f"{yo[100]:.1f}% → {ad[100]:.1f}%\nat 100 metros", fontsize=6.5, fontweight="bold", ha="center", linespacing=1.15)
-    c.text(22, 2.4, "thin lines: 1- and 3-month tests", fontsize=6.3, color=INK2)
-    c.set_xticks(xs); c.set_xlim(14, 156); c.set_ylim(0, 27); c.set_yticks([5, 15, 25])
-    c.set_xlabel("Metros in the test", labelpad=2); c.set_ylabel("Detectable\neffect (%)")
-    detach(c); letter(fig, c, "c", "Regression adjustment shrinks the detectable effect of a market test")
+    # ---- d: users per arm for a one-point lift at 80% power
+    req = load(f"{S03A}/out/covariate_adjustment.json")["required_n_one_point_lift"]
+    dd = ax["d"]
+    vals = [req["D"], req["L"], req["M"]]
+    hbars(dd, ["Unadjusted", "12 user features", "Model prediction"], vals, [GREY, BLUE, BLUE],
+          lambda v: f"{100 * round(v / 100):,.0f}", 8200)
+    dd.text(vals[2] + 1500, 0, f"−{100 * (1 - vals[2] / vals[0]):.0f}%", va="center", fontsize=6.8,
+            fontweight="bold", color=BLUE)
+    dd.set_xticks([0, 4000, 8000], ["0", "4,000", "8,000"])
+    dd.set_xlabel("Users per arm, one-point lift\nin visit rate, 80% power", labelpad=2)
+    header(fig, dd, "d")
 
-    # ---- d: monthly repeat-purchase rate of new-account cohorts
-    co = load("04_customer_metrics_retention/out/12_ltv_segments.json")
-    burn, co = co["burnin3_contamination"], co["cohorts_new_accounts"]
-    cohorts, months = sorted(co["repeat_rate"]), list(range(1, 12))
-    data = [[float("nan") if co["repeat_rate"][k].get(str(m)) is None else 100 * co["repeat_rate"][k][str(m)]
-             for m in months] for k in cohorts]
-    cmap = SEQ.copy(); cmap.set_bad("white")
-    d.imshow(data, cmap=cmap, vmin=0, vmax=30, aspect="auto")
-    for i, row in enumerate(data):
-        for j, v in enumerate(row):
-            if v == v:
-                d.text(j, i, f"{v:.0f}", ha="center", va="center", fontsize=5.8, color="white" if v > 16 else INK)
-    d.set_xticks(range(len(months)), months); d.set_yticks(range(len(cohorts)), cohorts); d.tick_params(length=0)
-    for s in d.spines.values():
-        s.set_visible(False)
-    d.set_xticks([v - 0.5 for v in range(1, len(months))], minor=True)
-    d.set_yticks([v - 0.5 for v in range(1, len(cohorts))], minor=True)
-    d.grid(which="minor", color="white", lw=1.0); d.tick_params(which="minor", length=0)
-    d.set_xlabel("Months since first purchase; monthly repeat-purchase rate (%)", labelpad=2)
-    d.text(10.4, 5.4, f'3-month look-back:\n{100 * burn["share"]:.0f}% of {burn["apparent_new"]:,} "new"\naccounts had bought\nin the prior year',
-           ha="right", va="center", fontsize=6.3, linespacing=1.2, color=INK2)
-    letter(fig, d, "d", "New-account cohorts under a 12-month look-back")
+    # ---- e: accounts a 3-month look-back labels new, split by purchase in the prior 12 months
+    burn = load(f"{S04}/out/12_ltv_segments.json")["burnin3_contamination"]
+    n, old = burn["apparent_new"], round(burn["apparent_new"] * burn["share"])
+    e = ax["e"]
+    e.barh([0], [n - old], color=BLUE, height=0.5, lw=0)
+    e.barh([0], [old], left=[n - old], color=RED, height=0.5, lw=0)
+    e.text((n - old) / 2, 0, f"{n - old}", ha="center", va="center", fontsize=6.5, color="white")
+    e.text(n - old + old / 2, 0, f"{old} ({100 * old / n:.0f}%)", ha="center", va="center", fontsize=6.5, color="white")
+    e.text(0, 0.52, "no purchase in the prior 12 months", fontsize=6.2, color=BLUE, va="bottom")
+    e.text(n, -0.52, "bought in the prior 12 months", fontsize=6.2, color=RED, va="top", ha="right")
+    e.set_xlim(0, n * 1.02); e.set_ylim(-1.0, 1.0); e.set_yticks([]); e.set_xticks([0, 500, 1000], ["0", "500", "1,000"])
+    e.spines["left"].set_visible(False); e.spines["bottom"].set_position(("outward", 3))
+    e.set_xlabel(f'Accounts labeled new under a\n3-month look-back ({n:,})', labelpad=2)
+    header(fig, e, "e")
     return fig
 
 

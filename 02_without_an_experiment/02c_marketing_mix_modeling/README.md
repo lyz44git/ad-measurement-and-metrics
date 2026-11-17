@@ -2,8 +2,8 @@
 
 > **Takeaway.** A marketing mix model recovers a channel's return only where that channel's spend moves enough on its
 > own, and this can be checked before fitting. In a pre-specified test on held-out simulations with real spend,
-> brand-channels with a signal-to-noise index of 2 or more were recovered within 19% (rank correlation 0.80 with the
-> truth); the rest were off by 50%. Only 19% of brand-channels reach that level on weekly data, against 55% on daily
+> the median absolute relative error of a channel's estimated return was 19% for brand-channels with a
+> signal-to-noise index of 2 or more (rank correlation 0.80 with the truth) and 50% for the rest. Only 19% of brand-channels reach that level on weekly data, against 55% on daily
 > data, and pooling the brands in one model did not help. Model ROAS should be checked this way first and calibrated
 > with experiments (studies 01a and 03b) before it guides a budget.
 
@@ -110,8 +110,9 @@ Recovery rows cover the brand-channels converged under both models; each cell is
 | **Holdout forecast, real revenue:** pooled model better than the no-media model | 15 of 32 | 18 of 28 (fit not converged) |
 | Mean wMAPE difference, pooled minus no media (95% CI over brands) | +0.045 (−0.064 to 0.167) | −0.012 (−0.106 to 0.097) (fit not converged) |
 
-- **Neither pre-specified rule was met.** Pooling did not lower the median error or raise the rank correlation at
-  either frequency. On weekly data it lowered the mean error (the 95% interval of the difference is below
+- **Neither pre-specified rule was met.** In the primary simulation (brand-specific shapes) pooling did not lower
+  the median error or raise the rank correlation at either frequency. With common shapes it lowered the weekly median
+  error (57% to 48%) but raised the daily one (26% to 31%). On weekly data it lowered the mean error (the 95% interval of the difference is below
   0) by shrinking a few extreme estimates, but the rule also required a lower median.
 - The pooled model's 90% intervals covered the truth less often than the per-brand model's.
 - With all eligible brands, the per-brand weekly model has a rank correlation of 0.19 to 0.31 with the truth, against
@@ -137,8 +138,8 @@ Source: [`out/detectability.json`](out/detectability.json); the index of every b
 - **The pre-specified rule was met.** In T1 and T2 both predictions held. In T3 the first held and the second missed
   its limit by a hair (median error 25.1% against 25%).
 - **Most weekly brand-channels have too little signal.** Counting every brand-channel of the simulation with brand-specific
-  shapes, 19% have an index of 2 or more on weekly data (13 of 68) and 55% on daily data (34 of 62). This, and not the model, is why weekly ROAS is not
-  recovered, and why pooling does not help.
+  shapes, 19% have an index of 2 or more on weekly data (13 of 68) and 55% on daily data (34 of 62). In these simulations, low signal explains why weekly ROAS is not
+  recovered and why pooling does not help; on real data the index rests on an assumed response shape (see Scope).
 - **On real spend,** the smallest ROAS detectable with 80% power, for an assumed carry-over and saturation shape, has
   a median of 7.5 on weekly data (quartiles 3.7 to 12.8) and 2.7 on daily data (1.2 to 5.0). An ROAS of 2 could be
   detected for 6% of brand-channels on weekly data and 42% on daily data. For comparison, model ROAS on real data is
