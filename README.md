@@ -43,12 +43,6 @@ In both studies, adjusting for what is known before the test is the main way to 
 |---|---|---|
 | [`04_customer_metrics_retention`](04_customer_metrics_retention) | Does the "new customer" metric count returning buyers as new, and which high-value customers are least likely to return? | A 3-month look-back would have labeled 1,036 accounts new, 62% of which had bought in the prior year. A purchase-model score ranked repeat buyers with AUC 0.79 against 0.75 for recency alone. |
 
-### Related: forecasts that add up across levels
-
-| Study | Question | Key result |
-|---|---|---|
-| [`09_hierarchical_forecasting`](09_hierarchical_forecasting) | Can a metric be forecast at national, state and metro levels so that the levels add up, without losing accuracy? | Separate forecasts of for-sale inventory disagreed across levels by 3.5-5.2%. Bottom-up reconciliation removed the gap with error at or below the unreconciled forecasts in 11 of 12 cases; MinT-shrink cut state and metro error by 7-10% with one base model but not with another. |
-
 Where a conclusion depends on a decision rule, the analysis plan was fixed before the run and its SHA-256 is recorded
 in the study's `logs/` folder. Follow-up analyses added after a first result have their own plan and are labeled as
 follow-ups. Results that did not support the more complex method are reported alongside the rest.
@@ -56,13 +50,13 @@ follow-ups. Results that did not support the more complex method are reported al
 ## Data sources and terms
 
 Data are not included in this repository. The randomized experiment used in studies 01, 02, 07 and 08 was designed,
-run and released by Criteo. Study 05 uses Criteo's attribution dataset, studies 03 and 09 public Zillow Research
-files, study 04 the UCI Online Retail II data, and study 06 a public marketing mix dataset released by Conjura.
+run and released by Criteo. Study 05 uses Criteo's attribution dataset, study 03 a public Zillow Research
+file, study 04 the UCI Online Retail II data, and study 06 a public marketing mix dataset released by Conjura.
 
 | Data | Used in | Terms |
 |---|---|---|
 | Criteo Uplift Prediction Dataset v2.1 (Diemert, Betlei, Renaudin and Amini 2018, AdKDD) | 01, 02, 07, 08 | Research, non-commercial use. The data pool several tests with non-uniform subsampling, so absolute lifts are not population effects. |
-| Zillow Research, metro newly pending listings (03), for-sale inventory and new listings (09) | 03, 09 | Data Provided by Zillow Group. Only derived simulation results and aggregate error tables are stored here. |
+| Zillow Research, metro newly pending listings | 03 | Data Provided by Zillow Group. Only derived simulation results are stored here. |
 | UCI Machine Learning Repository, Online Retail II (id 502) | 04 | CC BY 4.0. |
 | Criteo Attribution Modeling for Bidding Dataset (Diemert, Meynet, Galland and Lefortier 2017, AdKDD) | 05 | CC BY-NC-SA 4.0. The derived results in `05_multi_touch_attribution/out/` are shared under the same license. |
 | Conjura, Multi-Region Marketing Mix Modelling (MMM) Dataset for Several eCommerce Brands (Figshare 25314841) | 06 | CC BY 4.0. |
