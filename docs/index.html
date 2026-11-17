@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ad Measurement Explorer</title>
+<meta name="description" content="Interactive figures for a study of advertising measurement on public data.">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-page="index">
+<div class="top"><div class="wrap">
+  <a class="brand" href="index.html" style="color:inherit;text-decoration:none">Ad measurement</a>
+  <nav id="nav"><a href="index.html" data-page="index">Overview</a><a href="01.html" data-page="01">1 · Experiment</a><a href="02.html" data-page="02">2 · Attribution</a><a href="03.html" data-page="03">3 · Test design</a><a href="04.html" data-page="04">4 · Customers</a></nav>
+  <button class="btn ghost toggle-theme" id="theme" type="button" aria-label="Switch light or dark theme">◐</button>
+</div></div>
+<header class="hero"><div class="wrap">
+  <div class="kicker">Interactive figures · public data</div>
+  <h1 class="serif">The ads worked. Proving how much is the hard part.</h1>
+  <p class="dek">In a randomized experiment on 14 million users, advertising raised the conversion rate by 59%. A simple attribution count would have credited it with 68% more conversions than it caused. The charts below can be changed: switch the attribution rule, choose the size of a test, or look further back in a customer's history.</p>
+  <div class="stats">
+    <div class="stat"><div class="n" data-count="users">0</div><div class="l">users assigned at random to an ad group or a control group</div></div>
+    <div class="stat"><div class="n">+<span data-count="convLift">0</span>%</div><div class="l">conversion rate in the ad group, relative to control</div></div>
+    <div class="stat"><div class="n"><span class="o" data-count="credited">0</span><span class="vs">vs</span><span data-count="caused">0</span></div><div class="l">conversions credited by the simple count, and caused by the ads</div></div>
+  </div>
+</div></header>
+
+<!-- ============================== 1 ============================== -->
+<section class="part" id="effect"><div class="wrap">
+  <div class="kicker">1 · With an experiment</div>
+  <h2 class="serif">The ads were effective: visits rose 27% and conversions 59%.</h2>
+  <p class="lead">Users were assigned at random, so any difference between the two groups was caused by the ads.</p>
+
+  <div class="card">
+    <h3>Visit and conversion rates by group</h3>
+    <p class="sub">Each row moves from the control group's rate to the ad group's rate. With 14 million users, the 95% confidence intervals are narrower than the dots.</p>
+    <div id="c-rates"></div>
+    <p class="src">Study <a href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/01_with_an_experiment/01a_ad_incrementality">01a</a>. 13,979,592 users; 85% assigned to the ad group.</p>
+  </div>
+
+  <div class="card">
+    <h3>Error of segment estimates from a 2% sample</h3>
+    <p class="sub">The effect was estimated for 100 user segments from ten 2% samples and scored against the other 98% of users. Choose a sample, then pool the estimates with a multilevel model.</p>
+    <div class="ctrl"><span class="lab">Sample</span><div class="seg" id="seg-samples"></div></div>
+    <div class="row2 w">
+      <div><div id="c-slope"></div></div>
+      <div>
+        <div class="ctrl"><div class="seg" id="seg-pool"><button type="button" data-v="nopool">Each segment alone</button><button type="button" data-v="bayes">Multilevel model</button></div><button class="btn" id="play-pool" type="button">▶ Pool</button></div>
+        <div id="c-scatter"></div>
+        <div class="readout" id="ro-seg"></div>
+      </div>
+    </div>
+    <p class="note">Left: root mean squared error (RMSE) of the 100 segment effects in each sample, estimated segment by segment and with the multilevel model; the thick line is the mean over the ten samples. Right: the selected sample's 100 estimates against the benchmark; the thin lines show each estimate's distance from it.</p>
+    <p class="src">Study <a href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/01_with_an_experiment/01b_bayesian_segment_effects">01b</a>.</p>
+  </div>
+</div></section>
+
+<!-- ============================== 2 ============================== -->
+<div class="wrap explore"><a href="01.html">Explore the four studies with an experiment →</a></div>
+<section class="part" id="credit"><div class="wrap">
+  <div class="kicker">2 · Without an experiment</div>
+  <h2 class="serif">Without an experiment, the credit depends on the attribution rule.</h2>
+  <p class="lead">The simplest rule credits the ads with every conversion by a user who was shown one. The experiment shows how many of those the ads caused.</p>
+
+  <div class="card">
+    <h3>Outcomes credited by the simple count and caused by the ads</h3>
+    <div class="ctrl"><div class="seg" id="seg-gap"><button type="button" data-v="conversion">Conversions</button><button type="button" data-v="visit">Visits</button></div></div>
+    <div class="row2 v">
+      <div id="c-gap"></div>
+      <div><div id="c-hundred"></div><div class="legend" id="lg-hundred"></div></div>
+    </div>
+    <p class="note">Ad group only. Caused = the experiment's estimate of outcomes the ads added, with its 95% confidence interval. Right: of every 100 outcomes the count credits to the ads, how many the ads caused.</p>
+    <p class="src">Study <a href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/02_without_an_experiment/02a_attribution_metric_validation">02a</a>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Conversion credit by attribution rule</h3>
+    <p class="sub">Each square is 1% of the credit for conversions whose path had more than one ad touch. Colors give how long before the last touch an ad was shown.</p>
+    <div class="ctrl"><span class="lab">Rule</span><div class="seg" id="seg-rule"><button type="button" data-v="cr_last">Last touch</button><button type="button" data-v="cr_decay">Time decay</button><button type="button" data-v="cr_linear">Linear</button><button type="button" data-v="cr_first">First touch</button></div><button class="btn ghost" id="play-rule" type="button">▶ Cycle</button></div>
+    <div class="row2">
+      <div><div id="c-waffle"></div><div class="legend" id="lg-waffle"></div></div>
+      <div>
+        <h3 style="font-size:15px">Does the rule change what a bidder buys?</h3>
+        <p class="sub" style="margin-bottom:8px">Two bidders replay the same logged impressions, one trained on each rule's credit.</p>
+        <div class="ctrl"><span class="lab">Budget</span><div class="seg" id="seg-budget"><button type="button" data-v="0.25">25%</button><button type="button" data-v="0.5">50%</button><button type="button" data-v="0.75">75%</button></div></div>
+        <div id="c-bid"></div>
+      </div>
+    </div>
+    <p class="note">Budget is a share of logged spend. Spend overlap: share of spend on the same impressions. Credit lost: how much less credit a bidder captures, scored by one rule, when it was trained on the other rule; 95% intervals.</p>
+    <p class="src">Studies <a href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/02_without_an_experiment/02b_multi_touch_attribution">02b</a> and <a href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/02_without_an_experiment/02d_attribution_and_bidding">02d</a>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Marketing mix models: recovery error and the signal-to-noise index</h3>
+    <p class="sub">Each point is one brand and channel in a simulation with known returns. The index is computed from spend before any model is fitted.</p>
+    <div class="row2 v">
+      <div id="c-mmm"></div>
+      <div><div id="c-share"></div></div>
+    </div>
+    <p class="note">Left: absolute error of the estimated return on ad spend (ROAS), daily data, held-out simulation; dashed lines are the median error on each side of an index of 2. Right: share of brand-channels with an index of 2 or more on the real spend data.</p>
+    <p class="src">Study <a href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/02_without_an_experiment/02c_marketing_mix_modeling">02c</a>.</p>
+  </div>
+</div></section>
+
+<!-- ============================== 3 ============================== -->
+<div class="wrap explore"><a href="02.html">Explore the four studies without an experiment →</a></div>
+<section class="part" id="tests"><div class="wrap">
+  <div class="kicker">3 · Planning a test</div>
+  <h2 class="serif">Measuring the effect again requires a test, and a large one for conversions.</h2>
+  <p class="lead">Conversions are about twenty times rarer than visits, so a test of conversions needs about twenty times the users.</p>
+
+  <div class="card">
+    <h3>Users per arm needed to detect a lift</h3>
+    <div class="ctrl"><span class="lab">Relative lift</span><div class="seg" id="seg-lift"></div></div>
+    <div id="c-size"></div>
+    <p class="note">80% power, two-sided 5% test, at this experiment's control rates (visits 3.82%, conversions 0.19%).</p>
+    <p class="src">Study <a href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/01_with_an_experiment/01c_sql_metric_readout">01c</a>.</p>
+  </div>
+
+  <div class="row2">
+    <div class="card">
+      <h3>Users per arm for a one-point lift in visits</h3>
+      <p class="sub">Adjusting the readout for what is known about users before the test.</p>
+      <div id="c-cov"></div>
+      <p class="src">Study <a href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/03_planning_a_test/03a_lift_study_sizing">03a</a>. 80% power; 2,000 resampled studies per size.</p>
+    </div>
+    <div class="card">
+      <h3>Market-level tests: smallest detectable effect</h3>
+      <div class="ctrl"><div class="seg" id="seg-geo"><button type="button" data-v="adjusted">Regression-adjusted</button><button type="button" data-v="pairs">Matched pairs</button><button type="button" data-v="yoy">Year over year</button></div></div>
+      <div id="c-geo"></div>
+      <div id="c-geo-ro"></div>
+      <p class="src">Study <a href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/03_planning_a_test/03b_geo_experiment_design">03b</a>. Placebo tests on metro housing series. Data Provided by Zillow Group.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- ============================== 4 ============================== -->
+<div class="wrap explore"><a href="03.html">Explore the three studies on planning a test →</a></div>
+<section class="part" id="customers"><div class="wrap">
+  <div class="kicker">4 · Customer metrics</div>
+  <h2 class="serif">Customer counts require the same scrutiny.</h2>
+  <p class="lead">A "new customer" is new only relative to how far back the records are checked.</p>
+
+  <div class="card">
+    <h3>Accounts labeled new under a 3-month look-back</h3>
+    <p class="sub">Accounts that bought in March to May 2011 and not in the three months before.</p>
+    <div class="ctrl"><button class="btn" id="btn-look" type="button">Check the 12 months before</button><button class="btn ghost" id="btn-reset" type="button">Reset</button></div>
+    <div id="c-timeline"></div>
+    <div id="c-newbar"></div>
+    <p class="src">Study <a href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/04_customer_metrics_retention">04</a>. Two years of transactions of a UK online retailer.</p>
+  </div>
+
+  <div class="card">
+    <h3>Monthly repeat-purchase rate of new-account cohorts</h3>
+    <p class="sub">New accounts are those with no purchase in the previous 12 months. Choose a cohort to follow it month by month.</p>
+    <div id="c-heat"></div>
+    <div id="c-curve"></div>
+    <p class="note">Each cell is the share of a cohort's accounts that bought again in that month after their first purchase. Hatched cells are after the end of the data (November 2011).</p>
+    <p class="src">Study <a href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/04_customer_metrics_retention">04</a>.</p>
+  </div>
+</div></section>
+<div class="wrap explore" style="margin-top:8px"><a href="04.html">Explore the customer metrics study →</a></div>
+<footer><div class="wrap">
+  <div class="pager"><span></span><a class="next" href="01.html"><small>Next</small>1 · With an experiment</a></div>
+  <p>All numbers on these pages are read from the result files of the repository by <code>docs/build_data.py</code>. Methods, pre-specified rules and limits are in each study's page on GitHub. Data: Criteo uplift and attribution datasets (public research releases); a public marketing mix dataset released by Conjura; Zillow Research metro series (Data Provided by Zillow Group); Online Retail II (UCI Machine Learning Repository).</p>
+  <p><a href="https://github.com/lyz44git/ad-measurement-and-metrics">The repository on GitHub</a></p>
+</div></footer>
+<div id="tip" role="tooltip"></div>
+<script src="data.js"></script>
+<script src="assets/explorer.js"></script>
+</body>
+</html>
