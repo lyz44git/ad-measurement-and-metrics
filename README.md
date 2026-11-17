@@ -2,6 +2,8 @@
 
 [![tests](https://github.com/lyz44git/ad-measurement-and-metrics/actions/workflows/tests.yml/badge.svg)](https://github.com/lyz44git/ad-measurement-and-metrics/actions/workflows/tests.yml)
 
+**Interactive figures:** [lyz44git.github.io/ad-measurement-and-metrics](https://lyz44git.github.io/ad-measurement-and-metrics/). The results of each study can be explored by changing the attribution rule, the size of a test or the look-back window for new customers.
+
 **In a randomized experiment on 14 million users, advertising raised the conversion rate by 59%. A simple
 attribution count would have credited it with 68% more conversions than it caused.**
 
@@ -251,6 +253,7 @@ One folder per question, with the studies inside it:
 └── 03c_hierarchical_forecasting/
 04_customer_metrics_retention/     one study
 figures/                           Figures 1 to 6, and the scripts and shared style that draw every figure
+docs/                              interactive figures (GitHub Pages); build_data.py reads every number from the result files
 ```
 
 Study folders share this structure (not every study needs every folder):
