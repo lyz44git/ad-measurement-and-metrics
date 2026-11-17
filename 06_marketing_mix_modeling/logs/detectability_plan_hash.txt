@@ -1,0 +1,2 @@
+e3aeb0ab671ba216d46822d2e1f2e850f2d857bb1ab2b5533caf7e638adb6915  design/detectability_plan.md
+Mon Nov 16 21:24:56 CST 2026

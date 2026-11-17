@@ -1,8 +1,9 @@
 # 02 · Validating an attribution metric against a randomized experiment
 
 > **Takeaway.** Exposure-based attribution should not drive budget decisions without an experimental calibration: it
-> overstates incremental conversions by 68%. Where no experiment is available, covariate adjustment brings the
-> estimate back inside the experimental range in this data.
+> overstates incremental conversions by 68%. Where no experiment is available, covariate adjustment removes most of
+> the bias in this data: the per-exposed-user effect falls from 38.0 points to about 25, between the two experimental
+> estimates (21.5 and 28.7).
 
 ## Question
 
@@ -45,7 +46,8 @@ Source: [`out/attribution_vs_experiment.json`](out/attribution_vs_experiment.jso
 | Experimental benchmark (unadjusted / regression-adjusted) | 28.7 / 21.5 |
 
 - Attribution credits the ad with 44% more visits and 68% more conversions than it caused.
-- The naive estimate lies above the experimental range; both covariate-adjusted estimates fall inside it.
+- The naive estimate is 9 to 17 points above the two experimental estimates (28.7 unadjusted, 21.5
+  regression-adjusted); both covariate-adjusted estimates fall between them.
 
 ## Reproduce
 

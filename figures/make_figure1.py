@@ -44,8 +44,8 @@ def detach(ax):
 
 def letter(fig, ax, s, title, x=0.497):
     box = ax.get_position()
-    fig.text(x, box.y1 + 0.022, s, fontsize=10, fontweight="bold", va="bottom")
-    fig.text(x + 0.022, box.y1 + 0.0235, title, fontsize=7.5, va="bottom")
+    fig.text(x, box.y1 + 0.022, s, fontsize=8, fontweight="bold", va="baseline")
+    fig.text(x + 0.016, box.y1 + 0.022, title, fontsize=7.5, va="baseline")
 
 
 def leader(ax, xy, xytext, text, **kw):
@@ -85,9 +85,9 @@ def draw():
     a.set_xticks(x); a.set_xlim(0.6, 10.4); a.set_ylim(-1.15, 7.3)
     a.set_xlabel("Decile of predicted uplift (1 = highest)"); a.set_ylabel("Effect of the ads on visit rate (pp)")
     detach(a)
-    fig.text(0.012, 0.957, "a", fontsize=10, fontweight="bold", va="bottom")
-    fig.text(0.034, 0.9585, f'The ad effect is concentrated: {(itt["n1"] + itt["n0"]) / 1e6:.2f}M held-out users',
-             fontsize=7.5, va="bottom")
+    fig.text(0.012, 0.957, "a", fontsize=8, fontweight="bold", va="baseline")
+    fig.text(0.028, 0.957, f'The ad effect is concentrated: {(itt["n1"] + itt["n0"]) / 1e6:.2f}M held-out users',
+             fontsize=7.5, va="baseline")
 
     # inset: the experiment readout for all users, ad arm against control (control = 100)
     ins = a.inset_axes([0.40, 0.56, 0.58, 0.30])
@@ -105,12 +105,13 @@ def draw():
 
     b, c, d = (fig.add_axes([X0, yy, W, H]) for yy in ROWS)
 
-    # ---- b: effect of exposure, observational estimators against the experimental range
+    # ---- b: effect of exposure, observational estimators against the two experimental estimates
     at = load("02_attribution_metric_validation/out/attribution_vs_experiment.json")
     pe = at["per_exposed_user_visit_effect"]
     lo, hi = 100 * pe["cace_adjusted_study_01"], 100 * pe["cace_unadjusted"]
     b.axvspan(lo, hi, color=BLUE, alpha=0.10, lw=0)
-    b.text((lo + hi) / 2, 2.72, "experimental range", ha="center", va="center", fontsize=6.5, color=INK2)
+    b.text((lo + hi) / 2, 2.62, "two experimental\nestimates", ha="center", va="center", fontsize=6.5, color=INK2,
+           linespacing=1.05)
     est = [("Naive difference", pe["naive"], RED), ("OLS + covariates", pe["ols_adjusted"], BLUE),
            ("Double ML", pe["dml"], BLUE)]
     for i, (name, v, col) in enumerate(est):

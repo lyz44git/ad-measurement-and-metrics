@@ -31,7 +31,6 @@ fixed before the run; its SHA-256 is in `logs/10_plan_hash.txt`.
 3. **Effect on exposed users.** Only 3.6% of the ad arm saw an ad; exposure is treated as one-sided non-compliance.
 4. **Targeting.** A response model P(visit | X), T-, X- and DR-learners and a causal forest, trained on 50% of users,
    selected on 20% and scored once on the remaining 4.19M users with the Qini coefficient and a paired bootstrap.
-5. **Packaging.** Estimators and evaluation in `code/upliftkit`, a config file, a local scoring endpoint and 15 tests.
 
 ## Results
 
@@ -63,9 +62,11 @@ python code/10_run_criteo.py        # about 7 minutes on 16 cores; writes out/cr
 python -m pytest code/tests -q      # runs on simulated data; service tests are skipped until models/ exists
 ```
 
+The estimators and the evaluation code are in `code/upliftkit`, with a local scoring endpoint for the selected model
+(`code/upliftkit/service.py`).
+
 ## Scope
 
 - The released data pool several tests with non-uniform subsampling, so absolute lifts are not population effects;
   comparisons between methods are valid.
-- This is an analysis of released experimental data, not the design or operation of an experiment. The scoring
-  endpoint runs locally and is not deployed.
+- This is an analysis of released experimental data, not the design or operation of an experiment.

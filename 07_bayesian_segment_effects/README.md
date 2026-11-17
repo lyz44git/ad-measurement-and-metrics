@@ -1,4 +1,4 @@
-# 07 · Segment-level ad effects from small samples, with an automated readout
+# 07 · Segment-level ad effects from small samples
 
 > **Takeaway.** When a lift readout has to be split across 100 segments on a 2% sample, a Bayesian multilevel model
 > cuts the error of the segment estimates by 27% against separate per-segment estimates, and did so in 10 of 10
@@ -29,8 +29,6 @@ a local directory path was replaced. Deviations are in [`design/deviations.md`](
    segment), and a multilevel binomial model with segment-specific baselines and effects (NumPyro, NUTS, 4 chains).
 4. **Decision rule.** The multilevel model helps if its RMSE against the benchmark is below no pooling in at least 8
    of 10 samples and the 95% interval of the mean paired difference is below zero.
-5. **Report.** `code/04_build_report.py` regenerates a self-contained HTML report from the output JSON files; no
-   number in it is typed by hand.
 
 ## Results
 
@@ -55,8 +53,6 @@ estimate and interval agree to three decimals. Conversion lift +0.115 pp.
 - Its top-20 picks had a benchmark lift at least as high as the no-pooling picks in 9 of 10 samples.
 - Convergence after the reruns in deviation 1: maximum R-hat 1.0097, minimum bulk ESS 504.
 
-The generated report is [`out/criteo_bayes_report.html`](out/criteo_bayes_report.html).
-
 ## Reproduce
 
 ```bash
@@ -69,11 +65,11 @@ python code/03b_summarize.py out
 python code/04_build_report.py
 ```
 
-A rerun of these commands reproduced the summary files exactly.
+A rerun of these commands reproduced the summary files exactly. The last command writes an HTML summary of the output
+files to [`out/criteo_bayes_report.html`](out/criteo_bayes_report.html).
 
 ## Scope
 
 - The data are subsampled non-uniformly, so absolute lifts are not population effects; the comparison between
   estimators is valid.
 - The benchmark has its own sampling error, so interval coverage is approximate.
-- The report is a static file generated locally, not a hosted dashboard.

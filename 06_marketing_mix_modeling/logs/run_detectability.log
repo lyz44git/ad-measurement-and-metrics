@@ -1,0 +1,125 @@
+{
+ "tests": {
+  "T1": {
+   "n": 54,
+   "brands": 27,
+   "spearman_index_error": -0.4934248141795311,
+   "spearman_ci": [
+    -0.6811451650850981,
+    -0.24319948535467534
+   ],
+   "index_2_or_more": {
+    "n": 33,
+    "median_err": 0.18650981264189898,
+    "spearman_true_est": 0.803475935828877
+   },
+   "index_below_2": {
+    "n": 21,
+    "median_err": 0.5025550235161951,
+    "spearman_true_est": 0.3506493506493506
+   },
+   "share_index_2_or_more": 0.6111111111111112,
+   "p1": true,
+   "p2": true,
+   "both": true
+  },
+  "T2": {
+   "n": 50,
+   "brands": 25,
+   "spearman_index_error": -0.47188475390156065,
+   "spearman_ci": [
+    -0.645461014822663,
+    -0.2564492603847099
+   ],
+   "index_2_or_more": {
+    "n": 31,
+    "median_err": 0.18207424286835616,
+    "spearman_true_est": 0.7540322580645162
+   },
+   "index_below_2": {
+    "n": 19,
+    "median_err": 0.40034010404513753,
+    "spearman_true_est": 0.7701754385964912
+   },
+   "share_index_2_or_more": 0.62,
+   "p1": true,
+   "p2": true,
+   "both": true
+  },
+  "T3": {
+   "n": 64,
+   "brands": 32,
+   "spearman_index_error": -0.8270604395604395,
+   "spearman_ci": [
+    -0.8997848789950118,
+    -0.6963808308042843
+   ],
+   "index_2_or_more": {
+    "n": 13,
+    "median_err": 0.25069326674571546,
+    "spearman_true_est": 0.5494505494505494
+   },
+   "index_below_2": {
+    "n": 51,
+    "median_err": 0.7505643378438648,
+    "spearman_true_est": 0.27891402714932123
+   },
+   "share_index_2_or_more": 0.203125,
+   "p1": true,
+   "p2": false,
+   "both": false
+  }
+ },
+ "exploration_weekly_brand_shapes": {
+  "n": 66,
+  "brands": 33,
+  "spearman_index_error": -0.7165222836864629,
+  "spearman_ci": [
+   -0.8467080097527386,
+   -0.5317140764816456
+  ],
+  "index_2_or_more": {
+   "n": 13,
+   "median_err": 0.165186342753678,
+   "spearman_true_est": 0.47802197802197804
+  },
+  "index_below_2": {
+   "n": 53,
+   "median_err": 0.7056461396420354,
+   "spearman_true_est": 0.15062086760199966
+  },
+  "share_index_2_or_more": 0.19696969696969696,
+  "p1": true,
+  "p2": true,
+  "both": true
+ },
+ "rule_met": true
+}
+{
+ "W": {
+  "brand_channels": 68,
+  "median_min_detectable_roas": 7.473243881867344,
+  "quartiles": [
+   3.681098069767265,
+   12.834970579588642
+  ],
+  "share_at_most": {
+   "1": 0.0,
+   "2": 0.058823529411764705,
+   "4": 0.3235294117647059
+  }
+ },
+ "D": {
+  "brand_channels": 62,
+  "median_min_detectable_roas": 2.733747578009345,
+  "quartiles": [
+   1.2275571113521417,
+   4.995667168836981
+  ],
+  "share_at_most": {
+   "1": 0.14516129032258066,
+   "2": 0.41935483870967744,
+   "4": 0.6774193548387096
+  }
+ }
+}

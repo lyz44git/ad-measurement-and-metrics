@@ -56,3 +56,24 @@ def test_recovery_simulation_sets_training_roas_to_the_drawn_truth():
     spend = np.column_stack([g.google, g.meta])[: n - H].sum(axis=0)
     assert np.allclose(contrib[:, : n - H].sum(axis=1) / spend, true_roas)
     assert ((0.5 <= true_roas) & (true_roas <= 4)).all() and (y >= 1).all()
+
+
+def test_lag_matrix_form_matches_the_adstock_and_hill_transforms():
+    rng = np.random.default_rng(5)
+    x = rng.uniform(0, 1, 60); x[10:14] = 0.0
+    SL = m.lag_matrix(x, 8)
+    assert SL.shape == (60, 8) and np.allclose(SL[:, 0], x) and np.allclose(SL[3:, 3], x[:-3]) and SL[0, 1:].sum() == 0
+    for a, h, k, beta in [(0.3, 0.5, 1.0, 2.0), (0.7, 0.4, 0.8, 0.5)]:
+        direct = beta * m.hill(m.geometric_adstock(x, a, 8), h, k)
+        assert np.allclose(m.media_contribution(SL, a, h, k, beta), direct)
+    draws = m.media_contribution(SL, [0.3, 0.7], [0.5, 0.4], [1.0, 0.8], [2.0, 0.5])
+    assert draws.shape == (2, 60) and np.allclose(draws[1], 0.5 * m.hill(m.geometric_adstock(x, 0.7, 8), 0.4, 0.8))
+
+
+def test_simulation_with_brand_specific_shapes_sets_training_roas_to_the_drawn_truth():
+    g = m.load_brands(conjura_like(7 * 120), "W")[0]["b1"]
+    n, H = len(g), m.settings("W")["H"]
+    y, true_roas, contrib = m.simulate_revenue_shapes(g, np.ones(n), 1000.0, 0.05, np.random.default_rng(3), "W")
+    spend = np.column_stack([g.google, g.meta])[: n - H].sum(axis=0)
+    assert np.allclose(contrib[:, : n - H].sum(axis=1) / spend, true_roas)
+    assert ((0.5 <= true_roas) & (true_roas <= 4)).all() and (y >= 1).all() and (contrib >= 0).all()

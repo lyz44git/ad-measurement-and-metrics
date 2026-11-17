@@ -64,7 +64,7 @@ def design(n, freq, dow=None):
 
 
 def geometric_adstock(x, a, L, xp=np):
-    """Carry-over of spend: weighted sum of the last L periods with weights a**lag, normalised to sum to 1.
+    """Carry-over of spend: weighted sum of the last L periods with weights a**lag, normalized to sum to 1.
 
     xp is the array module (NumPy, or jax.numpy inside the model).
     """
@@ -97,6 +97,50 @@ def simulate_revenue(g, base_fit, ymean, resid_sd, rng, freq):
         padded = np.concatenate([np.zeros(L - 1), Sx[:, c]])
         st = np.array([(padded[t + L - 1 - np.arange(L)] * w).sum() for t in range(n)])
         sat = st / (st + 0.5)
+        contrib[c] = sat * true_roas[c] * S[:ntr, c].sum() / sat[:ntr].sum()
+    y = np.array(base_fit) * ymean + contrib.sum(axis=0) + rng.normal(0, resid_sd * ymean, n)
+    return np.clip(y, 1.0, None), true_roas, contrib
+
+
+# ---- helpers for the pooled model (design/followup_plan.md) ----
+
+def lag_matrix(x, L):
+    """n x L matrix whose column l holds x lagged by l periods (zero before the start of the series)."""
+    padded = np.concatenate([np.zeros(L - 1), np.asarray(x, dtype=float)])
+    idx = np.arange(len(x))[:, None] + (L - 1) - np.arange(L)[None, :]
+    return padded[idx]
+
+
+def media_contribution(SL, a, h, k, beta):
+    """Media term of one channel from its lag matrix: beta * Hill(geometric adstock).
+
+    SL: n x L lag matrix of scaled spend. a, h, k, beta: scalars, or arrays of posterior draws of the same length,
+    in which case the result has shape (draws, n). Equals beta * hill(geometric_adstock(x, a, L), h, k).
+    """
+    a, h, k, beta = (np.atleast_1d(np.asarray(v, dtype=float)) for v in (a, h, k, beta))
+    w = a[:, None] ** np.arange(SL.shape[1])[None, :]
+    w = w / w.sum(axis=1, keepdims=True)
+    ad = w @ SL.T                                             # draws x n
+    out = beta[:, None] * hill(ad, h[:, None], k[:, None])
+    return out[0] if out.shape[0] == 1 else out
+
+
+def simulate_revenue_shapes(g, base_fit, ymean, resid_sd, rng, freq):
+    """Real spend, simulated revenue with brand- and channel-specific media shapes (follow-up plan, test 1).
+
+    True ROAS ~ Uniform(0.5, 4), adstock decay ~ Uniform(0.2, 0.8), Hill h ~ Uniform(0.3, 0.8), k = 1. Each channel's
+    contribution is scaled so that its ROAS over the training periods equals the drawn value.
+    Returns (revenue series, true ROAS for Google and Meta, contributions).
+    """
+    s = settings(freq); H, L = s["H"], s["L"]
+    n = len(g); ntr = n - H
+    S = np.column_stack([g.google.values, g.meta.values]).astype(float)
+    smax = S[:ntr].max(axis=0); smax[smax == 0] = 1.0
+    Sx = S / smax
+    true_roas = rng.uniform(0.5, 4.0, 2); a = rng.uniform(0.2, 0.8, 2); h = rng.uniform(0.3, 0.8, 2)
+    contrib = np.zeros((2, n))
+    for c in range(2):
+        sat = media_contribution(lag_matrix(Sx[:, c], L), a[c], h[c], 1.0, 1.0)
         contrib[c] = sat * true_roas[c] * S[:ntr, c].sum() / sat[:ntr].sum()
     y = np.array(base_fit) * ymean + contrib.sum(axis=0) + rng.normal(0, resid_sd * ymean, n)
     return np.clip(y, 1.0, None), true_roas, contrib
