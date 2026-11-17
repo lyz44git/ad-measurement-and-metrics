@@ -44,6 +44,7 @@ API schema rejection (4 cases), API-vs-batch parity (< 1e-9 on 2,000 rows), orde
 None in estimators or decision rule. The top-10% uplift column has no CI (not pre-specified).
 
 ## Does and does not show
-Shows: analysis of a business randomized experiment at scale with non-compliance; meta-learners and a causal forest
-validated on randomized held-out data; an honest negative result on a pre-registered comparison; a tested scoring tool.
+Shows: analysis of a large randomized advertising experiment with one-sided non-compliance; meta-learners and a
+causal forest validated on randomized held-out data; a pre-registered comparison reported although its decision rule
+was not met; a tested scoring tool.
 Does not show: designing or running an experiment; production deployment; a population-level lift estimate.

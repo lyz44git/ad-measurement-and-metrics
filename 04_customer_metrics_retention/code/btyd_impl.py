@@ -29,7 +29,7 @@ def gg_ll(params, x, m):
     p, q, g = np.exp(params)
     return (gammaln(p * x + q) - gammaln(p * x) - gammaln(q) + q * np.log(g) + (p * x - 1) * np.log(m) + p * x * np.log(x) - (p * x + q) * np.log(g + x * m))
 def fit_gg(x, m, return_ll=False):
-    # Spend is rescaled by its median before optimisation (an unscaled fit on GBP stopped at a false boundary p->inf, gamma->0);
+    # Spend is rescaled by its median before optimization (an unscaled fit on GBP stopped at a false boundary p->inf, gamma->0);
     # gamma is a scale parameter in spend units, so it is multiplied back afterwards. Several starts; boundary check.
     c = float(np.median(m)); ms = m / c
     f = lambda pr: -gg_ll(pr, x, ms).sum()
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     nn = 20000; xg = rng.integers(1, 15, nn).astype(float); nu = rng.gamma(q, 1 / g, nn)
     m = np.array([rng.gamma(p * k, 1 / v) / k for k, v in zip(xg, nu)])
     gest = fit_gg(xg, m)
-    # GBP-scale check (spend in hundreds): the unscaled optimiser failed on this scale in the first version
+    # GBP-scale check (spend in hundreds): the unscaled optimizer failed on this scale in the first version
     g2 = 15.44 * 30; nu2 = rng.gamma(q, 1 / g2, nn); m2 = np.array([rng.gamma(p * k, 1 / v) / k for k, v in zip(xg, nu2)])
     gest2 = fit_gg(xg, m2)
     out = dict(bgnbd_true=true, bgnbd_est=dict(zip(true.keys(), est.round(3).tolist())), gg_true=dict(p=p, q=q, g=g), gg_est=dict(zip(["p", "q", "g"], gest.round(3).tolist())),

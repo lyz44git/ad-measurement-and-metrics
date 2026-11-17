@@ -44,7 +44,7 @@ Sources: [`out/12_ltv_segments.json`](out/12_ltv_segments.json),
 
 ### Metric definitions
 
-**New-customer definition.** With a 3-month look-back, 1,036 accounts would be labelled new, of which 640 (62%) had
+**New-customer definition.** With a 3-month look-back, 1,036 accounts would be labeled new, of which 640 (62%) had
 bought in the prior 12 months. Cohorts here use a 12-month look-back:
 
 ```sql
@@ -55,9 +55,8 @@ WHERE NOT EXISTS (SELECT 1 FROM days d
 ```
 
 **SQL reconciliation.** The segment table and the cohort repeat-rate matrix, rebuilt in DuckDB SQL
-([`out/14_sql_queries.sql`](out/14_sql_queries.sql)), match the Python results in all 92 cells. The first run did
-not: `NTILE(3)` and rank-based terciles placed three boundary accounts in different groups, which is recorded in the
-deviations file and fixed in the published SQL.
+([`out/14_sql_queries.sql`](out/14_sql_queries.sql)), match the Python results in all 92 cells. Both implementations
+use rank-based terciles with boundary accounts in the upper group (deviation 1).
 
 ![Monthly repeat-purchase rate of new-account cohorts](out/fig/fig6_cohort_retention.png)
 
@@ -81,7 +80,7 @@ bottom quartile.
 **High-value segment.** Accounts that bought in the last 60 days and were in the top third of 6-month sales made up
 26.5% of 2,716 active accounts and produced 72.5% of their next-six-month sales; 91.7% bought again.
 
-**Clustering check.** K-means on recency, frequency, spend and return behaviour, with the number of clusters chosen by
+**Clustering check.** K-means on recency, frequency, spend and return behavior, with the number of clusters chosen by
 bootstrap out-of-bag stability, selects two clusters (adjusted Rand index 0.92 on average, 10th percentile 0.89). Its
 high-value cluster is 36.8% of accounts and produced 76.5% of next-six-month sales, close to the rule above
 ([`out/12_ltv_segments.json`](out/12_ltv_segments.json)).

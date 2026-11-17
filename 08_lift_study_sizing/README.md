@@ -1,6 +1,6 @@
 # 08 · Sizing lift studies at survey-scale sample sizes
 
-> **Takeaway.** To detect a one-point lift on a 4% base rate, a study needs about 10,000 users per arm: power is 19%
+> **Takeaway.** To detect a one-point lift on a 3.8% base rate, a study needs about 10,000 users per arm: power is 19%
 > at 1,000 per arm, 73% at 5,000 and 94% at 10,000. False-positive rates stay near 5% at every size, for both the
 > z-test and a Bayesian readout.
 

@@ -13,7 +13,7 @@ forecast revenue better than a model without media?
 ## Data
 
 Conjura, "Multi-Region Marketing Mix Modelling (MMM) Dataset for Several eCommerce Brands" (Figshare 25314841,
-CC BY 4.0): daily spend by channel and purchases for 93 anonymised e-commerce brands. Download `conjura_mmm_data.csv`
+CC BY 4.0): daily spend by channel and purchases for 93 anonymized e-commerce brands. Download `conjura_mmm_data.csv`
 into `data_raw/` (git-ignored).
 
 Revenue is purchases at original price minus discounts. Google spend is the sum of the five Google columns and Meta

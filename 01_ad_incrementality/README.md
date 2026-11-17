@@ -2,7 +2,7 @@
 
 > **Takeaway.** The ads raised the visit rate by about one percentage point, and three quarters of the incremental
 > visits came from one fifth of users. A plain response model finds those users as well as the uplift models do, so
-> on this evidence uplift modelling does not earn its extra complexity for targeting.
+> on this evidence uplift modeling does not earn its extra complexity for targeting.
 
 ## Question
 
@@ -52,8 +52,9 @@ Full tables: [`docs/11_results_criteo_incrementality_uplift.md`](docs/11_results
 - **The pre-specified targeting comparison was not met.** The selected T-learner did not beat the response model on
   Qini (difference −1.2 × 10⁻⁴ per user, 95% CI −3.0 to +0.6). In this experiment the users most likely to visit are
   also the users the ad moves most.
-- Predicted uplift is well calibrated in deciles 1–9 (decile 1: 6.6 pp predicted, 6.0 pp realized). Decile 10 is
-  predicted negative (−0.8 pp) but realized +0.7 pp, so the model does not identify a group the ad harms.
+- Predicted uplift is well calibrated in deciles 1–9, where decile 1 has the highest predicted uplift (6.6 pp
+  predicted, 6.0 pp realized). Decile 10 is predicted negative (−0.8 pp) but realized +0.7 pp, so the model does
+  not identify a group the ad harms.
 
 ## Reproduce
 

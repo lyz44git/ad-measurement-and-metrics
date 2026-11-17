@@ -1,6 +1,6 @@
 # 03 · Sizing market-level (geo) experiments
 
-> **Takeaway.** Analyse market-level tests with regression adjustment on pre-period volume rather than year-over-year
+> **Takeaway.** Analyze market-level tests with regression adjustment on pre-period volume rather than year-over-year
 > growth (detectable effect 6.7% against 9.5% at 100 metros), plan for effects of 5% or more, skip matched pairs, and
 > use randomization inference when the target is total volume.
 

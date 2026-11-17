@@ -23,7 +23,7 @@ a local directory path was replaced. Deviations are in [`design/deviations.md`](
 1. **Overall effect.** Beta-Binomial posterior of the lift in visit and conversion rates on the full data, next to the
    frequentist difference in means.
 2. **Segments and samples.** 100 equal-size segments by rank on six features; ten disjoint 2% samples of users
-   (about 279,500 users and 41,900 controls each). The benchmark for a sample is the segment effect computed on the
+   (about 279,500 users each, about 41,900 of them in the control arm). The benchmark for a sample is the segment effect computed on the
    other 98% of users.
 3. **Estimators.** No pooling (per-segment difference in means), complete pooling (the overall difference for every
    segment), and a multilevel binomial model with segment-specific baselines and effects (NumPyro, NUTS, 4 chains).

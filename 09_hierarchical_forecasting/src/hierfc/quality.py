@@ -65,7 +65,7 @@ def crosswalk_summary(members: pd.DataFrame) -> dict:
 def flag_breaks(Y: np.ndarray, shift=np.log(4), persist=np.log(3), spike=np.log(4)) -> dict:
     """Coverage-break rule on log values of each row (members x months), one pass each: a largest one-month jump
     above `shift` whose 6-month medians before/after differ by more than `persist` (level shift), and points more
-    than `spike` from the median of their 3 neighbours on each side (spike). Counts only."""
+    than `spike` from the median of their 3 neighbors on each side (spike). Counts only."""
     n_shift = n_spike = 0
     rows_flagged = set()
     for r, v in enumerate(np.log(Y)):

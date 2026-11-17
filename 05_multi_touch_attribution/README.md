@@ -67,7 +67,7 @@ python code/mta.py derived/criteo_attr.parquet out
 ```
 
 `tests/` checks the path construction, that every rule gives each conversion one unit of credit, that time decay
-favours later touches, and that the decay-rate estimator recovers a known half-life on simulated delays.
+favors later touches, and that the decay-rate estimator recovers a known half-life on simulated delays.
 
 ## Scope
 

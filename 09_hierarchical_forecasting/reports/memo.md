@@ -58,7 +58,7 @@ carried through every level so that each level sums exactly to Zillow's US row.
 
 - **Base forecasts**: one `statsforecast` AutoETS model per node (873 nodes), seasonal period 12.
 - **Reconciliation** (all linear, ỹ = S G ŷ): bottom-up, top-down (proportions of the last 12 months), OLS,
-  WLS-structural and MinT-shrink (Schäfer–Strimmer shrinkage of the in-sample one-step residual covariance). Own numpy
+  WLS-structural and MinT-shrink (Schäfer–Strimmer shrinkage of the in-sample one-step residual covariance). Own NumPy
   implementation; a test matches `hierarchicalforecast` 1.5.3.
 - **Baselines**: no-change and seasonal naive (both coherent by construction).
 - **Pseudo-real-time backtest**: 24 monthly origins (as-of months 2023-11 to 2025-10). A month's value counts as
@@ -282,7 +282,7 @@ Full tables for both runs (by horizon, Remainder, negatives, incoherence) are in
 - That MinT-shrink beats bottom-up in general: its RMSSE was below bottom-up's only at the state and metro levels of
   the primary run, and the pre-specified tests found no clear difference from bottom-up at the US, division and state
   levels in any run.
-- Any 12-month skill for inventory with an ETS base, or anything about the 1–2-year horizons the Zillow role mentions.
+- Any 12-month skill for inventory with an ETS base, or anything about horizons beyond 12 months.
 - Real-time performance (one vintage), price forecasting (ZHVI does not add up), county or ZIP levels, or prediction
   intervals.
 - Anything about production use.
@@ -291,7 +291,7 @@ Full tables for both runs (by horizon, Remainder, negatives, incoherence) are in
 
 - **One vintage.** All data come from one download (2026-11-09); Zillow's later revisions of listing counts are in the
   history the backtest uses. This is pseudo-real-time (as-of masking), not a real-time vintage study.
-- **One period.** 24 origins over two years (2023-11 to 2025-10). At h = 12 neighbouring origins share 11 of 12 target
+- **One period.** 24 origins over two years (2023-11 to 2025-10). At h = 12 neighboring origins share 11 of 12 target
   months, so the test sample is closer to two independent years; the p-values are descriptive.
 - **Counts, not prices.** Inventory adds up; ZHVI does not. A price hierarchy needs a weighted (value) aggregate and is
   not attempted here.
@@ -308,8 +308,8 @@ Full tables for both runs (by horizon, Remainder, negatives, incoherence) are in
 - **D1 (reporting only).** The plan's verdict rule (§7) says reconciliation "helps" if its RMSSE is lower and a DM
   p-value is below 0.05 at h = 1 or h = 12. It did not say what to do when one horizon is significantly better and the
   other significantly worse. Such cells keep the plan's verdict and are flagged "(mixed …)"; the direction at each
-  horizon is shown in its own column. Also, "significant" is read as significant in A's favour for "A better" and in
-  B's favour for "A worse".
+  horizon is shown in its own column. Also, "significant" is read as significant in A's favor for "A better" and in
+  B's favor for "A worse".
 - **D2 (figure).** Figure 1 leaves out seasonal naive (it reaches 3–4× no-change at h = 1 and flattens the other
   lines); its numbers are in Tables 1, 2 and 5.
 - **D3 (reporting only).** The coverage-break flags use one pass of the copied rule; the original in

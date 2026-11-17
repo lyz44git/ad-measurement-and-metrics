@@ -19,7 +19,7 @@ def touches(rows):
 def test_converter_paths_keep_unclicked_touches_and_stop_at_the_first_conversion():
     d = touches([
         (0 * DAY, 1, 7, 0, -1, -1, 0),          # unclicked touch before the conversion: kept
-        (9 * DAY, 1, 7, 1, 10 * DAY, 11, 1),    # clicked touch labelled with the conversion
+        (9 * DAY, 1, 7, 1, 10 * DAY, 11, 1),    # clicked touch labeled with the conversion
         (12 * DAY, 1, 7, 0, -1, -1, 1),         # after the conversion: dropped
         (1 * DAY, 2, 7, 0, -1, -1, 0),          # non-converter: all touches kept
         (2 * DAY, 2, 8, 0, -1, -1, 1),

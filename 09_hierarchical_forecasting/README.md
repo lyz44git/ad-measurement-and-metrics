@@ -72,9 +72,9 @@ Full results and limits: [`reports/memo.md`](reports/memo.md). Tables: [`reports
 JOBS=16 ./run_all.sh    # tests, three backtests (about 13 minutes with 16 workers), tables, figure, number checks
 ```
 
-Run from this folder with the root `requirements.txt` installed. The tests need no data: the tests build a synthetic hierarchy and check that no future value leaks into a
-forecast, that reconciled forecasts add up, and that the reconciliation matches `hierarchicalforecast`. Tests that
-read the Zillow file are skipped when it is absent.
+Run from this folder with the root `requirements.txt` installed. The tests need no data: they build a synthetic
+hierarchy and check that no future value leaks into a forecast, that reconciled forecasts add up, and that the
+reconciliation matches `hierarchicalforecast`. Tests that read the Zillow file are skipped when it is absent.
 
 ## Layout
 
