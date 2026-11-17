@@ -1,4 +1,4 @@
-"""Result figures for studies 01, 02, 05, 06, 07 and 08, drawn from the committed result files.
+"""Result figures for studies 01a, 01b, 02a, 02b, 02c and 03a, drawn from the committed result files.
 
 Usage: python figures/make_study_figures.py   (writes one PNG into each study's out/ folder)
 """
@@ -53,7 +53,7 @@ def save(fig, rel):
 
 def fig01(t):
     """Visit and conversion rates by arm, with the regression-adjusted effect."""
-    a = load("01_ad_incrementality/out/criteo/a_incrementality.json")
+    a = load("01_with_an_experiment/01a_ad_incrementality/out/criteo/a_incrementality.json")
     fig, axes = new(2, height=2.7)
     for ax, key, name, letter in zip(axes, ("visit", "conversion"), ("Visit rate", "Conversion rate"), "ab"):
         itt, adj = a[key]["itt"], a[key]["aipw_linear"]
@@ -66,12 +66,12 @@ def fig01(t):
                 transform=ax.transAxes, va="top", color=t["ink2"], fontsize=7)
         ax.set_ylim(0, c1 * 1.38); ax.set_ylabel(f"{name} (%)"); ax.tick_params(axis="x", length=0)
         title(ax, letter, name)
-    save(fig, "01_ad_incrementality/out/fig_rates_by_arm.png")
+    save(fig, "01_with_an_experiment/01a_ad_incrementality/out/fig_rates_by_arm.png")
 
 
 def fig02(t):
     """Attributed against incremental outcomes."""
-    a = load("02_attribution_metric_validation/out/attribution_vs_experiment.json")
+    a = load("02_without_an_experiment/02a_attribution_metric_validation/out/attribution_vs_experiment.json")
     fig, axes = new(2, height=2.7)
     for ax, key, name, letter in zip(axes, ("visit", "conversion"), ("Visits", "Conversions"), "ab"):
         att, inc = a[key]["attributed"] / 1000, a[key]["incremental"] / 1000
@@ -83,12 +83,12 @@ def fig02(t):
                 va="top", color=t["ink2"], fontsize=7.5, fontweight="bold")
         ax.set_ylim(0, att * 1.3); ax.set_ylabel(f"{name} (thousands)"); ax.tick_params(axis="x", length=0)
         title(ax, letter, name)
-    save(fig, "02_attribution_metric_validation/out/fig_attributed_vs_incremental.png")
+    save(fig, "02_without_an_experiment/02a_attribution_metric_validation/out/fig_attributed_vs_incremental.png")
 
 
 def fig05(t):
     """Where each rule puts the credit, by how long before the last touch a touch occurred."""
-    m = load("05_multi_touch_attribution/out/mta.json")
+    m = load("02_without_an_experiment/02b_multi_touch_attribution/out/mta.json")
     rules = [("cr_last", "Last touch"), ("cr_linear", "Linear"), ("cr_decay", "Time decay"), ("cr_first", "First touch")]
     buckets = [("last", "Last touch", t["blue"]), ("<1d", "Under 1 day earlier", "#56B4E9"),
                ("1-7d", "1 to 7 days earlier", "#E69F00"), (">7d", "Over 7 days earlier", t["red"])]
@@ -116,34 +116,34 @@ def fig05(t):
     ax.set_ylim(3.5, -0.9); ax.set_xlim(0, 82); ax.set_xlabel("Share of credit on clicked touches (%)")
     ax.tick_params(axis="y", length=0)
     title(ax, "b", "Credit given to clicked touches")
-    save(fig, "05_multi_touch_attribution/out/fig_credit_by_rule.png")
+    save(fig, "02_without_an_experiment/02b_multi_touch_attribution/out/fig_credit_by_rule.png")
 
 
 def fig06(t):
     """Parameter recovery: estimated against known channel ROAS, weekly and daily data."""
     fig, axes = new(2, height=3.0)
     for ax, suf, name, letter in zip(axes, ("", "_daily"), ("Weekly data", "Daily data"), "ab"):
-        r = [x for x in rows(f"06_marketing_mix_modeling/out/mmm_recovery{suf}.csv") if x["converged"] == "True"]
+        r = [x for x in rows(f"02_without_an_experiment/02c_marketing_mix_modeling/out/mmm_recovery{suf}.csv") if x["converged"] == "True"]
         tr = [float(x["true"]) for x in r]; es = [float(x["est"]) for x in r]
         lo = [float(x["est"]) - float(x["lo"]) for x in r]; hi = [float(x["hi"]) - float(x["est"]) for x in r]
         ax.plot([0, 4.5], [0, 4.5], color=t["grey"], lw=0.8, ls=(0, (4, 3)))
         ax.errorbar(tr, es, yerr=[lo, hi], fmt="o", color=t["blue"], ms=3.2, elinewidth=0.6, alpha=0.85)
-        rho = load(f"06_marketing_mix_modeling/out/mmm_summary{suf}.json")["recovery"]["spearman"]
+        rho = load(f"02_without_an_experiment/02c_marketing_mix_modeling/out/mmm_summary{suf}.json")["recovery"]["spearman"]
         ax.text(0.04, 0.95, f"rank correlation {rho:.2f}", transform=ax.transAxes, va="top", fontweight="bold",
                 bbox=dict(facecolor=t["bg"], edgecolor="none", pad=2.5), zorder=5)
         ax.set_xlim(0, 4.5); ax.set_ylim(0, 9); ax.set_xlabel("Known channel ROAS (simulated)")
         ax.set_ylabel("Estimated ROAS, 90% interval")
         title(ax, letter, name)
-    save(fig, "06_marketing_mix_modeling/out/fig_roas_recovery.png")
+    save(fig, "02_without_an_experiment/02c_marketing_mix_modeling/out/fig_roas_recovery.png")
 
 
 def fig06b(t):
     """Recovery error against the signal-to-noise index, and the smallest detectable ROAS on real spend."""
-    idx = {(r["org"], r["channel"]): r for r in rows("06_marketing_mix_modeling/out/detectability.csv")
+    idx = {(r["org"], r["channel"]): r for r in rows("02_without_an_experiment/02c_marketing_mix_modeling/out/detectability.csv")
            if r["freq"] == "D" and r["sim"] == "brand_shapes"}
-    rec = [r for r in rows("06_marketing_mix_modeling/out/mmm_pooled_recovery_daily.csv")
+    rec = [r for r in rows("02_without_an_experiment/02c_marketing_mix_modeling/out/mmm_pooled_recovery_daily.csv")
            if r["sim"] == "brand_shapes" and r["single_converged"] == "True"]
-    s = load("06_marketing_mix_modeling/out/detectability.json")
+    s = load("02_without_an_experiment/02c_marketing_mix_modeling/out/detectability.json")
     fig, axes = new(2, height=3.0)
     ax = axes[0]
     x = [float(idx[(r["org"], r["channel"])]["index"]) for r in rec]
@@ -162,7 +162,7 @@ def fig06b(t):
     title(ax, "a", "Daily data, held-out simulation")
     ax = axes[1]
     for freq, name, col in (("W", "Weekly data", t["grey"]), ("D", "Daily data", t["blue"])):
-        m = sorted(float(r["min_detectable_roas"]) for r in rows("06_marketing_mix_modeling/out/detectability.csv")
+        m = sorted(float(r["min_detectable_roas"]) for r in rows("02_without_an_experiment/02c_marketing_mix_modeling/out/detectability.csv")
                    if r["freq"] == freq and r["sim"] == "brand_shapes")
         ax.step(m, [100 * (i + 1) / len(m) for i in range(len(m))], where="post", color=col)
         share = s[freq]["real_spend"]["share_at_most"]["2"]
@@ -174,13 +174,13 @@ def fig06b(t):
     ax.set_xlim(0, 16); ax.set_ylim(0, 102); ax.set_xlabel("Smallest detectable ROAS (80% power)")
     ax.set_ylabel("Brand-channels (cumulative %)")
     title(ax, "b", "Real spend: what could be detected")
-    save(fig, "06_marketing_mix_modeling/out/fig_detectability.png")
+    save(fig, "02_without_an_experiment/02c_marketing_mix_modeling/out/fig_detectability.png")
 
 
 def fig07(t):
     """Error of segment estimates by sample, and one sample's estimates against the benchmark."""
-    p = load("07_bayesian_segment_effects/out/part2_segments.json")
-    p.update(load("07_bayesian_segment_effects/out/part2_segments_rerun.json"))
+    p = load("01_with_an_experiment/01b_bayesian_segment_effects/out/part2_segments.json")
+    p.update(load("01_with_an_experiment/01b_bayesian_segment_effects/out/part2_segments_rerun.json"))
     reps = sorted(p, key=int)
     fig, axes = new(2, height=3.0)
     ax = axes[0]
@@ -203,12 +203,12 @@ def fig07(t):
     ax.set_xlabel("Benchmark effect, other 98% of users (pp)"); ax.set_ylabel("Estimate from the 2% sample (pp)")
     ax.legend(loc="upper left")
     title(ax, "b", "Segment estimates, sample 1")
-    save(fig, "07_bayesian_segment_effects/out/fig_segment_error.png")
+    save(fig, "01_with_an_experiment/01b_bayesian_segment_effects/out/fig_segment_error.png")
 
 
 def fig08(t):
     """Power and false-positive rate by users per arm."""
-    d = load("08_lift_study_sizing/out/lift_study_sizing.json")["by_n"]
+    d = load("03_planning_a_test/03a_lift_study_sizing/out/lift_study_sizing.json")["by_n"]
     ns = sorted(d, key=int); x = range(len(ns))
     fig, axes = new(2, height=2.8)
     ax = axes[0]
@@ -230,12 +230,12 @@ def fig08(t):
     ax.set_xticks(list(x), [f"{int(n):,}" for n in ns]); ax.set_ylim(0, 10)
     ax.set_xlabel("Users per arm"); ax.set_ylabel("A/A studies reporting a lift (%)"); ax.legend(loc="upper right")
     title(ax, "b", "False positives with no true lift")
-    save(fig, "08_lift_study_sizing/out/fig_power_by_sample_size.png")
+    save(fig, "03_planning_a_test/03a_lift_study_sizing/out/fig_power_by_sample_size.png")
 
 
 def fig08b(t):
     """Minimum detectable effect and sampling variance of adjusted against unadjusted readouts."""
-    d = load("08_lift_study_sizing/out/covariate_adjustment.json")["by_n"]
+    d = load("03_planning_a_test/03a_lift_study_sizing/out/covariate_adjustment.json")["by_n"]
     ns = sorted(d, key=int); x = range(len(ns))
     series = (("D", "Unadjusted", t["grey"]), ("L", "Adjusted, 12 features", t["green"]),
               ("M", "Adjusted, model prediction", t["blue"]))
@@ -265,7 +265,7 @@ def fig08b(t):
     ax.set_xlabel("Users per arm"); ax.set_ylabel("Sampling variance relative to unadjusted")
     ax.legend(loc="lower right")
     title(ax, "b", "Variance of the readout")
-    save(fig, "08_lift_study_sizing/out/fig_mde_by_adjustment.png")
+    save(fig, "03_planning_a_test/03a_lift_study_sizing/out/fig_mde_by_adjustment.png")
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 """Power and false-positive rates of lift studies at survey-scale sample sizes, by resampling a completed experiment.
 
-Usage: python code/lift_study_sizing.py [path to study 07's out/part1_overall.json] [out_dir]
-Needs only the arm sizes and visit counts of the Criteo experiment, which study 07 writes to part1_overall.json.
+Usage: python code/lift_study_sizing.py [path to study 01b's out/part1_overall.json] [out_dir]
+Needs only the arm sizes and visit counts of the Criteo experiment, which study 01b writes to part1_overall.json.
 Site visit is the binary response; there are no survey data.
 """
 import json
@@ -60,5 +60,5 @@ def main(src, out_dir):
 
 
 if __name__ == "__main__":
-    default = ROOT.parent / "07_bayesian_segment_effects" / "out" / "part1_overall.json"
+    default = ROOT.parents[1] / "01_with_an_experiment" / "01b_bayesian_segment_effects" / "out" / "part1_overall.json"
     main(sys.argv[1] if len(sys.argv) > 1 else default, sys.argv[2] if len(sys.argv) > 2 else ROOT / "out")

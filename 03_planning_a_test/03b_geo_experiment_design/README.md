@@ -1,4 +1,4 @@
-# 03 · Sizing market-level (geo) experiments
+# 03b · Sizing market-level (geo) experiments
 
 > **Takeaway.** Analyze market-level tests with regression adjustment on pre-period volume rather than year-over-year
 > growth (detectable effect 6.7% against 9.5% at 100 metros), plan for effects of 5% or more, skip matched pairs, and
@@ -50,7 +50,7 @@ Minimum detectable effect with 80% power, 2-month test:
 
 - **Regression adjustment is the main gain.** At 100 metros it lowers the MDE from 9.5% under a year-over-year
   comparison to 6.7%. A plain difference in levels cannot detect even a 50% change, because metros differ in size.
-  The user-level counterpart, adjustment for user features, is in [study 08](../08_lift_study_sizing).
+  The user-level counterpart, adjustment for user features, is in [study 03a](../03a_lift_study_sizing).
 - **Market tests detect only large effects:** 5.3% with all 150 metros, 16.3% with 20.
 - **Matched pairs add nothing once the estimate is adjusted**, and cost degrees of freedom with few metros.
 - **Longer tests help little:** 1, 2 and 3 months give 7.2%, 6.7% and 6.4% at 100 metros, because metro-level shocks

@@ -1,4 +1,4 @@
-# 02 · Validating an attribution metric against a randomized experiment
+# 02a · Validating an attribution metric against a randomized experiment
 
 > **Takeaway.** Exposure-based attribution should not drive budget decisions without an experimental calibration: it
 > overstates incremental conversions by 68%. Where no experiment is available, covariate adjustment removes most of
@@ -12,9 +12,9 @@ that from what the ad actually caused, and can covariate adjustment close the ga
 
 ## Data
 
-The Criteo experiment used in [study 01](../01_ad_incrementality): 13,979,592 users, of whom 428,212 in the ad arm
+The Criteo experiment used in [study 01a](../../01_with_an_experiment/01a_ad_incrementality): 13,979,592 users, of whom 428,212 in the ad arm
 were exposed. Pass the path to `criteo-research-uplift-v2.1.csv.gz` as the first argument, or place the file as
-described in study 01.
+described in study 01a.
 
 ## Method
 
@@ -25,7 +25,7 @@ A descriptive comparison with no decision rule.
 3. **Per-exposed-user effect on visits, three ways:** the naive exposed-minus-unexposed difference; OLS with the 12
    features as covariates (HC1 standard errors); and cross-fitted double machine learning with gradient-boosted
    nuisance models on a random 2,000,000 users.
-4. **Benchmark.** The experimental effect on exposed users from study 01, unadjusted and regression-adjusted.
+4. **Benchmark.** The experimental effect on exposed users from study 01a, unadjusted and regression-adjusted.
 
 ## Results
 
@@ -58,7 +58,7 @@ python code/attribution_vs_experiment.py /path/to/criteo-research-uplift-v2.1.cs
 `code/attribution_vs_experiment.py` exposes the estimators as functions; `tests/test_attribution.py` checks them on
 simulated data with a known effect and confounded exposure.
 
-Study 01 must have been run first, since its output supplies the adjusted benchmark. The double machine learning
+Study 01a must have been run first, since its output supplies the adjusted benchmark. The double machine learning
 estimate can differ in the third decimal between runs because the gradient-boosting fits are multi-threaded
 (24.60 and 24.63 pp in two runs).
 

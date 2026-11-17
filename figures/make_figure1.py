@@ -61,8 +61,8 @@ def draw():
     fig = plt.figure(figsize=(7.2, 5.0), dpi=300)
 
     # ---- a: realized ad effect by decile of predicted uplift, held-out users
-    tg = load("01_ad_incrementality/out/criteo/c_targeting.json")
-    inc = load("01_ad_incrementality/out/criteo/a_incrementality.json")
+    tg = load("01_with_an_experiment/01a_ad_incrementality/out/criteo/c_targeting.json")
+    inc = load("01_with_an_experiment/01a_ad_incrementality/out/criteo/a_incrementality.json")
     cal, itt = tg["calibration_selected"], tg["test_overall_itt"]
     a = fig.add_axes(HERO)
     x = [r["decile"] for r in cal]
@@ -106,7 +106,7 @@ def draw():
     b, c, d = (fig.add_axes([X0, yy, W, H]) for yy in ROWS)
 
     # ---- b: effect of exposure, observational estimators against the two experimental estimates
-    at = load("02_attribution_metric_validation/out/attribution_vs_experiment.json")
+    at = load("02_without_an_experiment/02a_attribution_metric_validation/out/attribution_vs_experiment.json")
     pe = at["per_exposed_user_visit_effect"]
     lo, hi = 100 * pe["cace_adjusted_study_01"], 100 * pe["cace_unadjusted"]
     b.axvspan(lo, hi, color=BLUE, alpha=0.10, lw=0)
@@ -130,7 +130,7 @@ def draw():
     # ---- c: minimum detectable effect by design and test length
     keys = {"CR: year-over-year difference": ("Year-over-year", GREY), "CR: ANCOVA (CUPED)": ("Regression-adjusted", BLUE)}
     mde = {(k, m): {} for k in keys for m in (1, 2, 3)}
-    for r in rows(ROOT / "03_geo_experiment_design/out/design_summary.csv"):
+    for r in rows(ROOT / "03_planning_a_test/03b_geo_experiment_design/out/design_summary.csv"):
         if r["estimator"] in keys:
             mde[(r["estimator"], int(r["test_months"]))][int(r["metros"])] = float(r["mde_80_pct"])
     xs = [20, 50, 100, 150]

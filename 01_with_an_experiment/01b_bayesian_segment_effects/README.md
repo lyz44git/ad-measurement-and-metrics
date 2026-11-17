@@ -1,4 +1,4 @@
-# 07 · Segment-level ad effects from small samples
+# 01b · Segment-level ad effects from small samples
 
 > **Takeaway.** When a lift readout has to be split across 100 segments on a 2% sample, a Bayesian multilevel model
 > cuts the error of the segment estimates by 27% against separate per-segment estimates, and did so in 10 of 10
@@ -11,7 +11,7 @@ closer to the truth than estimating each segment on its own, or than giving ever
 
 ## Data
 
-The Criteo experiment used in [study 01](../01_ad_incrementality) (13,979,592 users). Pass the path to
+The Criteo experiment used in [study 01a](../01a_ad_incrementality) (13,979,592 users). Pass the path to
 `criteo-research-uplift-v2.1.csv.gz` to the first script.
 
 ## Method
@@ -56,7 +56,7 @@ estimate and interval agree to three decimals. Conversion lift +0.115 pp.
 ## Reproduce
 
 ```bash
-pip install -r ../06_marketing_mix_modeling/requirements-mmm.txt   # NumPyro and JAX
+pip install -r ../../02_without_an_experiment/02c_marketing_mix_modeling/requirements-mmm.txt   # NumPyro and JAX
 python code/01_build.py /path/to/criteo-research-uplift-v2.1.csv.gz derived
 python code/02_overall_bayes.py derived out
 python code/03_segments_bayes.py derived out

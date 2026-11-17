@@ -2,7 +2,7 @@
 
 ## `analysis_plan.md` (Part A)
 
-The plan covers this study (Part A) and study 05 (Part B); it was written and hashed once, before either was run.
+The plan covers this study (Part A) and study 02b (Part B); it was written and hashed once, before either was run.
 
 1. **Daily rerun (added after seeing the weekly results).** The planned weekly model failed its own parameter-recovery
    check: with real spend and simulated revenue, the rank correlation between true and estimated ROAS was 0.01

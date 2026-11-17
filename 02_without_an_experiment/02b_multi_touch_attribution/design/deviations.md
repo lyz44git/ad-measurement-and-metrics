@@ -1,6 +1,6 @@
 # Deviations from `analysis_plan.md` (Part B)
 
-The plan covers this study (Part B) and study 06 (Part A); it was written and hashed once, before either was run.
+The plan covers this study (Part B) and study 02c (Part A); it was written and hashed once, before either was run.
 
 1. **Path definition.** The plan defined converter paths by the conversion label, but in this file the label sits on
    clicked impressions only (0 of 10.5M unclicked impressions carry it), so that definition would drop converters'

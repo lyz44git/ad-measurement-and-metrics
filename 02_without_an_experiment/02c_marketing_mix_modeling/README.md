@@ -1,11 +1,11 @@
-# 06 · Marketing mix models: which brands have enough signal to measure a channel's return?
+# 02c · Marketing mix models: which brands have enough signal to measure a channel's return?
 
 > **Takeaway.** A marketing mix model recovers a channel's return only where that channel's spend moves enough on its
 > own, and this can be checked before fitting. In a pre-specified test on held-out simulations with real spend,
 > brand-channels with a signal-to-noise index of 2 or more were recovered within 19% (rank correlation 0.80 with the
 > truth); the rest were off by 50%. Only 19% of brand-channels reach that level on weekly data, against 55% on daily
 > data, and pooling the brands in one model did not help. Model ROAS should be checked this way first and calibrated
-> with experiments (studies 01 and 03) before it guides a budget.
+> with experiments (studies 01a and 03b) before it guides a budget.
 
 ## Questions
 
@@ -29,7 +29,7 @@ offline media or competitor information.
 Each part has its own plan, fixed and hashed before that part was run (hashes in `logs/`). Parts 2 and 3 were added
 after the results of the part before them had been read, and each plan states what had been seen.
 
-**Part 1, one model per brand** ([`design/analysis_plan.md`](design/analysis_plan.md), Part A; Part B is study 05).
+**Part 1, one model per brand** ([`design/analysis_plan.md`](design/analysis_plan.md), Part A; Part B is study 02b).
 The daily run is a deviation from the weekly plan, made after the weekly results were seen
 ([`design/deviations.md`](design/deviations.md)).
 

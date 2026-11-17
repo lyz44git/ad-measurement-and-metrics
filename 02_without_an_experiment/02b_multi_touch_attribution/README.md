@@ -1,9 +1,9 @@
-# 05 · Multi-touch attribution on 6.1M display-ad user paths
+# 02b · Multi-touch attribution on 6.1M display-ad user paths
 
 > **Takeaway.** Last-touch reporting hides most of the path: 65% of converting paths have several touches, and last
 > touch gives no credit to 82% of the touches in them. A time-decay rule fitted to observed touch-to-conversion delays
 > leaves 39% of the credit on the last touch. These rules split credit; they do not show which touches caused the
-> conversion, which needs an experiment (study 01).
+> conversion, which needs an experiment (study 01a).
 
 ## Question
 
@@ -24,7 +24,7 @@ impressions (deviation 1).
 
 ## Method
 
-The analysis plan, [`design/analysis_plan.md`](design/analysis_plan.md) (Part B; Part A is study 06), was fixed before
+The analysis plan, [`design/analysis_plan.md`](design/analysis_plan.md) (Part B; Part A is study 02c), was fixed before
 the run; its SHA-256 is in `logs/plan_hash.txt`. Deviations are in [`design/deviations.md`](design/deviations.md).
 
 1. **Paths.** One path per user: for converters, every impression up to the first conversion, clicked or not; for

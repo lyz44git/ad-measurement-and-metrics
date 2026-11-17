@@ -1,4 +1,4 @@
-# 01 · Ad incrementality on a 14.0M-user randomized experiment
+# 01a · Ad incrementality on a 14.0M-user randomized experiment
 
 > **Takeaway.** The ads raised the visit rate by about one percentage point, and three quarters of the incremental
 > visits came from one fifth of users. A plain response model finds those users as well as the uplift models do, so

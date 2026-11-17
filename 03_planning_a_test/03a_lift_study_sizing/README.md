@@ -1,4 +1,4 @@
-# 08 · Sizing user-level lift studies, with and without covariate adjustment
+# 03a · Sizing user-level lift studies, with and without covariate adjustment
 
 > **Takeaway.** An unadjusted readout needs about 6,500 users per arm to detect a one-point lift on a 3.8% base rate
 > with 80% power: power is 19% at 1,000 per arm, 73% at 5,000 and 94% at 10,000. Adjusting the readout for a model
@@ -13,9 +13,9 @@ and how much smaller can the study be if the readout adjusts for what is known a
 
 ## Data
 
-The Criteo experiment used in [study 01](../01_ad_incrementality): 13,979,592 users, visit rate 3.82% in the control
+The Criteo experiment used in [study 01a](../../01_with_an_experiment/01a_ad_incrementality): 13,979,592 users, visit rate 3.82% in the control
 arm and 4.85% in the ad arm. Site visit stands in for the survey response. No survey data are used. Part 1 needs only
-the arm sizes and visit counts ([study 07](../07_bayesian_segment_effects) writes them to `out/part1_overall.json`);
+the arm sizes and visit counts ([study 01b](../../01_with_an_experiment/01b_bayesian_segment_effects) writes them to `out/part1_overall.json`);
 part 2 needs the user-level file.
 
 ## Method
@@ -29,7 +29,8 @@ part 2 needs the user-level file.
 3. A/A studies draw both arms from the control arm and give the false-positive rate.
 
 **Part 2, covariate adjustment.** Added after part 1 under [`design/followup_plan.md`](design/followup_plan.md), fixed
-before any adjusted estimate was computed (SHA-256 in `logs/followup_plan_hash.txt`).
+before any adjusted estimate was computed (SHA-256 in `logs/followup_plan_hash.txt`). The plan uses the numbers the
+studies had when it was written: its study 01 is 01a here and its study 03 is 03b.
 
 1. Users are split at random into two halves. A gradient-boosted model of visit on the 12 user features is trained on
    the control-arm users of one half; its prediction is computed for every user of the other half, from which all
@@ -82,9 +83,9 @@ Source: [`out/covariate_adjustment.json`](out/covariate_adjustment.json).
 - The model prediction explains 31% of the variance of the outcome among held-out control users (AUC 0.95), which is
   the share of variance the adjustment removes.
 - The same idea at market level, adjustment on pre-period volume, lowered the minimum detectable effect from 9.5% to
-  6.7% in [study 03](../03_geo_experiment_design).
+  6.7% in [study 03b](../03b_geo_experiment_design).
 
-Assignment in this dataset is slightly predictable from the features (study 01), so the adjusted readouts estimate a
+Assignment in this dataset is slightly predictable from the features (study 01a), so the adjusted readouts estimate a
 smaller lift on these data (0.68 to 0.73 points against 1.01 unadjusted). The comparison above therefore uses sampling
 variance and minimum detectable effect, which do not depend on the size of this experiment's lift.
 

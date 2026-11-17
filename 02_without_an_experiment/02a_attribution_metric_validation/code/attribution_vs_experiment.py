@@ -1,7 +1,7 @@
 """Exposure-attributed outcomes vs experimental incrementality on the Criteo Uplift v2.1 experiment.
 
 Usage: python code/attribution_vs_experiment.py [path to criteo-research-uplift-v2.1.csv.gz]
-Reads the regression-adjusted benchmark from study 01's output; writes out/attribution_vs_experiment.json.
+Reads the regression-adjusted benchmark from study 01a's output; writes out/attribution_vs_experiment.json.
 """
 import sys, json
 from pathlib import Path
@@ -10,7 +10,7 @@ from sklearn.ensemble import HistGradientBoostingClassifier as HGB
 from sklearn.model_selection import KFold
 
 ROOT = Path(__file__).resolve().parents[1]
-STUDY01 = ROOT.parent / "01_ad_incrementality"
+STUDY01 = ROOT.parents[1] / "01_with_an_experiment" / "01a_ad_incrementality"
 SEED = 20261115
 
 
