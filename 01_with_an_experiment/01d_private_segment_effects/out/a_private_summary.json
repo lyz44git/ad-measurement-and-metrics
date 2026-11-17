@@ -1,0 +1,35 @@
+{
+ "by_eps": {
+  "0.1": {
+   "rmse_nopool": 0.06951224867778617,
+   "rmse_ml": 0.020315860367707515,
+   "ml_better_reps": 10
+  },
+  "0.5": {
+   "rmse_nopool": 0.017655107258916343,
+   "rmse_ml": 0.013536679633748328,
+   "ml_better_reps": 10
+  },
+  "1.0": {
+   "rmse_nopool": 0.012741636473106726,
+   "rmse_ml": 0.010639091996443958,
+   "ml_better_reps": 10
+  },
+  "5.0": {
+   "rmse_nopool": 0.010928891351286768,
+   "rmse_ml": 0.0095696279752582,
+   "ml_better_reps": 9
+  },
+  "inf": {
+   "rmse_nopool": 0.010846452806467477,
+   "rmse_ml": 0.009502571404296126,
+   "ml_better_reps": 9
+  }
+ },
+ "rhat_max": 1.0187482833862305,
+ "fits": 130,
+ "fits_rhat_above_1.01": 10,
+ "nonprivate_nopool_rmse": 0.010846452806467477,
+ "smallest_eps_ml_le_nonprivate_nopool": "1.0",
+ "rule_met": true
+}

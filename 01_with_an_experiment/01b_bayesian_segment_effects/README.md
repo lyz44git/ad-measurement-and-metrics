@@ -73,3 +73,4 @@ files to [`out/criteo_bayes_report.html`](out/criteo_bayes_report.html).
 - The data are subsampled non-uniformly, so absolute lifts are not population effects; the comparison between
   estimators is valid.
 - The benchmark has its own sampling error, so interval coverage is approximate.
+- [Study 01d](../01d_private_segment_effects) repeats the comparison when the counts carry privacy noise.

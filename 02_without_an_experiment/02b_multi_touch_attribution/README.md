@@ -9,6 +9,7 @@
 
 When a user sees several ads before converting, how much does the choice of credit rule change which touches get
 credit? The rules split credit; none of them is validated against an experiment here.
+[Study 02d](../02d_attribution_and_bidding) asks whether the choice of rule changes what a bidder buys.
 
 ## Data
 

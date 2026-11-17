@@ -1,0 +1,39 @@
+{
+ "10": {
+  "mean_share": {
+   "multilevel": 0.5660279899089768,
+   "nopool": 0.5595792918254258,
+   "response": 0.3353618152880995,
+   "oracle": 0.6022218227166303
+  },
+  "random": 0.1,
+  "ml_ge_nopool": 7,
+  "ml_gt_response": 10,
+  "nopool_gt_response": 10
+ },
+ "20": {
+  "mean_share": {
+   "multilevel": 0.7913824177148424,
+   "nopool": 0.7689749951274788,
+   "response": 0.6712224441127754,
+   "oracle": 0.8430487388973754
+  },
+  "random": 0.2,
+  "ml_ge_nopool": 9,
+  "ml_gt_response": 10,
+  "nopool_gt_response": 10
+ },
+ "30": {
+  "mean_share": {
+   "multilevel": 0.876168146370642,
+   "nopool": 0.8345602073921577,
+   "response": 0.8649171619935654,
+   "oracle": 0.9056611157801935
+  },
+  "random": 0.3,
+  "ml_ge_nopool": 10,
+  "ml_gt_response": 4,
+  "nopool_gt_response": 3
+ },
+ "rule_met": false
+}

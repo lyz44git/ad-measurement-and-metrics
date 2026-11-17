@@ -31,7 +31,8 @@ Download `online_retail_II.xlsx` from the UCI repository into `data_raw/` (git-i
    and rebuilt in SQL to confirm that both implementations give the same tables.
 3. **Retention risk and early value** (`14_ltv_extension.py`): a ranking of high-value accounts by expected
    purchases, and first-month value of new accounts, both evaluated on later months.
-4. **Purchase and spend models** (`btyd_impl.py`, checked by `11_btyd.py`): BG/NBD for purchase frequency and
+4. **Purchase and spend models** (`btyd_impl.py`, checked by `11_btyd.py`): BG/NBD for purchase frequency (a
+   stochastic model: Poisson purchases while a customer is active, with a chance of dropping out after each one) and
    Gamma-Gamma for spend per purchase, implemented from the published likelihoods and checked by parameter recovery
    on simulated data. Compared out of time with a last-6-months sales rule and a LightGBM model.
 

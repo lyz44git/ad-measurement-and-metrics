@@ -5,7 +5,7 @@
 > Adjusting the readout for the 12 user features recorded before the ad cuts the required sample to about 4,700, and
 > adjusting for a model prediction built from them to about 4,400, with false-positive rates still near 5%. Most of
 > the saving comes from the adjustment itself; the model adds a little more. A conversion endpoint, with its lower base
-> rate, would need its own calculation.
+> rate, needs about 20 times the users for the same relative lift ([study 01c](../../01_with_an_experiment/01c_sql_metric_readout)).
 
 ## Question
 

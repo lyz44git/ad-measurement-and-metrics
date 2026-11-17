@@ -1,0 +1,18 @@
+{
+ "origin": "2023-11",
+ "nodes": 873,
+ "methods": {
+  "ols": {
+   "max_rel_diff": 3.297814441019252e-11,
+   "max_abs_diff_listings": 1.1408701539039612e-08
+  },
+  "wls_struct": {
+   "max_rel_diff": 1.2736714200074274e-12,
+   "max_abs_diff_listings": 4.656612873077393e-10
+  },
+  "mint_shrink": {
+   "max_rel_diff": 1.992853230407076e-10,
+   "max_abs_diff_listings": 3.77860851585865e-06
+  }
+ }
+}

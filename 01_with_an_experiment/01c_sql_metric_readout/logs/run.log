@@ -1,0 +1,17 @@
+loaded in 4 s
+checks: {"c1_rows": 13979592, "c2_rows_with_null": 0, "c3_rows_with_non_binary_flag": 0, "c4_exposed_in_control": 0, "c5_conversion_without_visit": 0, "c6_exposed_without_visit": 250702, "c7_rows_identical_to_another": 2221150}
+failed: []
+{"comparisons": 29, "disagreements": [], "reconciled": true, "seconds": 3.9}
+{'arm': 0, 'users': 2096937, 'exposed_users': 0, 'visits': 80105, 'conversions': 4063, 'visits_of_exposed_users': 0, 'conversions_of_exposed_users': 0, 'exposure_rate': 0.0, 'visit_rate': 0.03820095691954503, 'conversion_rate': 0.0019375880152813366}
+{'arm': 1, 'users': 11882655, 'exposed_users': 428212, 'visits': 576824, 'conversions': 36711, 'visits_of_exposed_users': 177510, 'conversions_of_exposed_users': 23031, 'exposure_rate': 0.036036727482199896, 'visit_rate': 0.048543360048743316, 'conversion_rate': 0.0030894610674129645}
+{'outcome': 'visit', 'users_control': 2096937.0, 'users_ad_arm': 11882655.0, 'outcomes_control': 80105.0, 'outcomes_ad_arm': 576824.0, 'control_rate': 0.03820095691954503, 'ad_arm_rate': 0.048543360048743316, 'effect_of_assignment': 0.010342403129198284, 'standard_error': 0.00014631642098864926, 'outcomes_caused': 122895.20825518364, 'outcomes_credited': 177510.0, 'credited_over_caused': 1.4444013116558005, 'exposure_rate': 0.036036727482199896, 'effect_per_exposed_user': 0.28699618005843747}
+{'outcome': 'conversion', 'users_control': 2096937.0, 'users_ad_arm': 11882655.0, 'outcomes_control': 4063.0, 'outcomes_ad_arm': 36711.0, 'control_rate': 0.0019375880152813366, 'ad_arm_rate': 0.0030894610674129645, 'effect_of_assignment': 0.0011518730521316279, 'standard_error': 3.437168357507502e-05, 'outcomes_caused': 13687.310082277148, 'outcomes_credited': 23031.0, 'credited_over_caused': 1.6826534842533756, 'exposure_rate': 0.036036727482199896, 'effect_per_exposed_user': 0.031963863885825596}
+{'endpoint': 'visit', 'control_rate': 0.03820095691954503, 'lift': 'relative', 'size': 0.05, 'ad_arm_rate': 0.04011100476552228, 'users_per_arm': 161878.65229795792}
+{'endpoint': 'visit', 'control_rate': 0.03820095691954503, 'lift': 'relative', 'size': 0.1, 'ad_arm_rate': 0.042021052611499535, 'users_per_arm': 41412.602015402204}
+{'endpoint': 'visit', 'control_rate': 0.03820095691954503, 'lift': 'relative', 'size': 0.25, 'ad_arm_rate': 0.04775119614943129, 'users_per_arm': 7074.859552416589}
+{'endpoint': 'visit', 'control_rate': 0.03820095691954503, 'lift': 'relative', 'size': 0.5, 'ad_arm_rate': 0.05730143537931755, 'users_per_arm': 1952.593349179357}
+{'endpoint': 'conversion', 'control_rate': 0.0019375880152813366, 'lift': 'relative', 'size': 0.05, 'ad_arm_rate': 0.0020344674160454033, 'users_per_arm': 3315096.1357130534}
+{'endpoint': 'conversion', 'control_rate': 0.0019375880152813366, 'lift': 'relative', 'size': 0.1, 'ad_arm_rate': 0.0021313468168094704, 'users_per_arm': 848943.9087436545}
+{'endpoint': 'conversion', 'control_rate': 0.0019375880152813366, 'lift': 'relative', 'size': 0.25, 'ad_arm_rate': 0.0024219850191016705, 'users_per_arm': 145508.79784868882}
+{'endpoint': 'conversion', 'control_rate': 0.0019375880152813366, 'lift': 'relative', 'size': 0.5, 'ad_arm_rate': 0.002906382022922005, 'users_per_arm': 40406.465098143824}
+{'endpoint': 'visit', 'control_rate': 0.03820095691954503, 'lift': 'absolute', 'size': 0.01, 'ad_arm_rate': 0.048200956919545034, 'users_per_arm': 6484.686010806744}

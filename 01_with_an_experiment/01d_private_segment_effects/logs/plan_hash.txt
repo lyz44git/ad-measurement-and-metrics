@@ -1,0 +1,4 @@
+3132d258f8b11964d94ef4b4aab273e8d663f001682992db6b48df687c79078f  design/analysis_plan.md
+Sun Nov 15 13:15:41 CST 2026
+SHA-256 of the original plan. The published copy differs in three places, where a local directory path and the
+names of two local project folders were replaced; estimators, metrics and decision rules are unchanged.

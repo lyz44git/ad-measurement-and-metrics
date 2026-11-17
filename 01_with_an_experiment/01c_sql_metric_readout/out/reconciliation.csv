@@ -1,0 +1,30 @@
+metric,kind,sql,python,abs_diff,agree
+01a users,count,13979592,13979592,0,True
+01a share assigned to the ad arm,value,0.8500001287591226,0.8500001287591226,0.0,True
+"02a users, control",count,2096937,2096937,0,True
+"02a users, ad arm",count,11882655,11882655,0,True
+"02a exposed users, ad arm",count,428212,428212,0,True
+"02a exposed users, control",count,0,0,0,True
+"02a exposure rate, ad arm",value,0.036036727482199896,0.036036727482199896,0.0,True
+"01a visit: users, control",count,2096937.0,2096937,0.0,True
+"01a visit: users, ad arm",count,11882655.0,11882655,0.0,True
+01a visit: control rate,value,0.03820095691954503,0.03820095691954503,0.0,True
+01a visit: effect of assignment,value,0.010342403129198284,0.010342403129198284,0.0,True
+01a visit: standard error,se,0.00014631642098864926,0.00014631645066032713,2.9671677875126035e-11,True
+02a visit: effect of assignment,value,0.010342403129198284,0.010342403129198284,0.0,True
+02a visit: outcomes in the ad arm,count,576824.0,576824,0.0,True
+02a visit: outcomes caused,float_count,122895.20825518364,122895.20825518364,0.0,True
+02a visit: outcomes credited,count,177510.0,177510,0.0,True
+02a visit: credited over caused,value,1.4444013116558005,1.4444013116558005,0.0,True
+02a visit: effect per exposed user,value,0.28699618005843747,0.28699618005843747,0.0,True
+"01a conversion: users, control",count,2096937.0,2096937,0.0,True
+"01a conversion: users, ad arm",count,11882655.0,11882655,0.0,True
+01a conversion: control rate,value,0.0019375880152813366,0.0019375880152813366,0.0,True
+01a conversion: effect of assignment,value,0.0011518730521316279,0.0011518730521316279,0.0,True
+01a conversion: standard error,se,3.437168357507502e-05,3.437169028999274e-05,6.714917725049278e-12,True
+02a conversion: effect of assignment,value,0.0011518730521316279,0.0011518730521316279,0.0,True
+02a conversion: outcomes in the ad arm,count,36711.0,36711,0.0,True
+02a conversion: outcomes caused,float_count,13687.310082277148,13687.310082277148,0.0,True
+02a conversion: outcomes credited,count,23031.0,23031,0.0,True
+02a conversion: credited over caused,value,1.6826534842533756,1.6826534842533756,0.0,True
+02a conversion: effect per exposed user,value,0.031963863885825596,0.031963863885825596,0.0,True

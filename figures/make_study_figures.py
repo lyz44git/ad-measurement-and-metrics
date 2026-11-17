@@ -1,4 +1,4 @@
-"""Result figures for studies 01a, 01b, 02a, 02b, 02c and 03a, drawn from the committed result files.
+"""Result figures for studies 01a, 01b, 01d, 02a, 02b, 02c and 03a, drawn from the committed result files.
 
 Usage: python figures/make_study_figures.py   (writes one PNG into each study's out/ folder)
 """
@@ -206,6 +206,40 @@ def fig07(t):
     save(fig, "01_with_an_experiment/01b_bayesian_segment_effects/out/fig_segment_error.png")
 
 
+def fig01d(t):
+    """Error of segment effects by privacy budget, and incremental visits captured by budget and ranking."""
+    S = "01_with_an_experiment/01d_private_segment_effects/out/"
+    a, c = load(S + "a_private_summary.json"), load(S + "c_allocation.json")
+    fig, axes = new(2, height=3.0)
+    ax = axes[0]
+    eps = ["0.1", "0.5", "1.0", "5.0", "inf"]; x = range(len(eps))
+    ref = 100 * a["nonprivate_nopool_rmse"]
+    ax.axhline(ref, color=t["grey"], lw=0.8, ls=(0, (4, 3)))
+    ax.text(4.1, ref * 1.07, "no pooling, no noise", fontsize=7, color=t["ink2"], ha="right")
+    for key, name, col in (("rmse_nopool", "No pooling", t["grey"]), ("rmse_ml", "Noise-aware multilevel", t["blue"])):
+        y = [100 * a["by_eps"][e][key] for e in eps]
+        ax.plot(list(x), y, color=col, marker="o", ms=4, mfc="white", mew=1.1, label=name)
+    ax.annotate("epsilon = 1: as accurate\nas no noise, no pooling", xy=(2, 100 * a["by_eps"]["1.0"]["rmse_ml"]), xytext=(2.1, 3.2),
+                fontsize=7, color=t["blue"], arrowprops=dict(arrowstyle="-", lw=0.5, color=t["blue"], shrinkA=1, shrinkB=3))
+    ax.set_yscale("log"); ax.set_ylim(0.8, 9); ax.set_yticks([1, 2, 4, 8], ["1", "2", "4", "8"]); ax.minorticks_off()
+    ax.set_xticks(list(x), ["0.1", "0.5", "1", "5", "no noise"])
+    ax.set_xlabel("Privacy budget epsilon (smaller is more private)"); ax.set_ylabel("RMSE of 100 segment effects (pp)")
+    ax.legend(loc="upper right")
+    title(ax, "a", "Accuracy under privacy noise")
+    ax = axes[1]
+    b = ["10", "20", "30"]
+    for key, name, col, ls in (("oracle", "Oracle", t["ink2"], (0, (1, 2))), ("multilevel", "Lift, multilevel", t["blue"], "-"),
+                               ("nopool", "Lift, no pooling", t["grey"], "-"), ("response", "Response rate", t["red"], "-")):
+        ax.plot([10, 20, 30], [100 * c[k]["mean_share"][key] for k in b], color=col, ls=ls, marker="o", ms=4,
+                mfc="white", mew=1.1, label=name)
+    ax.plot([10, 20, 30], [10, 20, 30], color=t["grid"], lw=1.0, label="Random")
+    ax.set_xticks([10, 20, 30], ["10%", "20%", "30%"]); ax.set_ylim(0, 100); ax.set_xlim(8, 32)
+    ax.set_xlabel("Budget (share of users)"); ax.set_ylabel("Incremental visits captured (%)")
+    ax.legend(loc="lower right")
+    title(ax, "b", "Allocation by segment ranking")
+    save(fig, S + "fig_privacy_and_allocation.png")
+
+
 def fig08(t):
     """Power and false-positive rate by users per arm."""
     d = load("03_planning_a_test/03a_lift_study_sizing/out/lift_study_sizing.json")["by_n"]
@@ -270,5 +304,5 @@ def fig08b(t):
 
 if __name__ == "__main__":
     style(T)
-    for f in (fig01, fig02, fig05, fig06, fig06b, fig07, fig08, fig08b):
+    for f in (fig01, fig07, fig01d, fig02, fig05, fig06, fig06b, fig08, fig08b):
         f(T)

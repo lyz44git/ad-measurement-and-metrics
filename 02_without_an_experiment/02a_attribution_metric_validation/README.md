@@ -4,7 +4,8 @@
 > the experiment puts the conversions caused by the ads at 13,687: 68% more. Attribution counts should not drive
 > budget decisions without an experimental calibration. Without an experiment, covariate adjustment moved the
 > per-exposed-user visit effect from a naive 38.0 points to 24.6-25.5, between the two experimental estimates (21.5
-> and 28.7); this comparison cannot say how much of the bias was removed.
+> and 28.7); this comparison cannot say how much of the bias was removed. The counts are reproduced from the raw file in
+> SQL in [study 01c](../../01_with_an_experiment/01c_sql_metric_readout).
 
 ## Question
 
