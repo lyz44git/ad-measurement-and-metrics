@@ -2,9 +2,20 @@
 
 Both studies read the same randomized experiment (Criteo, 14.0M users).
 
-| Study | Question |
-|---|---|
-| [`01a_ad_incrementality`](01a_ad_incrementality) | How many site visits did the ads cause, as opposed to visits that would have happened anyway? |
-| [`01b_bayesian_segment_effects`](01b_bayesian_segment_effects) | Can segment-level ad effects be read from a 2% sample? |
+| Study | Question | Key result |
+|---|---|---|
+| [`01a_ad_incrementality`](01a_ad_incrementality) | How many site visits did the ads cause, as opposed to visits that would have happened anyway? | In Criteo's 14.0M-user randomized experiment, ads raised the visit rate from 3.82% to 4.85% (+1.03 points; +0.77 after regression adjustment) and the conversion rate from 0.19% to 0.31%. |
+| [`01b_bayesian_segment_effects`](01b_bayesian_segment_effects) | Can segment-level ad effects be read from a 2% sample? | A Bayesian multilevel model cut the error of 100 segment estimates by 27% against separate per-segment estimates (0.79 against 1.08 points), in 10 of 10 samples. |
 
-Key results are in the [main README](../README.md).
+## Main figure of each study
+
+**[01a · Ad incrementality on a 14.0M-user randomized experiment](01a_ad_incrementality)**
+
+![Visit and conversion rates by arm](01a_ad_incrementality/out/fig_rates_by_arm.png)
+
+**[01b · Segment-level ad effects from small samples](01b_bayesian_segment_effects)**
+
+![RMSE of segment estimates by sample, and one sample's estimates against the benchmark](01b_bayesian_segment_effects/out/fig_segment_error.png)
+
+Method, data, decision rules and limitations are in each study's README; the four questions are introduced in
+the [main README](../README.md).
