@@ -1,30 +1,37 @@
-# The ad took a bow for sales it didn't make
+# The ads worked. Proving how much is the hard part.
 
 [![tests](https://github.com/lyz44git/ad-measurement-and-metrics/actions/workflows/tests.yml/badge.svg)](https://github.com/lyz44git/ad-measurement-and-metrics/actions/workflows/tests.yml)
 
-**Four in ten conversions credited to the ads would have happened anyway.**
+**In a 14-million-user experiment the ads raised the conversion rate by 59%. A simple tally would have credited them
+with 68% more conversions than they caused.**
 
-Someone sees an ad. Later, they buy. Did the ad make the sale?
+Someone sees an ad. Later, they buy. How much of that was the ad?
 
-The usual tally says yes. Every conversion of a user who saw an ad goes in the ad's column, whether or not that
-person was going to convert anyway. (A conversion is the action the advertiser wanted, such as a purchase.) On a
-public dataset released by Criteo, that tally gives the ads 23,031 conversions.
+Here, a good deal. Criteo ran an experiment in which fourteen million users were split at random into a group that
+could be shown ads and a group that could not. The group that could be shown ads visited 27% more often and converted
+59% more often. The ads caused 13,687 conversions. (A conversion is the action the advertiser wanted, such as a
+purchase.)
 
-Criteo had also run an experiment. Fourteen million users were split at random into a group that could be shown ads
-and a group that could not. Comparing the two groups, the ads caused 13,687 conversions. The other 9,300 or so, four
-in ten of those credited, would have happened without the ads. The ads took a bow for all 23,031, a tally 68% too
-high.
+Without the experiment that number would have been hard to know. The simplest tally credits the ads with every
+conversion of a user who saw one: 23,031 conversions, 68% more than the ads caused. Four in ten of the conversions it
+credits would have happened anyway, so a budget set on that tally is set on the wrong number.
 
-This repository follows that gap through four questions: what the ads did cause, who gets the credit when there is no
-experiment, how to plan the next test, and whether the customers being counted are counted correctly. All data are
-public. Where a result rests on a pass-or-fail rule, the rule was fixed and hashed before the result was seen, and the
-rules that were not met are listed in section 5.
+This repository is about getting the number right. It takes four questions in turn: what the ads caused, who gets the
+credit when there is no experiment, how to plan the next test, and whether the customers being counted are counted
+correctly. All data are public. Where a result rests on a pass-or-fail rule, the rule was fixed and hashed before the
+result was seen, and the rules that were not met are listed in section 5. Section 6 sets the results against published research.
+
+> **What this does not say.** It does not say that advertising does not work: in this experiment it did. The 68%
+> overcount belongs to the simplest rule, credit for every conversion of a user who saw an ad, applied to one public
+> dataset. It says nothing about the reporting of any ad platform, and the size of the gap will differ elsewhere: the
+> data are a subsample of tests run on one display-advertising network. What carries over is the method, which is to
+> check a metric against an experiment.
 
 <img src="figures/figure1.png" alt="Five panels in reading order: ad effect by decile of predicted uplift with the experiment readout inset; outcomes credited by attribution against outcomes caused; error of a marketing mix model against a signal-to-noise index; smallest detectable lift by users per arm with and without covariate adjustment; cohort repeat-purchase rates." width="100%">
 
 **Figure 1 | The argument of the repository, one panel per step, in reading order.** **a**, Study 01a. Effect of assignment to the ad arm on the visit rate by decile of predicted uplift among 4.19M held-out users: realized effect with its 95% interval (blue), T-learner prediction (gray) and the average effect (dashed). The top fifth of users by this score accounts for 75% of incremental visits; ranking by a plain response model gives the same share. Inset: visit and conversion rates in the ad arm relative to control for all 14.0M users. **b**, Study 02a. Visits and conversions in the ad arm credited by exposure-based attribution, relative to those caused by the ads according to the unadjusted experimental estimate (= 100). **c**, Study 02c. Absolute relative error of a per-brand marketing mix model's channel return against a signal-to-noise index computed before fitting, in a held-out daily simulation on real spend (test T1, 54 brand-channels); lines are group medians and the threshold of 2 was fixed before this test. **d**, Study 03a. Smallest lift in visit rate detectable with 80% power by users per arm, for an unadjusted readout and for readouts adjusted for 12 user features or for a model prediction built from them; dots mark the sample needed for a one-point lift. **e**, Study 04. Monthly repeat-purchase rate of new-account cohorts under a 12-month look-back; a 3-month look-back would label 1,036 accounts new, 62% of which had bought in the prior 12 months. Drawn by [`figures/make_figure1.py`](figures/make_figure1.py) from the result files in each study folder.
 
-## 1. Part of the bow was earned. The ads did work.
+## 1. The ads worked: visits up 27%, conversions up 59%.
 
 Assignment to the ad group raised the visit rate from 3.82% to 4.85% and the conversion rate from 0.19% to 0.31%.
 Only 3.6% of that group saw an ad ([01a](01_with_an_experiment/01a_ad_incrementality)).
@@ -47,7 +54,7 @@ agree. The data checks also record that the file has no user ID and that 16% of 
 
 <sub><b>How this is known.</b> A randomized experiment on 13,979,592 users, read as the effect of assignment, with regression adjustment as a check. Uplift models compared with a response model on held-out users. A Bayesian multilevel model on ten 2% samples, scored against the other 98% of users. Laplace noise for differential privacy at four privacy budgets. DuckDB for the SQL.</sub>
 
-## 2. Without an experiment, the rule decides who takes the bow.
+## 2. Without an experiment, the credit depends on the rule.
 
 Crediting the ads with every outcome of a user who saw one gives them 68% more conversions and 44% more visits than
 they caused ([02a](02_without_an_experiment/02a_attribution_metric_validation)).
@@ -69,7 +76,7 @@ weekly data; 55% do on daily data. Fitting all brands in one model did not help 
 
 <sub><b>How this is known.</b> Attribution counts set against the experiment of section 1; regression and double machine learning for the adjusted estimates. Credit rules on 6.1M display-ad paths. A replay of two bidders on 4.6M logged impressions at their logged prices. Marketing mix simulations with known returns on the real spend of 31 to 34 e-commerce brands, with the index tested on simulations it had not seen.</sub>
 
-## 3. To see what the ads caused, run a test. For conversions, a big one.
+## 3. Proving it again takes a test. For conversions, a big one.
 
 Detecting a one-point lift in the visit rate takes about 6,500 users per group. Adjusting for what is known about
 users before the test brings that to about 4,400 ([03a](03_planning_a_test/03a_lift_study_sizing)).
@@ -87,7 +94,7 @@ made separately for the nation, the states and the metros disagreed by 3.5% to 5
 
 <sub><b>How this is known.</b> For users, 2,000 resampled studies per sample size with A/A checks, and the two-proportion sample-size formula. For markets, 5,000 placebo tests per design. For forecasts, 24 rolling forecast origins on a hierarchy of 873 series.</sub>
 
-## 4. The same overcount hides in "new customers."
+## 4. Counting customers needs the same care.
 
 Counting customers has the problem that counting conversions has: the count takes in people who were already there.
 With a three-month look-back, 1,036 accounts of a UK online retailer count as new customers. 640 of them had bought in
@@ -99,9 +106,9 @@ better than the model ([04](04_customer_metrics_retention)).
 
 <sub><b>How this is known.</b> Two years of transactions (794,163 lines, 5,875 accounts; no ads in these data). The metric tables rebuilt in SQL match the Python results in all 92 cells.</sub>
 
-## 5. No bow for these: six pre-set tests were not passed.
+## 5. Six pre-set tests were not passed.
 
-The standard applied to the ads applies to the methods here. Each of these missed a bar that was set before the
+The standard applied to the metrics applies to the methods here. Each of these missed a bar that was set before the
 result was seen, and is reported as a miss.
 
 - The uplift model did not beat a plain response model at ranking users for targeting ([01a](01_with_an_experiment/01a_ad_incrementality)).
@@ -111,6 +118,31 @@ result was seen, and is reported as a miss.
 - Ranking segments by estimated lift did not reliably beat ranking by response rate at a 30% budget, though it did at
   10% and 20% ([01d](01_with_an_experiment/01d_private_segment_effects)).
 - The purchase model did not beat a past-sales rule at ranking 12-month sales ([04](04_customer_metrics_retention)).
+
+## 6. The published research finds the same pattern.
+
+An effect that is real, and smaller than the raw comparison suggests, is what peer-reviewed work finds too. The full
+comparison, result by result and with references, is in [RELATED_RESEARCH.md](RELATED_RESEARCH.md).
+
+- **Observational estimates.** On 15 and then 663 experiments at Facebook, adjusting for user characteristics often
+  failed to recover the experimental effect (Gordon et al. 2019; Gordon, Moakler and Zettelmeyer 2023). The adjusted
+  estimate here did land between the experimental ones; with one experiment that is not a counterexample
+  ([02a](02_without_an_experiment/02a_attribution_metric_validation)).
+- **Test size.** Informative advertising experiments can need more than 10 million person-weeks (Lewis and Rao 2015),
+  the same arithmetic that makes a conversion test here 20 times larger than a visit test ([01c](01_with_an_experiment/01c_sql_metric_readout)).
+- **Targeting.** At eBay the users most likely to buy were the wrong ones to target (Blake, Nosko and Tadelis 2015).
+  Here they are the right ones, which is the case where predicting the outcome is enough (Fernández-Loría and Provost
+  2022) ([01a](01_with_an_experiment/01a_ad_incrementality)).
+- **Returns differ by setting.** Television advertising for 288 brands had a negative return at the margin for more
+  than 80% of them (Shapiro, Hitsch and Tuchman 2021); the ads in this experiment raised conversions by 59%. That
+  spread is the reason to measure each case.
+- **Finance went through the same correction.** In annual data advertising appeared to raise stock returns (Lou
+  2014); with daily data the relation was reverse causality (Focke, Ruenzi and Ungeheuer 2020), while a cleanly
+  identified effect on investor attention remains (Liaukonyte and Zaldokas 2022).
+- **Where the field is going.** Calibrated on 2,226 experiments, campaign-level measures that include last-click
+  counts explain 88% of the variation in incremental conversions per dollar, against 19% for last-click attribution
+  alone (Gordon, Moakler and Zettelmeyer, working paper). Attribution becomes useful once it is checked against
+  experiments, which is what this repository does on a small scale.
 
 ## The studies
 
