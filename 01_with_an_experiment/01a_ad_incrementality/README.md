@@ -1,5 +1,7 @@
 # 01a · Ad incrementality on a 14.0M-user randomized experiment
 
+**[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/01.html#s01a)**
+
 > **Takeaway.** Assignment to the ad arm raised the visit rate by about one percentage point (3.82% to 4.85%) and the
 > conversion rate from 0.19% to 0.31%, in Criteo's released sample of the experiment. The pre-specified uplift model
 > did not beat a plain response model at ranking users for targeting, so on this evidence uplift modeling does not earn
@@ -43,7 +45,7 @@ Full tables: [`docs/11_results_criteo_incrementality_uplift.md`](docs/11_results
 | Conversion rate, control → ad arm | 0.19% → 0.31% (+0.115 pp, SE 0.003) | +0.100 pp (SE 0.003) |
 | Visit effect among exposed users | 28.7 pp (SE 0.41) | 21.5 pp (SE 0.35) |
 
-![Visit and conversion rates by arm, and the effect of assignment with and without regression adjustment](out/fig_rates_by_arm.png)
+[![Visit and conversion rates by group, the effect by decile of predicted uplift, and the Qini coefficient of each targeting model](out/fig_rates_by_arm.png)](https://lyz44git.github.io/ad-measurement-and-metrics/01.html#s01a)
 
 - Assignment is slightly predictable from the features (held-out AUC 0.509; largest standardized difference 0.049),
   so both columns are reported.

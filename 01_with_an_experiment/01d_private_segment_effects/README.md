@@ -1,5 +1,7 @@
 # 01d · Segment effects from privacy-protected counts
 
+**[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/01.html#s01d)**
+
 > **Takeaway.** When only noisy segment counts may be released, a multilevel model that knows the noise scale keeps
 > segment effects usable. With Laplace noise at epsilon = 1 its error (1.06 points) is no higher than that of
 > per-segment estimates on the unprotected counts (1.08), and on the same noisy counts it beat per-segment
@@ -67,7 +69,7 @@ Sources: [`out/a_private_summary.json`](out/a_private_summary.json), [`out/c_all
 | 20% | 79.1% | 76.9% | 67.1% | 84.3% | 20% | 10 of 10 |
 | 30% | 87.6% | 83.5% | 86.5% | 90.6% | 30% | 4 of 10 |
 
-![RMSE of segment effects by privacy budget, and share of incremental visits captured by budget and ranking](out/fig_privacy_and_allocation.png)
+[![Error of segment effects by privacy budget, and incremental visits captured by budget and ranking](out/fig_privacy_and_allocation.png)](https://lyz44git.github.io/ad-measurement-and-metrics/01.html#s01d)
 
 - **The pre-specified rule of Part A was met.** The gain from the model grows as the privacy budget shrinks: at
   epsilon = 0.1 no pooling is off by 6.95 points and the multilevel model by 2.03.

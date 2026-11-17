@@ -1,5 +1,7 @@
 # 03c · Hierarchical forecasts of a marketplace metric that add up across levels
 
+**[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03c)**
+
 > **Takeaway.** Forecasts made separately for the US, divisions, states and metros disagree with each other by 3.5% to
 > 5.2%. Bottom-up reconciliation removes the gap at no cost in accuracy (at or below the unreconciled error in 11 of
 > 12 cases). MinT-shrink lowered state and metro error by 7% to 10% with an ETS base, but the gain did not hold with
@@ -66,7 +68,7 @@ Full results and limits: [`reports/memo.md`](reports/memo.md). Tables: [`reports
 - OLS reconciliation was worse than unreconciled forecasts at the state and metro levels in all three runs, because it
   spreads national corrections evenly over metros of very different sizes.
 
-![Relative RMSSE by horizon, inventory with an ETS base](reports/figures/relative_rmsse_by_horizon_inventory_ets.png)
+[![Gap between forecast levels before reconciliation, and forecast error by horizon at four levels](reports/figures/relative_rmsse_by_horizon_inventory_ets.png)](https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03c)
 
 ## Reproduce
 

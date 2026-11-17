@@ -1,5 +1,7 @@
 # 04 · Customer metric definitions and retention on retail transactions
 
+**[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/04.html#s04)**
+
 > **Takeaway.** The "new customer" count depends on its definition: of the 1,036 accounts this retailer would label
 > new under a 3-month look-back, 640 (62%) had bought in the prior 12 months, so acquisition metrics here use a
 > 12-month look-back. Among high-value accounts, a purchase-model score ranks who buys again within six months better
@@ -60,7 +62,7 @@ WHERE NOT EXISTS (SELECT 1 FROM days d
 ([`out/14_sql_queries.sql`](out/14_sql_queries.sql)), match the Python results in all 92 cells. Both implementations
 use rank-based terciles with boundary accounts in the upper group (deviation 1).
 
-![Monthly repeat-purchase rate of new-account cohorts](out/fig/fig6_cohort_retention.png)
+[![Monthly repeat-purchase rate of new-account cohorts](out/fig/fig6_cohort_retention.png)](https://lyz44git.github.io/ad-measurement-and-metrics/04.html#s04)
 
 ### Retention and early value
 
@@ -87,7 +89,7 @@ bootstrap out-of-bag stability, selects two clusters (adjusted Rand index 0.92 o
 high-value cluster is 36.8% of accounts and produced 76.5% of next-six-month sales, close to the rule above
 ([`out/12_ltv_segments.json`](out/12_ltv_segments.json)).
 
-![Rule segments: share of accounts and of next-six-month sales, and mean next-six-month sales per account with 95% bootstrap intervals](out/fig/fig5_segments.png)
+[![Recency and value segments: share of accounts against share of next-six-month sales, and mean sales per account](out/fig/fig5_segments.png)](https://lyz44git.github.io/ad-measurement-and-metrics/04.html#s04)
 
 ### Purchase model against a simple rule
 

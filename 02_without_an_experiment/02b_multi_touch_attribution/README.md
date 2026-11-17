@@ -1,5 +1,7 @@
 # 02b · Multi-touch attribution on 6.1M display-ad user paths
 
+**[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02b)**
+
 > **Takeaway.** Last-touch reporting hides most of the path: 65% of converting paths have several touches, and last
 > touch gives no credit to 82% of the touches in them. A time-decay rule fitted to observed touch-to-conversion delays
 > leaves 39% of the credit on the last touch. These rules split credit; they do not show which touches caused the
@@ -51,7 +53,7 @@ Among the 64,159 multi-touch conversions of test users (349,355 touches, 5.4 per
 | Linear | 29% | 56% |
 | Time decay (half-life 7.9 days) | 39% | 59% |
 
-![Share of conversion credit by timing of the touch and on clicked touches, by rule](out/fig_credit_by_rule.png)
+[![Share of conversion credit by rule and timing of the touch, and credit on clicked touches](out/fig_credit_by_rule.png)](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02b)
 
 - 65.2% of converting paths have more than one touch, and last touch gives no credit to 81.6% of the touches in
   multi-touch converting paths. Clicked impressions are 52% of those touches.

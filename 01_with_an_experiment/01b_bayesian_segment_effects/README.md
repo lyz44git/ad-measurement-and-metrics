@@ -1,5 +1,7 @@
 # 01b · Segment-level ad effects from small samples
 
+**[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/01.html#s01b)**
+
 > **Takeaway.** When a lift readout has to be split across 100 segments on a 2% sample, a Bayesian multilevel model
 > cuts the error of the segment estimates by 27% against separate per-segment estimates, and did so in 10 of 10
 > samples. Its 90% intervals are conservative (96% coverage).
@@ -46,7 +48,7 @@ estimate and interval agree to three decimals. Conversion lift +0.115 pp.
 | Benchmark lift of the 20 segments picked (pp; all segments 0.96, best possible 4.03) | 3.68 | n/a | 3.78 |
 | Coverage of 90% intervals | 87.5% | n/a | 96% |
 
-![RMSE of segment estimates by sample, and one sample's estimates against the benchmark](out/fig_segment_error.png)
+[![Error of segment estimates in ten 2% samples, each segment alone and with a multilevel model, and one sample's estimates against the benchmark](out/fig_segment_error.png)](https://lyz44git.github.io/ad-measurement-and-metrics/01.html#s01b)
 
 - **The pre-specified rule was met.** The multilevel model had the lower RMSE in 10 of 10 samples; mean paired
   difference −0.297 pp (95% CI −0.349 to −0.245), a 27% reduction.

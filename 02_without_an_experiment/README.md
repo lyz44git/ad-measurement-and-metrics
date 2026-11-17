@@ -1,5 +1,7 @@
 # 2. Without an experiment: when can the usual metrics be trusted?
 
+**[Explore these studies interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/02.html)**
+
 Studies 02a and 02c check a metric used in place of an experiment against a benchmark: the experiment of
 [study 01a](../01_with_an_experiment/01a_ad_incrementality), or a simulation with known returns. Study 02b shows how
 much the credit given to each touch depends on the rule chosen, and study 02d whether that changes what a bidder
@@ -16,15 +18,15 @@ buys; these two have no benchmark.
 
 **[02a · Validating an attribution metric against a randomized experiment](02a_attribution_metric_validation)**
 
-![Outcomes credited by attribution against incremental outcomes from the experiment, and estimates of the effect of exposure by method](02a_attribution_metric_validation/out/fig_attributed_vs_incremental.png)
+[![Outcomes credited by attribution against outcomes caused by the ads, and estimates of the effect of exposure by method](02a_attribution_metric_validation/out/fig_attributed_vs_incremental.png)](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02a)
 
 **[02b · Multi-touch attribution on 6.1M display-ad user paths](02b_multi_touch_attribution)**
 
-![Share of conversion credit by timing of the touch and on clicked touches, by rule](02b_multi_touch_attribution/out/fig_credit_by_rule.png)
+[![Share of conversion credit by rule and timing of the touch, and credit on clicked touches](02b_multi_touch_attribution/out/fig_credit_by_rule.png)](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02b)
 
 **[02c · Marketing mix models: which brands have enough signal to measure a channel's return?](02c_marketing_mix_modeling)**
 
-![Recovery error against the signal-to-noise index, and the smallest detectable ROAS on real spend](02c_marketing_mix_modeling/out/fig_detectability.png)
+[![Recovery error against the signal-to-noise index, and the smallest detectable ROAS on real spend](02c_marketing_mix_modeling/out/fig_detectability.png)](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02c)
 
 Study 02d has no figure; the results are the tables in the study's README.
 

@@ -1,5 +1,7 @@
 # 02d · Does the attribution rule change what a bidder buys?
 
+**[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02d)**
+
 > **Takeaway.** Hardly, in this log. Two bidders that value impressions by last-touch and by time-decay credit buy
 > nearly the same impressions: at half the logged budget they share 90% of their spend, and a bidder trained on one
 > rule gives up at most 2.2% of the other rule's credit. The pre-specified threshold of 5% was not met. The rule

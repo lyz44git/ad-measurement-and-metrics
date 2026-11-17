@@ -1,5 +1,7 @@
 # 03b · Sizing market-level (geo) experiments
 
+**[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03b)**
+
 > **Takeaway.** In placebo tests on historical metro listing counts, regression adjustment on pre-period volume
 > lowered the smallest detectable effect of a two-month, 100-metro test from 9.5% (year-over-year growth) to 6.7%;
 > matched pairs added nothing once the estimate was adjusted. When the target is total volume, randomization inference
@@ -62,7 +64,7 @@ Minimum detectable effect with 80% power, 2-month test:
   dominate. Randomization inference keeps the rate between 4.2% and 5.8%, at the cost of a larger MDE (8.8% at 100
   metros).
 
-![Minimum detectable effect by number of metros and by test length, and false-positive rate of the volume-weighted estimate under a t-test and under randomization inference](out/fig1_mde_by_metros.png)
+[![Smallest detectable effect by metros and test length, three designs compared, and false-positive rate of the volume-weighted estimate](out/fig1_mde_by_metros.png)](https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03b)
 
 ## Reproduce
 

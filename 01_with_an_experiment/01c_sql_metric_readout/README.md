@@ -1,5 +1,7 @@
 # 01c · The experiment readout in SQL: metric definitions, data checks and reconciliation
 
+**[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/01.html#s01c)**
+
 > **Takeaway.** Every number in the readout of the experiment comes from one short SQL query with a stated numerator
 > and denominator, and agrees with the Python pipeline of studies 01a and 02a in 29 of 29 comparisons. The data checks
 > pass. Two facts that the readout depends on are recorded: the file has no user identifier, so a "user" is a row, and

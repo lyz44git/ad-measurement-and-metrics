@@ -1,5 +1,7 @@
 # 1. With an experiment: what did the ads cause, and for whom?
 
+**[Explore these studies interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/01.html)**
+
 The four studies read the same randomized experiment (Criteo, 14.0M users): the effect (01a), the effect by
 segment (01b), the definitions and checks behind the numbers (01c), and segment effects when the counts carry
 privacy noise (01d).
@@ -15,15 +17,15 @@ privacy noise (01d).
 
 **[01a · Ad incrementality on a 14.0M-user randomized experiment](01a_ad_incrementality)**
 
-![Visit and conversion rates by arm, and the effect of assignment with and without regression adjustment](01a_ad_incrementality/out/fig_rates_by_arm.png)
+[![Visit and conversion rates by group, the effect by decile of predicted uplift, and the Qini coefficient of each targeting model](01a_ad_incrementality/out/fig_rates_by_arm.png)](https://lyz44git.github.io/ad-measurement-and-metrics/01.html#s01a)
 
 **[01b · Segment-level ad effects from small samples](01b_bayesian_segment_effects)**
 
-![RMSE of segment estimates by sample, and one sample's estimates against the benchmark](01b_bayesian_segment_effects/out/fig_segment_error.png)
+[![Error of segment estimates in ten 2% samples, each segment alone and with a multilevel model, and one sample's estimates against the benchmark](01b_bayesian_segment_effects/out/fig_segment_error.png)](https://lyz44git.github.io/ad-measurement-and-metrics/01.html#s01b)
 
 **[01d · Segment effects from privacy-protected counts](01d_private_segment_effects)**
 
-![RMSE of segment effects by privacy budget, and share of incremental visits captured by budget and ranking](01d_private_segment_effects/out/fig_privacy_and_allocation.png)
+[![Error of segment effects by privacy budget, and incremental visits captured by budget and ranking](01d_private_segment_effects/out/fig_privacy_and_allocation.png)](https://lyz44git.github.io/ad-measurement-and-metrics/01.html#s01d)
 
 Study 01c has no figure; the results are the tables in the study's README.
 

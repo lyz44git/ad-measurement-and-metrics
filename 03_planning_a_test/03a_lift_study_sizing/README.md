@@ -1,5 +1,7 @@
 # 03a · Sizing user-level lift studies, with and without covariate adjustment
 
+**[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03a)**
+
 > **Takeaway.** For a one-point lift in site visits on a 3.8% base rate, an unadjusted readout needs about 6,500 users
 > per arm for 80% power (calculated; on the simulated grid, power is 73% at 5,000 and 94% at 10,000 per arm).
 > Adjusting the readout for the 12 user features recorded before the ad cuts the required sample to about 4,700, and
@@ -58,7 +60,7 @@ Source: [`out/lift_study_sizing.json`](out/lift_study_sizing.json).
 | 10,000 | 94% | 97% | 94.6% | 5.1% / 4.8% |
 | 20,000 | 99.9% | 100% | 95.5% | 5.7% / 4.9% |
 
-![Power and A/A false-positive rate by users per arm](out/fig_power_by_sample_size.png)
+[![Power and A/A false-positive rate by users per arm](out/fig_power_by_sample_size.png)](https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03a)
 
 The smallest size on this grid with at least 80% power is 10,000 users per arm. The Bayesian rule detects more often
 because it is one-sided.
@@ -75,7 +77,7 @@ Source: [`out/covariate_adjustment.json`](out/covariate_adjustment.json).
 | 10,000 | 0.79 / 0.69 / 0.66 | 0.70 (0.67 to 0.74) | 5.5% / 5.8% / 5.7% |
 | 20,000 | 0.56 / 0.48 / 0.47 | 0.69 (0.65 to 0.72) | 5.9% / 5.0% / 4.5% |
 
-![Minimum detectable lift and sampling variance of adjusted and unadjusted readouts](out/fig_mde_by_adjustment.png)
+[![Minimum detectable lift and sampling variance of adjusted and unadjusted readouts](out/fig_mde_by_adjustment.png)](https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03a)
 
 - **The pre-specified rule was met for both adjusted readouts.** Adjusting for the model prediction cut the sampling
   variance by 30% to 33% at every size; the 12 raw features cut it by 25% to 29%. Interval coverage stayed between

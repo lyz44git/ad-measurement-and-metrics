@@ -1,5 +1,7 @@
 # 02c · Marketing mix models: which brands have enough signal to measure a channel's return?
 
+**[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02c)**
+
 > **Takeaway.** A marketing mix model recovers a channel's return only where that channel's spend moves enough on its
 > own, and this can be checked before fitting. In a pre-specified test on held-out simulations with real spend,
 > the median absolute relative error of a channel's estimated return was 19% for brand-channels with a
@@ -84,7 +86,7 @@ Sources: [`out/mmm_summary.json`](out/mmm_summary.json) (weekly), [`out/mmm_summ
 | Revenue / total spend, median across converged brands | 5.9 | 6.4 |
 | Media share of revenue, median across brands | 61% | 43% |
 
-![Estimated against known channel ROAS in the recovery test, weekly and daily data, on logarithmic axes](out/fig_roas_recovery.png)
+[![Estimated against known channel ROAS in the recovery test, weekly and daily data, on logarithmic axes](out/fig_roas_recovery.png)](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02c)
 
 - **The pre-specified forecasting rule was not met** in either run: the interval of the mean wMAPE difference
   includes 0.
@@ -133,7 +135,7 @@ Source: [`out/detectability.json`](out/detectability.json); the index of every b
 | T3: weekly, common shapes | 64 | −0.83 (−0.90 to −0.70) | 20% / 25% / 0.55 | 75% / 0.28 |
 | Not a test: weekly, brand-specific shapes (where the index was found) | 66 | −0.72 (−0.85 to −0.53) | 20% / 17% / 0.48 | 71% / 0.15 |
 
-![Recovery error against the signal-to-noise index, and the smallest detectable ROAS on real spend](out/fig_detectability.png)
+[![Recovery error against the signal-to-noise index, and the smallest detectable ROAS on real spend](out/fig_detectability.png)](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02c)
 
 - **The pre-specified rule was met.** In T1 and T2 both predictions held. In T3 the first held and the second missed
   its limit by a hair (median error 25.1% against 25%).

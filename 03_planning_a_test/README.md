@@ -1,5 +1,7 @@
 # 3. Planning a test: how large must it be, and what is the baseline?
 
+**[Explore these studies interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/03.html)**
+
 Where a budget decision needs incremental evidence that the metrics of section 2 cannot give, the next step is an
 experiment. Studies 03a and 03b size it, by user and by market; in both, adjusting for what is known before the
 test is the main way to make it smaller. Study 03c forecasts the baseline of a metric so that national, state and
@@ -15,15 +17,15 @@ metro levels agree.
 
 **[03a · Sizing user-level lift studies, with and without covariate adjustment](03a_lift_study_sizing)**
 
-![Minimum detectable lift and sampling variance of adjusted and unadjusted readouts](03a_lift_study_sizing/out/fig_mde_by_adjustment.png)
+[![Minimum detectable lift and sampling variance of adjusted and unadjusted readouts](03a_lift_study_sizing/out/fig_mde_by_adjustment.png)](https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03a)
 
 **[03b · Sizing market-level (geo) experiments](03b_geo_experiment_design)**
 
-![Minimum detectable effect by number of metros and by test length, and false-positive rate of the volume-weighted estimate under a t-test and under randomization inference](03b_geo_experiment_design/out/fig1_mde_by_metros.png)
+[![Smallest detectable effect by metros and test length, three designs compared, and false-positive rate of the volume-weighted estimate](03b_geo_experiment_design/out/fig1_mde_by_metros.png)](https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03b)
 
 **[03c · Hierarchical forecasts of a marketplace metric that add up across levels](03c_hierarchical_forecasting)**
 
-![Relative RMSSE by horizon, inventory with an ETS base](03c_hierarchical_forecasting/reports/figures/relative_rmsse_by_horizon_inventory_ets.png)
+[![Gap between forecast levels before reconciliation, and forecast error by horizon at four levels](03c_hierarchical_forecasting/reports/figures/relative_rmsse_by_horizon_inventory_ets.png)](https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03c)
 
 Method, data, decision rules and limitations are in each study's README; the four questions are introduced in
 the [main README](../README.md).
