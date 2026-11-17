@@ -71,7 +71,8 @@ Full results and limits: [`reports/memo.md`](reports/memo.md). Tables: [`reports
 ## Reproduce
 
 ```bash
-JOBS=16 ./run_all.sh    # tests, three backtests (about 13 minutes with 16 workers), tables, figure, number checks
+JOBS=16 ./run_all.sh    # tests, three backtests (about 13 minutes with 16 workers), tables, number checks
+python ../../figures/make_study_figures.py   # redraws the figure from reports/tables/
 ```
 
 Run from this folder with the root `requirements.txt` installed. The tests need no data: they build a synthetic

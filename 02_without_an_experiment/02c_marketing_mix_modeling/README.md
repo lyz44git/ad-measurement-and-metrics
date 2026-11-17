@@ -84,7 +84,7 @@ Sources: [`out/mmm_summary.json`](out/mmm_summary.json) (weekly), [`out/mmm_summ
 | Revenue / total spend, median across converged brands | 5.9 | 6.4 |
 | Media share of revenue, median across brands | 61% | 43% |
 
-![Estimated against known channel ROAS in the recovery test, weekly and daily data](out/fig_roas_recovery.png)
+![Estimated against known channel ROAS in the recovery test, weekly and daily data, on logarithmic axes](out/fig_roas_recovery.png)
 
 - **The pre-specified forecasting rule was not met** in either run: the interval of the mean wMAPE difference
   includes 0.

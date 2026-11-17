@@ -29,10 +29,8 @@ import sys, json, functools, time
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "code"))
-import figstyle
 import numpy as np, pandas as pd
 from scipy.stats import t as tdist
-import matplotlib.pyplot as plt
 print = functools.partial(print, flush=True)
 
 DEFAULT_ZFILE = ROOT / "data_raw" / "Metro_new_pending_uc_sfrcondo_month.csv"
@@ -215,21 +213,8 @@ def main(zfile=DEFAULT_ZFILE):
     print(mde2.round(1).to_string())
     print(RES.groupby(["source", "estimator"]).false_positive_rate.agg(["min", "max"]).round(3).to_string())
 
-    # ------------------------------------------------------------------ figure: MDE vs metros, 2-month test
-    figstyle.apply()
-    SHOW = ["CR: year-over-year difference", "CR: ANCOVA (CUPED)", "MP: pair ANCOVA"]
-    fig, ax = plt.subplots(figsize=(5.6, 4.0))
-    src = next(iter(pools))
-    d = RES[(RES.source == src) & (RES.test_months == 2)]
-    for i, k in enumerate(SHOW):
-        g = d[d.estimator == k].sort_values("metros")
-        ax.plot(g.metros, g.mde_80_pct, marker="o", color=figstyle.SERIES[i], label=k)
-    xt = sorted(d.metros.unique()); ax.set_xscale("log"); ax.set_xticks(xt); ax.set_xticklabels([str(n) for n in xt]); ax.minorticks_off()
-    ax.set_xlabel("Metros in the test (half treated)"); ax.set_ylabel("Minimum detectable effect, % (80% power)")
-    ax.set_title(f"{src}: 2-month test"); ax.legend(loc="upper right")
-    figstyle.note(fig, "Placebo experiments on historical data (5,000 draws per point); two-sided 5% tests. Newly pending "
-                  "listings, metro monthly 2018-01..2026-09 (largest point = all eligible metros). Data Provided by Zillow Group.")
-    fig.tight_layout(); fig.savefig(OUT / "fig1_mde_by_metros.png")
+    # The figure on the study page is drawn from out/design_summary.csv and out/randomization_inference_check.csv by
+    # figures/make_study_figures.py at the repository root.
 
     json.dump({"draws_per_cell": R, "metros_grid": NS, "test_months": DS, "break_rule": [BREAK_LO, BREAK_HI],
                "pools": summs, "runtime_s": round(time.time() - t0)}, open(OUT / "meta.json", "w"), indent=1, default=str)

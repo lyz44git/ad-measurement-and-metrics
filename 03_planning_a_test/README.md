@@ -19,7 +19,7 @@ metro levels agree.
 
 **[03b · Sizing market-level (geo) experiments](03b_geo_experiment_design)**
 
-![Minimum detectable effect by number of metros](03b_geo_experiment_design/out/fig1_mde_by_metros.png)
+![Minimum detectable effect by number of metros and by test length, and false-positive rate of the volume-weighted estimate under a t-test and under randomization inference](03b_geo_experiment_design/out/fig1_mde_by_metros.png)
 
 **[03c · Hierarchical forecasts of a marketplace metric that add up across levels](03c_hierarchical_forecasting)**
 

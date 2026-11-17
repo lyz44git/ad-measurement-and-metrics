@@ -15,7 +15,7 @@ privacy noise (01d).
 
 **[01a · Ad incrementality on a 14.0M-user randomized experiment](01a_ad_incrementality)**
 
-![Visit and conversion rates by arm](01a_ad_incrementality/out/fig_rates_by_arm.png)
+![Visit and conversion rates by arm, and the effect of assignment with and without regression adjustment](01a_ad_incrementality/out/fig_rates_by_arm.png)
 
 **[01b · Segment-level ad effects from small samples](01b_bayesian_segment_effects)**
 

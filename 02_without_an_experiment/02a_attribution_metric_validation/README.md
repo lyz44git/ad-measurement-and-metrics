@@ -38,7 +38,7 @@ Source: [`out/attribution_vs_experiment.json`](out/attribution_vs_experiment.jso
 | Visits | 177,510 | 122,895 | 44% |
 | Conversions | 23,031 | 13,687 | 68% |
 
-![Outcomes credited by attribution against incremental outcomes from the experiment](out/fig_attributed_vs_incremental.png)
+![Outcomes credited by attribution against incremental outcomes from the experiment, and estimates of the effect of exposure by method](out/fig_attributed_vs_incremental.png)
 
 | Per-exposed-user effect on visits | pp |
 |---|---|

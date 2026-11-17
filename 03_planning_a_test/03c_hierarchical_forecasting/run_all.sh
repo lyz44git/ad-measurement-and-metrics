@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# End to end: tests, the three pre-specified backtests, then tables, figure and memo tables.
+# End to end: tests, the three pre-specified backtests, then tables and memo tables.
+# The figure is drawn from reports/tables/ by figures/make_study_figures.py at the repository root.
 # Needs the Zillow files downloaded by hand into data_external/zillow/v1_20261109/ (see README).
 set -euo pipefail
 cd "$(dirname "$0")"

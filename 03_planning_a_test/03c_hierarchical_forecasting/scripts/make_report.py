@@ -205,38 +205,6 @@ def fmt_remainder(rem):
     return "\n".join(out)
 
 
-def figure(byh, path, title):
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-    series = [("base", "#2a78d6"), ("bu", "#eb6834"), ("mint_shrink", "#1baf7a")]   # seasonal naive: tables only
-    fig, axes = plt.subplots(1, 4, figsize=(13, 4.0), sharey=True, facecolor="#fcfcfb")
-    for ax, lname in zip(axes, LEVELS):
-        ax.set_facecolor("#fcfcfb")
-        ax.axhline(1, color="#8a8984", lw=1.2, ls=(0, (4, 3)))
-        for m, col in series:
-            d = byh[(byh.level == lname) & (byh.method == m)].sort_values("h")
-            ax.plot(d.h, d.rel_to_no_change, color=col, lw=2, label=LABEL[m])
-        ax.set_title(lname, fontsize=11, color="#0b0b0b", loc="left")
-        ax.set_xticks([1, 3, 6, 9, 12]); ax.set_xlabel("horizon (months)", fontsize=9, color="#52514e")
-        ax.tick_params(colors="#52514e", labelsize=8.5)
-        for s in ("top", "right"):
-            ax.spines[s].set_visible(False)
-        for s in ("left", "bottom"):
-            ax.spines[s].set_color("#c8c7c1")
-        ax.grid(axis="y", color="#e6e5e0", lw=0.8)
-    axes[0].set_ylabel("RMSSE relative to no-change", fontsize=9, color="#52514e")
-    axes[0].text(4.2, 1.02, "no-change = 1", fontsize=8, color="#52514e", va="bottom")
-    h, l = axes[0].get_legend_handles_labels()
-    fig.legend(h, l, loc="upper left", bbox_to_anchor=(0.005, 0.925), ncol=3, frameon=False, fontsize=9)
-    fig.suptitle(title, x=0.01, y=0.985, ha="left", fontsize=12, color="#0b0b0b")
-    fig.text(0.01, 0.01, f"{ATTRIBUTION}. Below 1 = better than no-change. 24 monthly origins, 2023-11 to 2025-10.",
-             fontsize=8, color="#52514e")
-    fig.tight_layout(rect=(0, 0.04, 1, 0.86))
-    fig.savefig(path, dpi=150)
-    plt.close(fig)
-
-
 def main():
     TABLES.mkdir(parents=True, exist_ok=True); FIGURES.mkdir(parents=True, exist_ok=True)
     blocks, headlines, cross = {}, {}, []
@@ -261,9 +229,6 @@ def main():
                           "headline": head.round(6).to_dict("records"),
                           "comparisons": comp.round(6).to_dict("records"),
                           "remainder": rem.round(6).to_dict("records")}
-        if tag == "inventory_ets":
-            figure(byh, FIGURES / "relative_rmsse_by_horizon_inventory_ets.png",
-                   "For-sale inventory: forecast error relative to no-change, by level and horizon (AutoETS base)")
     if cross:
         pd.DataFrame(cross).to_csv(TABLES / "cross_spec_summary.csv", index=False)
         blocks["cross_spec"] = fmt_cross(cross)

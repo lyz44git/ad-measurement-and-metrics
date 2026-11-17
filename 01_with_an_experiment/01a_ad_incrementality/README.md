@@ -43,7 +43,7 @@ Full tables: [`docs/11_results_criteo_incrementality_uplift.md`](docs/11_results
 | Conversion rate, control → ad arm | 0.19% → 0.31% (+0.115 pp, SE 0.003) | +0.100 pp (SE 0.003) |
 | Visit effect among exposed users | 28.7 pp (SE 0.41) | 21.5 pp (SE 0.35) |
 
-![Visit and conversion rates by arm](out/fig_rates_by_arm.png)
+![Visit and conversion rates by arm, and the effect of assignment with and without regression adjustment](out/fig_rates_by_arm.png)
 
 - Assignment is slightly predictable from the features (held-out AUC 0.509; largest standardized difference 0.049),
   so both columns are reported.

@@ -93,7 +93,7 @@ look-back labels 1,036 accounts new, of which 640 had bought in the prior 12 mon
 
 ## 7. The same lesson in finance
 
-The finance literature asks whether advertising moves investors as well as customers, and it went through the same
+The finance literature asks whether advertising moves investors as well as customers, and it shows the same
 correction. Lou (2014) finds, in annual data, that higher advertising spending comes with more retail buying and
 higher stock returns in the same year and lower returns afterward, and that advertising rises before insider sales.
 Focke, Ruenzi and Ungeheuer (2020) use daily advertising data and find that advertising raises investor attention but

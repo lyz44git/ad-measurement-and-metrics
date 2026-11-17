@@ -62,12 +62,13 @@ Minimum detectable effect with 80% power, 2-month test:
   dominate. Randomization inference keeps the rate between 4.2% and 5.8%, at the cost of a larger MDE (8.8% at 100
   metros).
 
-![Minimum detectable effect by number of metros](out/fig1_mde_by_metros.png)
+![Minimum detectable effect by number of metros and by test length, and false-positive rate of the volume-weighted estimate under a t-test and under randomization inference](out/fig1_mde_by_metros.png)
 
 ## Reproduce
 
 ```bash
 python code/geo_experiment_power.py /path/to/Metro_new_pending_uc_sfrcondo_month.csv   # about 20 seconds
+python ../../figures/make_study_figures.py                                             # redraws the figure from out/
 ```
 
 The script is seeded; a re-run reproduces `out/` exactly. `tests/test_geo_power.py` runs the same simulation on

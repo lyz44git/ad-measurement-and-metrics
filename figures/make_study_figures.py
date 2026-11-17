@@ -1,308 +1,362 @@
-"""Result figures for studies 01a, 01b, 01d, 02a, 02b, 02c and 03a, drawn from the committed result files.
+"""Figures shown on the study pages, drawn from the committed result files in the shared style (figures/figstyle.py).
 
-Usage: python figures/make_study_figures.py   (writes one PNG into each study's out/ folder)
+Usage: python figures/make_study_figures.py   (writes the PNG files into each study's output folder)
+
+Intervals are 95% unless a label says otherwise. Where a result file reports a rate over a known number of simulated
+studies, the interval is the binomial one for that number of studies.
 """
-import csv
-import json
+import sys
 from pathlib import Path
 
-import matplotlib
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-ROOT = Path(__file__).resolve().parents[1]
-T = dict(bg="#ffffff", ink="#111111", ink2="#555555", axis="#333333", grid="#e6e6e6", band="#e9eff5",
-         blue="#0072B2", red="#D55E00", green="#009E73", grey="#8c8c8c")
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from figstyle import *  # noqa: E402,F401,F403
+
+EDGE = "#444444"
+ZILLOW = "Data Provided by Zillow Group."
 
 
-def style(t):
-    plt.rcParams.update({
-        "font.family": ["Arial", "Helvetica Neue", "DejaVu Sans"], "font.size": 7.5, "axes.labelsize": 7.5,
-        "xtick.labelsize": 7, "ytick.labelsize": 7, "legend.fontsize": 7,
-        "figure.facecolor": t["bg"], "axes.facecolor": t["bg"], "savefig.facecolor": t["bg"],
-        "text.color": t["ink"], "axes.labelcolor": t["ink"], "axes.edgecolor": t["axis"],
-        "xtick.color": t["axis"], "ytick.color": t["axis"], "axes.linewidth": 0.6,
-        "xtick.major.width": 0.6, "ytick.major.width": 0.6, "xtick.major.size": 2.5, "ytick.major.size": 2.5,
-        "axes.spines.top": False, "axes.spines.right": False, "lines.linewidth": 1.2, "legend.frameon": False})
+def binom(p, n):
+    return 196 * (p * (1 - p) / n) ** 0.5
 
 
-def load(rel):
-    return json.loads((ROOT / rel).read_text())
+def points(ax, x, y, lo, hi, color, label=None, ms=4.5, **kw):
+    """Point estimates with an interval given by its lower and upper ends."""
+    ax.errorbar(x, y, yerr=[[a - b for a, b in zip(y, lo)], [b - a for a, b in zip(y, hi)]], color=color, marker="o", ms=ms, lw=1.0, label=label, **kw)
 
 
-def rows(rel):
-    with open(ROOT / rel) as f:
-        return list(csv.DictReader(f))
+def footer(fig, text):
+    fig.text(0.995, 0.008, text, ha="right", va="bottom", fontsize=6, color="#777777")
 
 
-def new(n, width=7.2, height=2.9):
-    fig, axes = plt.subplots(1, n, figsize=(width, height), dpi=300)
-    return fig, (axes if n > 1 else [axes])
+def fig01a():
+    """Visit and conversion rates by arm, and the effect of assignment with and without regression adjustment."""
+    inc = load(f"{S01A}/out/criteo/a_incrementality.json")
+    fig, ax = plt.subplots(1, 4, figsize=(7.2, 2.6), dpi=300)
+    for a, key, name, letter in ((ax[0], "visit", "Visit rate", "A"), (ax[1], "conversion", "Conversion rate", "B")):
+        r = inc[key]["itt"]; p0, p1 = r["control_mean"], r["control_mean"] + r["est"]
+        ci = [binom(p, n) for p, n in ((p0, r["n0"]), (p1, r["n1"]))]
+        bars(a, ["Control", "Ad arm"], [100 * p0, 100 * p1], ci, [GREY, NAVY], lambda v: f"{v:.2f}%")
+        a.set_ylim(0, 100 * p1 * 1.42); bracket(a, 0, 1, 100 * p1 * 1.13, f"+{100 * r['est']:.2f} pp")
+        a.set_ylabel("Percent of users"); panel(a, letter, name)
+    for a, key, name, letter in ((ax[2], "visit", "Visit effect", "C"), (ax[3], "conversion", "Conversion effect", "D")):
+        est = [inc[key]["itt"], inc[key]["aipw_linear"]]
+        v = [100 * e["est"] for e in est]; h = [196 * e["se"] for e in est]
+        a.errorbar([0, 1], v, yerr=h, color=NAVY, marker="o", ls="none", ms=5, lw=1.0)
+        for i in range(2):
+            a.text(i + 0.13, v[i], f"{v[i]:.2f}", va="center", fontsize=7.5)
+        a.set_xticks([0, 1], ["Unadjusted", "Adjusted"]); a.set_xlim(-0.5, 1.6); a.set_ylim(0, max(v) * 1.42)
+        a.tick_params(axis="x", length=0); a.set_ylabel("Percentage points"); panel(a, letter, name)
+    fig.tight_layout(w_pad=1.6)
+    save(fig, f"{S01A}/out/fig_rates_by_arm.png")
 
 
-def title(ax, letter, text):
-    ax.set_title(f"{letter}   {text}" if letter else text, loc="left", fontsize=8.5, fontweight="bold", pad=8)
+def fig01b():
+    """Error of the segment estimates in each of the ten samples, and one sample's estimates against the benchmark."""
+    p = load(f"{S01B}/out/part2_segments.json"); p.update(load(f"{S01B}/out/part2_segments_rerun.json"))
+    reps = sorted(p, key=int); x = [int(r) + 1 for r in reps]
+    fig, ax = plt.subplots(1, 2, figsize=(7.2, 2.9), dpi=300, gridspec_kw=dict(width_ratios=[1.15, 1]))
+    a = ax[0]
+    a.vlines(x, [100 * p[r]["rmse"]["bayes"] for r in reps], [100 * p[r]["rmse"]["nopool"] for r in reps], color="#c9cfd6", lw=1.2)
+    for k, name, col in (("cpool", "Overall effect", LIGHTBLUE), ("nopool", "Each segment", GREY), ("bayes", "Multilevel model", NAVY)):
+        a.plot(x, [100 * p[r]["rmse"][k] for r in reps], color=col, marker="o", ls="none", ms=5, label=name)
+    a.set_xticks(x); a.set_xlim(0.4, 10.6); a.set_ylim(0, 2.6); a.set_xlabel("2% sample"); a.set_ylabel("RMSE of segment effects (pp)")
+    a.legend(loc="upper center", ncol=3, columnspacing=1.2, handletextpad=0.2); panel(a, "A", "Error in each sample")
+    b = ax[1]; s = p[reps[0]]["seg"]; bench = [100 * v for v in s["bench"]]
+    b.plot([-1, 9], [-1, 9], color=EDGE, lw=0.7, ls="--", label="Estimate = benchmark")
+    b.scatter(bench, [100 * v for v in s["nopool"]], s=10, color=GREY, label="Each segment", lw=0)
+    b.scatter(bench, [100 * v for v in s["bayes"]], s=10, color=NAVY, label="Multilevel model", lw=0)
+    b.set_xlim(-1, 9); b.set_ylim(-3, 11); b.set_xlabel("Benchmark effect, other 98% of users (pp)"); b.set_ylabel("Estimate from the sample (pp)")
+    b.legend(loc="upper left"); panel(b, "B", "Segment estimates, sample 1")
+    fig.tight_layout(w_pad=2.0)
+    save(fig, f"{S01B}/out/fig_segment_error.png")
 
 
-def save(fig, rel):
-    fig.tight_layout(w_pad=2.2)
-    fig.savefig(ROOT / rel, dpi=300)
-    plt.close(fig)
-    print("wrote", rel)
-
-
-def fig01(t):
-    """Visit and conversion rates by arm, with the regression-adjusted effect."""
-    a = load("01_with_an_experiment/01a_ad_incrementality/out/criteo/a_incrementality.json")
-    fig, axes = new(2, height=2.7)
-    for ax, key, name, letter in zip(axes, ("visit", "conversion"), ("Visit rate", "Conversion rate"), "ab"):
-        itt, adj = a[key]["itt"], a[key]["aipw_linear"]
-        c0 = 100 * itt["control_mean"]; c1 = c0 + 100 * itt["est"]
-        bars = ax.bar(["Control", "Ad arm"], [c0, c1], color=[t["grey"], t["blue"]], width=0.55)
-        ax.errorbar([1], [c1], yerr=[196 * itt["se"]], color=t["ink"], lw=0.9, capsize=0)
-        for b, v in zip(bars, (c0, c1)):
-            ax.text(b.get_x() + b.get_width() / 2, v + 0.012 * c1, f"{v:.2f}%", ha="center", va="bottom")
-        ax.text(0.03, 0.95, f"+{100 * itt['est']:.2f} pp unadjusted\n+{100 * adj['est']:.2f} pp regression-adjusted",
-                transform=ax.transAxes, va="top", color=t["ink2"], fontsize=7)
-        ax.set_ylim(0, c1 * 1.38); ax.set_ylabel(f"{name} (%)"); ax.tick_params(axis="x", length=0)
-        title(ax, letter, name)
-    save(fig, "01_with_an_experiment/01a_ad_incrementality/out/fig_rates_by_arm.png")
-
-
-def fig02(t):
-    """Attributed against incremental outcomes."""
-    a = load("02_without_an_experiment/02a_attribution_metric_validation/out/attribution_vs_experiment.json")
-    fig, axes = new(2, height=2.7)
-    for ax, key, name, letter in zip(axes, ("visit", "conversion"), ("Visits", "Conversions"), "ab"):
-        att, inc = a[key]["attributed"] / 1000, a[key]["incremental"] / 1000
-        bars = ax.bar(["Credited by\nattribution", "Incremental\n(experiment)"], [att, inc],
-                      color=[t["red"], t["blue"]], width=0.55)
-        for b, v in zip(bars, (att, inc)):
-            ax.text(b.get_x() + b.get_width() / 2, v + 0.015 * att, f"{v:,.1f}K", ha="center", va="bottom")
-        ax.text(0.97, 0.95, f"overstated by {100 * (att / inc - 1):.0f}%", transform=ax.transAxes, ha="right",
-                va="top", color=t["ink2"], fontsize=7.5, fontweight="bold")
-        ax.set_ylim(0, att * 1.3); ax.set_ylabel(f"{name} (thousands)"); ax.tick_params(axis="x", length=0)
-        title(ax, letter, name)
-    save(fig, "02_without_an_experiment/02a_attribution_metric_validation/out/fig_attributed_vs_incremental.png")
-
-
-def fig05(t):
-    """Where each rule puts the credit, by how long before the last touch a touch occurred."""
-    m = load("02_without_an_experiment/02b_multi_touch_attribution/out/mta.json")
-    rules = [("cr_last", "Last touch"), ("cr_linear", "Linear"), ("cr_decay", "Time decay"), ("cr_first", "First touch")]
-    buckets = [("last", "Last touch", t["blue"]), ("<1d", "Under 1 day earlier", "#56B4E9"),
-               ("1-7d", "1 to 7 days earlier", "#E69F00"), (">7d", "Over 7 days earlier", t["red"])]
-    fig, axes = new(2, height=2.8)
-    ax = axes[0]; left = [0.0] * len(rules)
-    for key, name, col in buckets:
-        vals = [100 * m["credit_by_recency_bucket"][r][key] for r, _ in rules]
-        ax.barh([n for _, n in rules], vals, left=left, color=col, label=name, height=0.6)
-        for i, (v, l) in enumerate(zip(vals, left)):
-            if v >= 9:
-                ax.text(l + v / 2, i, f"{v:.0f}", ha="center", va="center", color="white", fontsize=7)
-        left = [l + v for l, v in zip(left, vals)]
-    ax.invert_yaxis(); ax.set_xlim(0, 100); ax.set_xlabel("Share of conversion credit (%)")
-    ax.tick_params(axis="y", length=0)
-    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.24), ncol=2, columnspacing=1.2, handlelength=1.1)
-    title(ax, "a", "Credit by recency of the touch")
-    ax = axes[1]
-    vals = [100 * m["credit_on_clicked_touches"][r] for r, _ in rules]
-    ax.barh([n for _, n in rules], vals, color=t["blue"], height=0.6)
-    ax.axvline(100 * m["share_touches_clicked"], color=t["grey"], lw=0.8, ls=(0, (4, 3)))
-    ax.text(100 * m["share_touches_clicked"] + 1.2, -0.62, f"{100 * m['share_touches_clicked']:.0f}% of touches were clicked",
-            va="center", color=t["ink2"], fontsize=6.8)
-    for i, v in enumerate(vals):
-        ax.text(v + 1, i, f"{v:.0f}%", va="center")
-    ax.set_ylim(3.5, -0.9); ax.set_xlim(0, 82); ax.set_xlabel("Share of credit on clicked touches (%)")
-    ax.tick_params(axis="y", length=0)
-    title(ax, "b", "Credit given to clicked touches")
-    save(fig, "02_without_an_experiment/02b_multi_touch_attribution/out/fig_credit_by_rule.png")
-
-
-def fig06(t):
-    """Parameter recovery: estimated against known channel ROAS, weekly and daily data."""
-    fig, axes = new(2, height=3.0)
-    for ax, suf, name, letter in zip(axes, ("", "_daily"), ("Weekly data", "Daily data"), "ab"):
-        r = [x for x in rows(f"02_without_an_experiment/02c_marketing_mix_modeling/out/mmm_recovery{suf}.csv") if x["converged"] == "True"]
-        tr = [float(x["true"]) for x in r]; es = [float(x["est"]) for x in r]
-        lo = [float(x["est"]) - float(x["lo"]) for x in r]; hi = [float(x["hi"]) - float(x["est"]) for x in r]
-        ax.plot([0, 4.5], [0, 4.5], color=t["grey"], lw=0.8, ls=(0, (4, 3)))
-        ax.errorbar(tr, es, yerr=[lo, hi], fmt="o", color=t["blue"], ms=3.2, elinewidth=0.6, alpha=0.85)
-        rho = load(f"02_without_an_experiment/02c_marketing_mix_modeling/out/mmm_summary{suf}.json")["recovery"]["spearman"]
-        ax.text(0.04, 0.95, f"rank correlation {rho:.2f}", transform=ax.transAxes, va="top", fontweight="bold",
-                bbox=dict(facecolor=t["bg"], edgecolor="none", pad=2.5), zorder=5)
-        ax.set_xlim(0, 4.5); ax.set_ylim(0, 9); ax.set_xlabel("Known channel ROAS (simulated)")
-        ax.set_ylabel("Estimated ROAS, 90% interval")
-        title(ax, letter, name)
-    save(fig, "02_without_an_experiment/02c_marketing_mix_modeling/out/fig_roas_recovery.png")
-
-
-def fig06b(t):
-    """Recovery error against the signal-to-noise index, and the smallest detectable ROAS on real spend."""
-    idx = {(r["org"], r["channel"]): r for r in rows("02_without_an_experiment/02c_marketing_mix_modeling/out/detectability.csv")
-           if r["freq"] == "D" and r["sim"] == "brand_shapes"}
-    rec = [r for r in rows("02_without_an_experiment/02c_marketing_mix_modeling/out/mmm_pooled_recovery_daily.csv")
-           if r["sim"] == "brand_shapes" and r["single_converged"] == "True"]
-    s = load("02_without_an_experiment/02c_marketing_mix_modeling/out/detectability.json")
-    fig, axes = new(2, height=3.0)
-    ax = axes[0]
-    x = [float(idx[(r["org"], r["channel"])]["index"]) for r in rec]
-    y = [100 * abs(float(r["single"]) - float(r["true"])) / float(r["true"]) for r in rec]
-    ax.axvline(2, color=t["grey"], lw=0.8, ls=(0, (4, 3)))
-    ax.scatter([a for a in x if a < 2], [b for a, b in zip(x, y) if a < 2], color=t["grey"], s=13, lw=0)
-    ax.scatter([a for a in x if a >= 2], [b for a, b in zip(x, y) if a >= 2], color=t["blue"], s=13, lw=0)
-    t1 = s["tests"]["T1"]
-    ax.text(0.03, 0.05, f"index below 2\nmedian error {100 * t1['index_below_2']['median_err']:.0f}%", transform=ax.transAxes,
-            color=t["ink2"], fontsize=7, va="bottom")
-    ax.text(0.97, 0.95, f"index 2 or more\nmedian error {100 * t1['index_2_or_more']['median_err']:.0f}%",
-            transform=ax.transAxes, color=t["blue"], fontsize=7, va="top", ha="right", fontweight="bold")
-    ax.set_xscale("log"); ax.set_yscale("log"); ax.set_xlim(0.05, 60); ax.set_ylim(0.5, 2000)
-    ax.set_xticks([0.1, 1, 2, 10], ["0.1", "1", "2", "10"]); ax.set_yticks([1, 10, 100, 1000], ["1", "10", "100", "1,000"])
-    ax.set_xlabel("Signal-to-noise index, computed before fitting"); ax.set_ylabel("Error of estimated ROAS (%)")
-    title(ax, "a", "Daily data, held-out simulation")
-    ax = axes[1]
-    for freq, name, col in (("W", "Weekly data", t["grey"]), ("D", "Daily data", t["blue"])):
-        m = sorted(float(r["min_detectable_roas"]) for r in rows("02_without_an_experiment/02c_marketing_mix_modeling/out/detectability.csv")
-                   if r["freq"] == freq and r["sim"] == "brand_shapes")
-        ax.step(m, [100 * (i + 1) / len(m) for i in range(len(m))], where="post", color=col)
-        share = s[freq]["real_spend"]["share_at_most"]["2"]
-        ax.plot(2, 100 * share, marker="o", ms=4, color=col)
-        ax.annotate(f"{name}: {100 * share:.0f}% can detect an ROAS of 2", xy=(2, 100 * share),
-                    xytext=(5.6, 27 if freq == "D" else 13), color=t["blue"] if freq == "D" else t["ink2"], fontsize=7,
-                    va="center", arrowprops=dict(arrowstyle="-", lw=0.5, color=col, shrinkA=1, shrinkB=3))
-    ax.axvline(2, color=t["grey"], lw=0.8, ls=(0, (4, 3)))
-    ax.set_xlim(0, 16); ax.set_ylim(0, 102); ax.set_xlabel("Smallest detectable ROAS (80% power)")
-    ax.set_ylabel("Brand-channels (cumulative %)")
-    title(ax, "b", "Real spend: what could be detected")
-    save(fig, "02_without_an_experiment/02c_marketing_mix_modeling/out/fig_detectability.png")
-
-
-def fig07(t):
-    """Error of segment estimates by sample, and one sample's estimates against the benchmark."""
-    p = load("01_with_an_experiment/01b_bayesian_segment_effects/out/part2_segments.json")
-    p.update(load("01_with_an_experiment/01b_bayesian_segment_effects/out/part2_segments_rerun.json"))
-    reps = sorted(p, key=int)
-    fig, axes = new(2, height=3.0)
-    ax = axes[0]
-    for i, r in enumerate(reps):
-        a, b = 100 * p[r]["rmse"]["nopool"], 100 * p[r]["rmse"]["bayes"]
-        ax.plot([a, b], [i, i], color=t["grid"], lw=2, zorder=1)
-        ax.scatter([a], [i], color=t["grey"], s=18, zorder=2, label="No pooling" if i == 0 else None)
-        ax.scatter([b], [i], color=t["blue"], s=18, zorder=2, label="Multilevel" if i == 0 else None)
-    ax.set_yticks(range(len(reps)), [str(int(r) + 1) for r in reps]); ax.invert_yaxis()
-    ax.set_xlabel("RMSE of 100 segment effects (pp)"); ax.set_ylabel("2% sample"); ax.set_xlim(0.6, 1.3)
-    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=2, columnspacing=1.6)
-    ax.tick_params(axis="y", length=0)
-    title(ax, "a", "Error against the benchmark")
-    ax = axes[1]; s = p[reps[0]]["seg"]
-    b = [100 * v for v in s["bench"]]
-    ax.plot([-1, 9], [-1, 9], color=t["grey"], lw=0.8, ls=(0, (4, 3)))
-    ax.scatter(b, [100 * v for v in s["nopool"]], color=t["grey"], s=9, alpha=0.7, label="No pooling", lw=0)
-    ax.scatter(b, [100 * v for v in s["bayes"]], color=t["blue"], s=9, alpha=0.9, label="Multilevel", lw=0)
-    ax.set_xlim(-1, 9); ax.set_ylim(-3, 11)
-    ax.set_xlabel("Benchmark effect, other 98% of users (pp)"); ax.set_ylabel("Estimate from the 2% sample (pp)")
-    ax.legend(loc="upper left")
-    title(ax, "b", "Segment estimates, sample 1")
-    save(fig, "01_with_an_experiment/01b_bayesian_segment_effects/out/fig_segment_error.png")
-
-
-def fig01d(t):
+def fig01d():
     """Error of segment effects by privacy budget, and incremental visits captured by budget and ranking."""
-    S = "01_with_an_experiment/01d_private_segment_effects/out/"
-    a, c = load(S + "a_private_summary.json"), load(S + "c_allocation.json")
-    fig, axes = new(2, height=3.0)
-    ax = axes[0]
-    eps = ["0.1", "0.5", "1.0", "5.0", "inf"]; x = range(len(eps))
-    ref = 100 * a["nonprivate_nopool_rmse"]
-    ax.axhline(ref, color=t["grey"], lw=0.8, ls=(0, (4, 3)))
-    ax.text(4.1, ref * 1.07, "no pooling, no noise", fontsize=7, color=t["ink2"], ha="right")
-    for key, name, col in (("rmse_nopool", "No pooling", t["grey"]), ("rmse_ml", "Noise-aware multilevel", t["blue"])):
-        y = [100 * a["by_eps"][e][key] for e in eps]
-        ax.plot(list(x), y, color=col, marker="o", ms=4, mfc="white", mew=1.1, label=name)
-    ax.annotate("epsilon = 1: as accurate\nas no noise, no pooling", xy=(2, 100 * a["by_eps"]["1.0"]["rmse_ml"]), xytext=(2.1, 3.2),
-                fontsize=7, color=t["blue"], arrowprops=dict(arrowstyle="-", lw=0.5, color=t["blue"], shrinkA=1, shrinkB=3))
-    ax.set_yscale("log"); ax.set_ylim(0.8, 9); ax.set_yticks([1, 2, 4, 8], ["1", "2", "4", "8"]); ax.minorticks_off()
-    ax.set_xticks(list(x), ["0.1", "0.5", "1", "5", "no noise"])
-    ax.set_xlabel("Privacy budget epsilon (smaller is more private)"); ax.set_ylabel("RMSE of 100 segment effects (pp)")
-    ax.legend(loc="upper right")
-    title(ax, "a", "Accuracy under privacy noise")
-    ax = axes[1]
-    b = ["10", "20", "30"]
-    for key, name, col, ls in (("oracle", "Oracle", t["ink2"], (0, (1, 2))), ("multilevel", "Lift, multilevel", t["blue"], "-"),
-                               ("nopool", "Lift, no pooling", t["grey"], "-"), ("response", "Response rate", t["red"], "-")):
-        ax.plot([10, 20, 30], [100 * c[k]["mean_share"][key] for k in b], color=col, ls=ls, marker="o", ms=4,
-                mfc="white", mew=1.1, label=name)
-    ax.plot([10, 20, 30], [10, 20, 30], color=t["grid"], lw=1.0, label="Random")
-    ax.set_xticks([10, 20, 30], ["10%", "20%", "30%"]); ax.set_ylim(0, 100); ax.set_xlim(8, 32)
-    ax.set_xlabel("Budget (share of users)"); ax.set_ylabel("Incremental visits captured (%)")
-    ax.legend(loc="lower right")
-    title(ax, "b", "Allocation by segment ranking")
-    save(fig, S + "fig_privacy_and_allocation.png")
+    pr = load(f"{S01D}/out/a_private_summary.json"); al = load(f"{S01D}/out/c_allocation.json")
+    fig, ax = plt.subplots(1, 2, figsize=(7.2, 2.9), dpi=300)
+    eps = ["0.1", "0.5", "1.0", "5.0", "inf"]; xe = list(range(len(eps))); a = ax[0]
+    a.plot(xe, [100 * pr["by_eps"][e]["rmse_nopool"] for e in eps], color=GREY, marker="o", label="Each segment")
+    a.plot(xe, [100 * pr["by_eps"][e]["rmse_ml"] for e in eps], color=NAVY, marker="o", label="Multilevel model")
+    a.axhline(100 * pr["nonprivate_nopool_rmse"], color=GREY, lw=0.9, ls="--", label="Each segment, no noise")
+    a.set_yscale("log"); a.set_yticks([1, 2, 4, 8], ["1", "2", "4", "8"]); a.minorticks_off()
+    a.set_xticks(xe, ["0.1", "0.5", "1", "5", "None"]); a.set_xlabel("Privacy budget (epsilon)"); a.set_ylabel("RMSE of segment effects (pp)")
+    a.legend(loc="upper right"); panel(a, "A", "Error under privacy noise")
+    b = ax[1]; bud = ["10", "20", "30"]; xb = [10, 20, 30]
+    for k, name, col, ls in (("oracle", "True segment effects", INK, ":"), ("multilevel", "Lift, multilevel model", NAVY, "-"),
+                             ("nopool", "Lift, each segment", GREY, "-"), ("response", "Response rate", ORANGE, "-")):
+        b.plot(xb, [100 * al[q]["mean_share"][k] for q in bud], color=col, ls=ls, marker="o", label=name)
+    b.plot(xb, [100 * al[q]["random"] for q in bud], color="#c9cfd6", lw=1.2, label="Random order")
+    b.set_xticks(xb, ["10%", "20%", "30%"]); b.set_xlim(8, 32); b.set_ylim(0, 100)
+    b.set_xlabel("Budget (share of users)"); b.set_ylabel("Incremental visits captured (%)")
+    b.legend(loc="lower right", bbox_to_anchor=(1.0, 0.3), labelspacing=0.3); panel(b, "B", "Allocation by segment ranking")
+    fig.tight_layout(w_pad=2.0)
+    save(fig, f"{S01D}/out/fig_privacy_and_allocation.png")
 
 
-def fig08(t):
-    """Power and false-positive rate by users per arm."""
-    d = load("03_planning_a_test/03a_lift_study_sizing/out/lift_study_sizing.json")["by_n"]
-    ns = sorted(d, key=int); x = range(len(ns))
-    fig, axes = new(2, height=2.8)
-    ax = axes[0]
-    ax.axhline(80, color=t["grey"], lw=0.8, ls=(0, (4, 3)))
-    ax.text(len(ns) - 1, 81.5, "80% power", ha="right", color=t["ink2"], fontsize=7)
-    ax.plot(x, [100 * d[n]["power_z"] for n in ns], color=t["blue"], marker="o", ms=3.8, label="z-test, 5%")
-    ax.plot(x, [100 * d[n]["bayes_detect"] for n in ns], color=t["green"], marker="o", ms=3.8,
-            label="Bayesian, P(lift > 0) > 0.95")
-    for i, n in enumerate(ns):
-        ax.text(i + 0.08, 100 * d[n]["power_z"] - 6, f"{100 * d[n]['power_z']:.0f}%", color=t["blue"], fontsize=7)
-    ax.set_xticks(list(x), [f"{int(n):,}" for n in ns]); ax.set_ylim(0, 106); ax.set_xlim(-0.3, len(ns) - 0.55)
-    ax.set_xlabel("Users per arm"); ax.set_ylabel("Studies detecting the lift (%)"); ax.legend(loc="lower right")
-    title(ax, "a", "Power to detect a 1-point lift")
-    ax = axes[1]
-    ax.axhline(5, color=t["grey"], lw=0.8, ls=(0, (4, 3)))
-    ax.plot(x, [100 * d[n]["aa_false_positive_z"] for n in ns], color=t["blue"], marker="o", ms=3.8, label="z-test")
-    ax.plot(x, [100 * d[n]["aa_false_positive_bayes"] for n in ns], color=t["green"], marker="o", ms=3.8,
-            label="Bayesian")
-    ax.set_xticks(list(x), [f"{int(n):,}" for n in ns]); ax.set_ylim(0, 10)
-    ax.set_xlabel("Users per arm"); ax.set_ylabel("A/A studies reporting a lift (%)"); ax.legend(loc="upper right")
-    title(ax, "b", "False positives with no true lift")
-    save(fig, "03_planning_a_test/03a_lift_study_sizing/out/fig_power_by_sample_size.png")
+def fig02a():
+    """Outcomes credited by attribution against outcomes caused, and estimates of the effect of exposure."""
+    at = load(f"{S02A}/out/attribution_vs_experiment.json"); inc = load(f"{S01A}/out/criteo/a_incrementality.json"); n1 = at["n_treated"]
+    fig, ax = plt.subplots(1, 3, figsize=(7.2, 2.9), dpi=300, gridspec_kw=dict(width_ratios=[0.75, 0.75, 1.5]))
+    for a, key, name, letter in ((ax[0], "visit", "Visits", "A"), (ax[1], "conversion", "Conversions", "B")):
+        r = at[key]; ci = 1.96 * inc[key]["itt"]["se"] * n1
+        bars(a, ["Credited", "Caused"], [r["attributed"] / 1e3, r["incremental"] / 1e3], [0, ci / 1e3], [ORANGE, NAVY], lambda v: f"{1e3 * v:,.0f}")
+        a.set_ylim(0, r["attributed"] / 1e3 * 1.42)
+        bracket(a, 0, 1, r["attributed"] / 1e3 * 1.13, f"{100 * (r['attributed_over_incremental'] - 1):.0f}% more credited", color=ORANGE)
+        a.set_ylabel("Thousands, ad arm"); panel(a, letter, name)
+    pe = at["per_exposed_user_visit_effect"]
+    est = [("Experiment, unadjusted", inc["cace_visit_unadjusted"]["est"], inc["cace_visit_unadjusted"]["se"], NAVY),
+           ("Experiment, adjusted", inc["cace_visit_adjusted"]["est"], inc["cace_visit_adjusted"]["se"], NAVY),
+           ("Exposed vs. unexposed", pe["naive"], pe["naive_se"], ORANGE), ("Regression adjustment", pe["ols_adjusted"], pe["ols_se"], BLUE),
+           ("Double machine learning", pe["dml"], pe["dml_se"], BLUE)]
+    c = ax[2]
+    for i, (name, v, se, col) in enumerate(est):
+        y = len(est) - 1 - i
+        c.errorbar(100 * v, y, xerr=196 * se, color=col, marker="o", ms=4.5, lw=1.0)
+        c.text(100 * v + 196 * se + 0.7, y, f"{100 * v:.1f}", va="center", fontsize=7.5)
+    c.axhline(2.5, color="#bbbbbb", lw=0.6)
+    c.set_yticks(range(len(est) - 1, -1, -1), [e[0] for e in est]); c.set_ylim(-0.6, len(est) - 0.4); c.set_xlim(18, 43); c.tick_params(axis="y", length=0)
+    c.grid(axis="y", visible=False); c.grid(axis="x", visible=True)
+    c.set_xlabel("Effect of exposure on visit rate (pp)"); panel(c, "C", "Effect of exposure")
+    fig.tight_layout(w_pad=1.5)
+    save(fig, f"{S02A}/out/fig_attributed_vs_incremental.png")
 
 
-def fig08b(t):
-    """Minimum detectable effect and sampling variance of adjusted against unadjusted readouts."""
-    d = load("03_planning_a_test/03a_lift_study_sizing/out/covariate_adjustment.json")["by_n"]
-    ns = sorted(d, key=int); x = range(len(ns))
-    series = (("D", "Unadjusted", t["grey"]), ("L", "Adjusted, 12 features", t["green"]),
-              ("M", "Adjusted, model prediction", t["blue"]))
-    fig, axes = new(2, height=2.8)
-    ax = axes[0]
+def fig02b():
+    """Where each rule puts the credit: by how long before the last touch a touch occurred, and on clicked touches."""
+    m = load(f"{S02B}/out/mta.json"); cr = m["credit_by_recency_bucket"]
+    keys = ["last", "<1d", "1-7d", ">7d"]; names = ["Last touch", "< 1 day earlier", "1-7 days earlier", "> 7 days earlier"]
+    rules = [("cr_last", "Last\ntouch"), ("cr_decay", "Time\ndecay"), ("cr_linear", "Linear"), ("cr_first", "First\ntouch")]
+    fig, ax = plt.subplots(1, 2, figsize=(7.2, 3.3), dpi=300, gridspec_kw=dict(width_ratios=[1.15, 1]))
+    a = ax[0]
+    for q, (rk, _) in enumerate(rules):
+        base = 0.0
+        for kk, col, nm in zip(keys, SHADES, names):
+            v = 100 * cr[rk][kk]
+            a.bar(q, v, bottom=base, color=col, width=0.6, label=nm if q == 0 else None)
+            if v >= 9:
+                a.text(q, base + v / 2, f"{v:.0f}", ha="center", va="center", fontsize=7, color="white" if col in SHADES[:2] else INK)
+            base += v
+    a.set_xticks(range(len(rules)), [r[1] for r in rules]); a.tick_params(axis="x", length=0); a.set_ylim(0, 100)
+    a.set_ylabel("Share of conversion credit (%)"); a.legend(loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=2, columnspacing=1.2, handlelength=1.0)
+    panel(a, "A", "Credit by timing of the touch")
+    b = ax[1]; v = [100 * m["credit_on_clicked_touches"][rk] for rk, _ in rules]
+    b.bar(range(len(rules)), v, color=NAVY, width=0.58)
+    for q, u in enumerate(v):
+        b.text(q, u / 2, f"{u:.0f}%", ha="center", va="center", fontsize=7.5, color="white")
+    b.set_xticks(range(len(rules)), [r[1] for r in rules]); b.set_xlim(-0.6, len(rules) - 0.4); b.tick_params(axis="x", length=0)
+    b.axhline(100 * m["share_touches_clicked"], color=ORANGE, lw=1.0, ls="--", label=f'Share of touches that were clicked ({100 * m["share_touches_clicked"]:.0f}%)')
+    b.set_ylim(0, 100); b.set_ylabel("Share of credit on clicked touches (%)"); b.legend(loc="upper center", bbox_to_anchor=(0.5, -0.2))
+    panel(b, "B", "Credit on clicked touches")
+    fig.tight_layout(w_pad=2.0)
+    save(fig, f"{S02B}/out/fig_credit_by_rule.png")
+
+
+def fig02c_recovery():
+    """Estimated against known channel ROAS in the recovery test, weekly and daily data (logarithmic axes)."""
+    fig, ax = plt.subplots(1, 2, figsize=(7.2, 3.2), dpi=300)
+    for a, suf, name, letter in ((ax[0], "", "Weekly data", "A"), (ax[1], "_daily", "Daily data", "B")):
+        r = [u for u in rows(f"{S02C}/out/mmm_recovery{suf}.csv") if u["converged"] == "True"]
+        rho = load(f"{S02C}/out/mmm_summary{suf}.json")["recovery"]["spearman"]
+        a.plot([0.4, 5], [0.4, 5], color=EDGE, lw=0.7, ls="--", label="Estimate = known value")
+        points(a, [float(u["true"]) for u in r], [float(u["est"]) for u in r], [float(u["lo"]) for u in r], [float(u["hi"]) for u in r],
+               NAVY, label="Estimate, 90% interval", ms=3.6, ls="none", capsize=0, elinewidth=0.7)
+        a.set_xscale("log"); a.set_yscale("log"); a.set_xlim(0.4, 5); a.set_ylim(0.03, 1000)
+        a.set_xticks([0.5, 1, 2, 4], ["0.5", "1", "2", "4"]); a.set_yticks([0.1, 1, 10, 100, 1000], ["0.1", "1", "10", "100", "1,000"]); a.minorticks_off()
+        a.set_xlabel("Known channel ROAS (simulated)"); a.set_ylabel("Estimated ROAS")
+        panel(a, letter, f"{name} (rank correlation {rho:.2f})")
+    h, l = ax[0].get_legend_handles_labels()
+    fig.legend(h, l, loc="lower center", ncol=2, bbox_to_anchor=(0.5, 0.0), columnspacing=2.0)
+    fig.tight_layout(w_pad=2.0, rect=(0, 0.07, 1, 1))
+    save(fig, f"{S02C}/out/fig_roas_recovery.png")
+
+
+def fig02c_detect():
+    """Recovery error against the signal-to-noise index, and the smallest detectable ROAS on real spend."""
+    det = rows(f"{S02C}/out/detectability.csv"); rr = [r for r in det if r["sim"] == "brand_shapes"]
+    idx = {(r["org"], r["channel"]): float(r["index"]) for r in rr if r["freq"] == "D"}
+    rec = [r for r in rows(f"{S02C}/out/mmm_pooled_recovery_daily.csv") if r["sim"] == "brand_shapes" and r["single_converged"] == "True"]
+    s = load(f"{S02C}/out/detectability.json"); t1 = s["tests"]["T1"]
+    px = [max(idx[(r["org"], r["channel"])], 0.06) for r in rec]
+    py = [100 * abs(float(r["single"]) - float(r["true"])) / float(r["true"]) for r in rec]
+    fig, ax = plt.subplots(1, 2, figsize=(7.2, 2.9), dpi=300)
+    a = ax[0]
+    a.scatter([u for u in px if u < 2], [v for u, v in zip(px, py) if u < 2], s=12, color=GREY, label=f'Index < 2 (median error {100 * t1["index_below_2"]["median_err"]:.0f}%)')
+    a.scatter([u for u in px if u >= 2], [v for u, v in zip(px, py) if u >= 2], s=12, color=NAVY, label=f'Index ≥ 2 (median error {100 * t1["index_2_or_more"]["median_err"]:.0f}%)')
+    a.axvline(2, color=ORANGE, lw=1.0, ls="--"); a.axvspan(2, 60, color=NAVY, alpha=0.05, lw=0)
+    a.set_xscale("log"); a.set_yscale("log"); a.set_xlim(0.02, 60); a.set_ylim(0.6, 4000)
+    a.set_xticks([0.1, 1, 2, 10], ["0.1", "1", "2", "10"]); a.set_yticks([1, 10, 100, 1000], ["1", "10", "100", "1,000"]); a.minorticks_off()
+    a.set_xlabel("Signal-to-noise index, computed before fitting"); a.set_ylabel("Absolute error of estimated ROAS (%)")
+    a.legend(loc="lower left", handletextpad=0.1, borderaxespad=0.2, fontsize=7); panel(a, "A", "Daily data, held-out simulation")
+    b = ax[1]
+    for freq, name, col in (("W", "Weekly data", GREY), ("D", "Daily data", NAVY)):
+        v = sorted(float(r["min_detectable_roas"]) for r in rr if r["freq"] == freq)
+        share = s[freq]["real_spend"]["share_at_most"]["2"]
+        b.step(v, [100 * (q + 1) / len(v) for q in range(len(v))], where="post", color=col, label=f"{name} ({100 * share:.0f}% at 2 or below)")
+    b.axvline(2, color=ORANGE, lw=1.0, ls="--"); b.axvspan(0, 2, color=NAVY, alpha=0.05, lw=0)
+    b.set_xlim(0, 16); b.set_ylim(0, 100); b.set_xlabel("Smallest detectable ROAS (80% power)"); b.set_ylabel("Cumulative share of brand-channels (%)")
+    b.legend(loc="lower right"); panel(b, "B", "Real spend: smallest detectable ROAS")
+    fig.tight_layout(w_pad=2.0)
+    save(fig, f"{S02C}/out/fig_detectability.png")
+
+
+def fig03a_power():
+    """Share of resampled studies that detect the lift, and that report a lift when there is none, by users per arm."""
+    d = load(f"{S03A}/out/lift_study_sizing.json"); k = d["studies_per_n"]; d = d["by_n"]; ns = sorted(d, key=int); x = list(range(len(ns)))
+    fig, ax = plt.subplots(1, 2, figsize=(7.2, 2.8), dpi=300)
+    for a, keys, ref, name, letter in ((ax[0], ("power_z", "bayes_detect"), 80, "Power to detect a one-point lift", "A"),
+                                       (ax[1], ("aa_false_positive_z", "aa_false_positive_bayes"), 5, "False positives with no true lift", "B")):
+        for key, lab, col, off in zip(keys, ("z-test at 5%", "Bayesian, P(lift > 0) > 0.95"), (NAVY, BLUE), (-0.05, 0.05)):
+            y = [100 * d[n][key] for n in ns]; h = [binom(d[n][key], k) for n in ns]
+            a.errorbar([q + off for q in x], y, yerr=h, color=col, marker="o", lw=1.2, elinewidth=0.9, label=lab)
+        a.axhline(ref, color=ORANGE, lw=1.0, ls="--", label="80% power" if ref == 80 else "Nominal 5%")
+        a.set_xticks(x, [f"{int(n):,}" for n in ns]); a.set_xlabel("Users per arm"); panel(a, letter, name)
+    ax[0].set_ylim(0, 105); ax[0].set_ylabel("Studies detecting the lift (%)"); ax[0].legend(loc="lower right")
+    ax[1].set_ylim(0, 10); ax[1].set_ylabel("A/A studies reporting a lift (%)"); ax[1].legend(loc="upper right")
+    fig.tight_layout(w_pad=2.0)
+    save(fig, f"{S03A}/out/fig_power_by_sample_size.png")
+
+
+def fig03a_mde():
+    """Minimum detectable lift, and sampling variance of the adjusted readouts relative to the unadjusted one."""
+    d = load(f"{S03A}/out/covariate_adjustment.json")["by_n"]; ns = sorted(d, key=int); x = list(range(len(ns)))
+    series = (("D", "Unadjusted", GREY), ("L", "Adjusted, 12 features", BLUE), ("M", "Adjusted, model prediction", NAVY))
+    fig, ax = plt.subplots(1, 2, figsize=(7.2, 2.8), dpi=300)
+    a = ax[0]
     for key, name, col in series:
-        ax.plot(x, [100 * d[n][key]["mde80"] for n in ns], color=col, marker="o", ms=3.8, label=name)
-    for i, n in enumerate(ns):
-        ax.text(i + 0.1, 100 * d[n]["D"]["mde80"] + 0.08, f"{100 * d[n]['D']['mde80']:.2f}", color=t["ink2"], fontsize=7)
-        ax.text(i - 0.1, 100 * d[n]["M"]["mde80"] - 0.2, f"{100 * d[n]['M']['mde80']:.2f}", color=t["blue"], fontsize=7,
-                ha="right")
-    ax.axhline(1, color=t["grey"], lw=0.8, ls=(0, (4, 3)))
-    ax.set_xticks(list(x), [f"{int(n):,}" for n in ns]); ax.set_ylim(0, 3.0); ax.set_xlim(-0.6, len(ns) - 0.6)
-    ax.set_xlabel("Users per arm"); ax.set_ylabel("Smallest lift detected with 80% power (pp)")
-    ax.legend(loc="upper right")
-    title(ax, "a", "Minimum detectable lift")
-    ax = axes[1]
-    ax.axhline(1, color=t["grey"], lw=0.8, ls=(0, (4, 3)))
-    for key, name, col in series[1:]:
-        r = [d[n][key]["variance_ratio_to_D"] for n in ns]
-        lo = [d[n][key]["variance_ratio_to_D"] - d[n][key]["variance_ratio_ci"][0] for n in ns]
-        hi = [d[n][key]["variance_ratio_ci"][1] - d[n][key]["variance_ratio_to_D"] for n in ns]
-        off = -0.07 if key == "L" else 0.07
-        ax.errorbar([i + off for i in x], r, yerr=[lo, hi], color=col, marker="o", ms=3.8, lw=0, elinewidth=1.0,
-                    label=name)
-    ax.set_xticks(list(x), [f"{int(n):,}" for n in ns]); ax.set_ylim(0.5, 1.08); ax.set_xlim(-0.5, len(ns) - 0.5)
-    ax.set_xlabel("Users per arm"); ax.set_ylabel("Sampling variance relative to unadjusted")
-    ax.legend(loc="lower right")
-    title(ax, "b", "Variance of the readout")
-    save(fig, "03_planning_a_test/03a_lift_study_sizing/out/fig_mde_by_adjustment.png")
+        a.plot(x, [100 * d[n][key]["mde80"] for n in ns], color=col, marker="o", label=name)
+    a.axhline(1, color=ORANGE, lw=1.0, ls="--", label="One-point lift")
+    a.set_xticks(x, [f"{int(n):,}" for n in ns]); a.set_ylim(0, 3); a.set_xlabel("Users per arm"); a.set_ylabel("Minimum detectable lift (pp)")
+    a.legend(loc="upper right"); panel(a, "A", "Minimum detectable lift")
+    b = ax[1]
+    b.axhline(1, color=GREY, lw=0.9, ls="--", label="Unadjusted")
+    for (key, name, col), off in zip(series[1:], (-0.07, 0.07)):
+        y = [d[n][key]["variance_ratio_to_D"] for n in ns]
+        points(b, [q + off for q in x], y, [d[n][key]["variance_ratio_ci"][0] for n in ns], [d[n][key]["variance_ratio_ci"][1] for n in ns], col, label=name, ls="none")
+    b.set_xticks(x, [f"{int(n):,}" for n in ns]); b.set_xlim(-0.5, len(ns) - 0.5); b.set_ylim(0.4, 1.1)
+    b.set_xlabel("Users per arm"); b.set_ylabel("Variance relative to unadjusted"); b.legend(loc="lower right")
+    panel(b, "B", "Sampling variance of the readout")
+    fig.tight_layout(w_pad=2.0)
+    save(fig, f"{S03A}/out/fig_mde_by_adjustment.png")
+
+
+def fig03b():
+    """Minimum detectable effect by number of metros and by test length, and false positives of the volume-weighted estimate."""
+    tab = rows(f"{S03B}/out/design_summary.csv"); ri = rows(f"{S03B}/out/randomization_inference_check.csv")
+    series = (("CR: year-over-year difference", "Year-over-year difference", GREY), ("MP: pair ANCOVA", "Matched pairs, adjusted", BLUE),
+              ("CR: ANCOVA (CUPED)", "Regression-adjusted", NAVY))
+    mde = {(r["estimator"], int(r["metros"]), int(r["test_months"])): float(r["mde_80_pct"]) for r in tab if r["mde_80_pct"]}
+    xs = [20, 50, 100, 150]
+    fig, ax = plt.subplots(1, 3, figsize=(7.2, 2.9), dpi=300, gridspec_kw=dict(width_ratios=[1.15, 0.85, 1.1]))
+    a = ax[0]
+    for k, name, col in series:
+        a.plot(xs, [mde[(k, m, 2)] for m in xs], color=col, marker="o", label=name)
+    a.set_xticks(xs); a.set_ylim(0, 28); a.set_xlabel("Metros in the test"); a.set_ylabel("Minimum detectable effect (%)")
+    a.legend(loc="upper right"); panel(a, "A", "By number of metros (two months)")
+    b = ax[1]
+    for k, name, col in series:
+        b.plot([1, 2, 3], [mde[(k, 100, t)] for t in (1, 2, 3)], color=col, marker="o")
+    b.set_xticks([1, 2, 3]); b.set_xlim(0.7, 3.3); b.set_ylim(0, 28); b.set_xlabel("Test length (months)"); b.set_ylabel("Minimum detectable effect (%)")
+    panel(b, "B", "By test length (100 metros)")
+    c = ax[2]; vw = {int(r["metros"]): r for r in ri if r["estimator"] == "CR: volume-weighted ANCOVA"}
+    n_t = {int(r["metros"]): int(r["draws"]) for r in tab if r["estimator"] == "CR: volume-weighted ANCOVA" and r["test_months"] == "2"}
+    q = list(range(len(xs)))
+    y = [100 * float(vw[m]["false_positive_rate_t_test"]) for m in xs]
+    c.errorbar([u - 0.06 for u in q], y, yerr=[binom(v / 100, n_t[m]) for v, m in zip(y, xs)], color=ORANGE, marker="o", lw=1.2, elinewidth=0.9, label="t-test")
+    y = [100 * float(vw[m]["false_positive_rate"]) for m in xs]
+    c.errorbar([u + 0.06 for u in q], y, yerr=[binom(v / 100, int(vw[m]["draws"])) for v, m in zip(y, xs)], color=NAVY, marker="o", lw=1.2, elinewidth=0.9, label="Randomization inference")
+    c.axhline(5, color=GREY, lw=0.9, ls="--", label="Nominal 5%")
+    c.set_xticks(q, [str(m) for m in xs]); c.set_xlim(-0.4, 3.4); c.set_ylim(0, 12); c.set_xlabel("Metros in the test"); c.set_ylabel("Placebo tests rejecting (%)")
+    c.legend(loc="upper right"); panel(c, "C", "Volume-weighted estimate")
+    fig.tight_layout(w_pad=1.4, rect=(0, 0.03, 1, 1)); footer(fig, ZILLOW)
+    save(fig, f"{S03B}/out/fig1_mde_by_metros.png")
+
+
+def fig03c():
+    """Forecast error relative to a no-change forecast, by horizon, at the four levels of the hierarchy."""
+    tab = rows(f"{S03C}/reports/tables/inventory_ets_by_horizon.csv")
+    val = {(r["level"], r["method"], int(r["h"])): float(r["rel_to_no_change"]) for r in tab}; hs = list(range(1, 13))
+    fig, ax = plt.subplots(1, 4, figsize=(7.2, 2.9), dpi=300, sharey=True)
+    for a, lev, name, letter in zip(ax, ("US", "division", "state", "metro"), ("Nation", "Divisions", "States", "Metros"), "ABCD"):
+        a.axhline(1, color=ORANGE, lw=1.0, ls="--", label="No-change forecast")
+        for m, lab, col, ls in (("base", "Unreconciled", GREY, "-"), ("bu", "Bottom-up", BLUE, (0, (3, 2))), ("mint_shrink", "MinT-shrink", NAVY, "-")):
+            a.plot(hs, [val[(lev, m, h)] for h in hs], color=col, ls=ls, label=lab)
+        a.set_xticks([1, 3, 6, 9, 12]); a.set_ylim(0.3, 1.4); a.set_xlabel("Horizon (months)"); panel(a, letter, name)
+    ax[0].set_ylabel("RMSSE relative to no-change")
+    h, l = ax[0].get_legend_handles_labels()
+    fig.legend(h[1:] + h[:1], l[1:] + l[:1], loc="lower center", ncol=4, bbox_to_anchor=(0.5, 0.035), columnspacing=1.6)
+    fig.tight_layout(w_pad=1.2, rect=(0, 0.11, 1, 1)); footer(fig, ZILLOW)
+    save(fig, f"{S03C}/reports/figures/relative_rmsse_by_horizon_inventory_ets.png")
+
+
+def fig04_segments():
+    """Rule segments: share of accounts against share of next-six-month sales, and mean sales per account."""
+    seg = {s["segment"]: s for s in load(f"{S04}/out/12_ltv_segments.json")["rule_segments"]}
+    rec = [("recent<=60d", "≤60"), ("61-120d", "61-120"), (">120d", ">120")]; tiers = [("high", "High value"), ("mid", "Mid value"), ("low", "Low value")]
+    order = [(f"{r}|{t}", rl) for t, _ in tiers for r, rl in rec]; x = [q + q // 3 * 0.6 for q in range(9)]
+    fig, ax = plt.subplots(1, 2, figsize=(7.2, 3.0), dpi=300, gridspec_kw=dict(width_ratios=[1.1, 1]))
+    a = ax[0]; w = 0.38
+    for key, name, col, off in (("share_accounts", "Share of accounts", GREY, -w / 2), ("share_next6m_sales_existing", "Share of next-six-month sales", NAVY, w / 2)):
+        v = [100 * seg[k][key] for k, _ in order]
+        a.bar([u + off for u in x], v, width=w, color=col, label=name)
+        for u, val in zip(x, v):
+            a.text(u + off, val + 1.2, f"{val:.0f}", ha="center", va="bottom", fontsize=6.5)
+    a.set_ylim(0, 85); a.set_ylabel("Percent"); a.legend(loc="upper right"); panel(a, "A", "Accounts and later sales")
+    b = ax[1]
+    m = [seg[k]["mean_next6m_sales"] for k, _ in order]
+    points(b, x, m, [seg[k]["mean_ci_boot"][0] for k, _ in order], [seg[k]["mean_ci_boot"][1] for k, _ in order], NAVY, ls="none")
+    b.set_yscale("log"); b.set_yticks([200, 500, 1000, 2000, 5000], ["200", "500", "1,000", "2,000", "5,000"]); b.minorticks_off(); b.set_ylim(120, 7000)
+    b.set_ylabel("Mean next-six-month sales (GBP)"); panel(b, "B", "Sales per account")
+    for q in (a, b):
+        q.set_xticks(x, [rl for _, rl in order]); q.tick_params(axis="x", length=0, labelsize=6.2); q.set_xlim(x[0] - 0.6, x[-1] + 0.6)
+        for g, (_, tl) in enumerate(tiers):
+            q.text(x[3 * g + 1], -0.115, tl, transform=q.get_xaxis_transform(), ha="center", va="top", fontsize=7.5)
+        q.set_xlabel("Days since last purchase, by value tier", labelpad=19)
+    fig.tight_layout(w_pad=2.0)
+    save(fig, f"{S04}/out/fig/fig5_segments.png")
+
+
+def fig04_cohorts():
+    """Monthly repeat-purchase rate of new-account cohorts."""
+    c = load(f"{S04}/out/12_ltv_segments.json")["cohorts_new_accounts"]; cms = list(c["repeat_rate"]); ks = list(range(1, 12))
+    grid = [[c["repeat_rate"][cm].get(str(k)) for k in ks] for cm in cms]
+    fig, a = plt.subplots(figsize=(7.2, 2.9), dpi=300); a.set_label("heat")
+    top = 100 * max(v for r in grid for v in r if v is not None)
+    im = a.imshow([[float("nan") if v is None else 100 * v for v in r] for r in grid], aspect="auto", cmap=SEQ, vmin=0, vmax=top)
+    for i, r in enumerate(grid):
+        for j, v in enumerate(r):
+            if v is not None:
+                a.text(j, i, f"{100 * v:.0f}", ha="center", va="center", fontsize=7, color="white" if 100 * v > 0.55 * top else INK)
+    a.set_xticks(range(len(ks)), ks); a.set_yticks(range(len(cms)), [f"{cm}  (n = {c['size'][cm]})" for cm in cms])
+    a.set_xticks([u - 0.5 for u in range(1, len(ks))], minor=True); a.set_yticks([u - 0.5 for u in range(1, len(cms))], minor=True)
+    a.grid(False); a.grid(which="minor", color="white", lw=1.2); a.tick_params(which="both", length=0)
+    for side in a.spines.values():
+        side.set_visible(False)
+    a.set_xlabel("Months since first purchase"); a.set_ylabel("Month of first purchase")
+    cb = fig.colorbar(im, ax=a, pad=0.02, aspect=18); cb.set_label("Accounts buying again (%)"); cb.outline.set_visible(False); cb.ax.tick_params(length=0)
+    cb.ax.set_label("heat")
+    fig.tight_layout()
+    save(fig, f"{S04}/out/fig/fig6_cohort_retention.png")
+
+
+def fig04_calibration():
+    """Predicted against actual next-six-month sales by decile of the prediction."""
+    r = load(f"{S04}/out/12_ltv_segments.json")
+    fig, a = plt.subplots(figsize=(3.6, 2.9), dpi=300)
+    top = max(d["actual"] for d in r["calib_BGNBD_GG"]) * 1.3
+    a.plot([100, top], [100, top], color=EDGE, lw=0.7, ls="--", label="Predicted = actual")
+    for k, name, col in (("calib_ML_lgbm_tweedie", "Gradient boosting", GREY), ("calib_BGNBD_GG", "Purchase model", NAVY)):
+        a.plot([d["pred"] for d in r[k]], [d["actual"] for d in r[k]], color=col, marker="o", label=name)
+    a.set_xscale("log"); a.set_yscale("log"); a.set_xticks([100, 1000, 10000], ["100", "1,000", "10,000"]); a.set_yticks([100, 1000, 10000], ["100", "1,000", "10,000"]); a.minorticks_off()
+    a.set_xlabel("Mean predicted sales by decile (GBP)"); a.set_ylabel("Mean actual sales (GBP)"); a.legend(loc="upper left")
+    fig.tight_layout()
+    save(fig, f"{S04}/out/fig/fig4_ltv_calibration.png")
 
 
 if __name__ == "__main__":
-    style(T)
-    for f in (fig01, fig07, fig01d, fig02, fig05, fig06, fig06b, fig08, fig08b):
-        f(T)
+    style()
+    for f in (fig01a, fig01b, fig01d, fig02a, fig02b, fig02c_recovery, fig02c_detect, fig03a_power, fig03a_mde, fig03b, fig03c,
+              fig04_segments, fig04_cohorts, fig04_calibration):
+        f()

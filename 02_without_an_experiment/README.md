@@ -16,11 +16,11 @@ buys; these two have no benchmark.
 
 **[02a · Validating an attribution metric against a randomized experiment](02a_attribution_metric_validation)**
 
-![Outcomes credited by attribution against incremental outcomes from the experiment](02a_attribution_metric_validation/out/fig_attributed_vs_incremental.png)
+![Outcomes credited by attribution against incremental outcomes from the experiment, and estimates of the effect of exposure by method](02a_attribution_metric_validation/out/fig_attributed_vs_incremental.png)
 
 **[02b · Multi-touch attribution on 6.1M display-ad user paths](02b_multi_touch_attribution)**
 
-![Share of conversion credit by recency of the touch and on clicked touches, by rule](02b_multi_touch_attribution/out/fig_credit_by_rule.png)
+![Share of conversion credit by timing of the touch and on clicked touches, by rule](02b_multi_touch_attribution/out/fig_credit_by_rule.png)
 
 **[02c · Marketing mix models: which brands have enough signal to measure a channel's return?](02c_marketing_mix_modeling)**
 

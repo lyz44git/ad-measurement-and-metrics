@@ -87,7 +87,7 @@ bootstrap out-of-bag stability, selects two clusters (adjusted Rand index 0.92 o
 high-value cluster is 36.8% of accounts and produced 76.5% of next-six-month sales, close to the rule above
 ([`out/12_ltv_segments.json`](out/12_ltv_segments.json)).
 
-![Rule segments: share of accounts and of next-six-month sales](out/fig/fig5_segments.png)
+![Rule segments: share of accounts and of next-six-month sales, and mean next-six-month sales per account with 95% bootstrap intervals](out/fig/fig5_segments.png)
 
 ### Purchase model against a simple rule
 
@@ -108,8 +108,8 @@ Each script takes its paths as arguments:
 python code/10_ltv_load.py data_raw/online_retail_II.xlsx derived out
 python code/11_btyd.py out/11_btyd_recovery.json
 python code/12_ltv_segments.py derived out code
-python code/13_ltv_figs.py out
 python code/14_ltv_extension.py derived out code
+python ../figures/make_study_figures.py   # redraws the figures from out/
 ```
 
 `tests/` checks the purchase and spend models on simulated customers and runs the published SQL against an
