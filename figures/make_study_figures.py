@@ -61,10 +61,10 @@ def fig01d():
         y = [100 * al[q]["mean_share"][k] for q in b]
         a.plot(x, y, color=c, lw=2.2 if c != INK2 else 1.4, ls=ls, marker="o", ms=5.5, mec="white", mew=1, zorder=3, label=name)
     for q, xx in zip(b, x):
-        a.text(xx, 6, f"lift beat\nresponse\n{al[q]['ml_gt_response']} of 10", ha="center", fontsize=6.8, color=ORANGE if al[q]["ml_gt_response"] < 8 else NAVY,
+        a.text(xx, 117, f"lift beat\nresponse\n{al[q]['ml_gt_response']} of 10", ha="center", va="top", fontsize=6.8, color=ORANGE if al[q]["ml_gt_response"] < 8 else NAVY,
                fontweight="bold", linespacing=1.1)
     a.legend(loc="center right", bbox_to_anchor=(1.0, 0.42), labelcolor=INK2, fontsize=7, handlelength=1.8)
-    a.set_xticks(x, ["10%", "20%", "30%"]); a.set_xlim(7, 37); a.set_ylim(0, 100); a.set_xlabel("Budget (share of users)")
+    a.set_xticks(x, ["10%", "20%", "30%"]); a.set_xlim(7, 37); a.set_ylim(0, 118); a.set_yticks(range(0, 101, 20)); a.set_xlabel("Budget (share of users)")
     a.set_ylabel("Incremental visits captured (%)"); clean(a); panel(a, "B", "Allocation by segment ranking")
     fig.subplots_adjust(left=0.08, right=0.98, top=0.86, bottom=0.18, wspace=0.3)
     save(fig, f"{S01D}/out/fig_privacy_and_allocation.png")
@@ -116,7 +116,8 @@ def fig02c_detect():
         v = sorted(float(r["min_detectable_roas"]) for r in rr if r["freq"] == f)
         b.step(v, [100 * (q + 1) / len(v) for q in range(len(v))], where="post", color=c, lw=2.2)
         sh = 100 * s[f]["real_spend"]["share_at_most"]["2"]
-        b.text(15.6, 100 * sum(u <= 15.6 for u in v) / len(v) + (3 if f == "D" else -9), f"{name}: {sh:.0f}% at 2 or below", ha="right", fontsize=7.2, color=c, fontweight="bold", path_effects=HALO)
+        y_lab = 100 * sum(u <= 15.6 for u in v) / len(v) + 3 if f == "D" else 100 * sum(u <= 9 for u in v) / len(v) - 16  # weekly label sits below its curve
+        b.text(15.6, y_lab, f"{name}: {sh:.0f}% at 2 or below", ha="right", fontsize=7.2, color=c, fontweight="bold", path_effects=HALO)
     b.axvline(2, color=ORANGE, lw=1.2, ls=(0, (4, 3)))
     b.set_xlim(0, 16); b.set_ylim(0, 100); b.set_xlabel("Smallest detectable ROAS (80% power)"); b.set_ylabel("Brand-channels, cumulative (%)"); clean(b)
     panel(b, "B", "Real spend: what could be detected")
@@ -148,10 +149,10 @@ def fig03a_mde():
     a.text(24000, 1.07, "one-point lift", ha="right", fontsize=7.2, color=ORANGE, fontweight="bold")
     for k, name, c in (("D", "unadjusted", GREY), ("L", "adjusted, 12 features", BLUE), ("M", "adjusted, model prediction", NAVY)):
         a.plot([int(n) for n in ns], [100 * by[n][k]["mde80"] for n in ns], color=c, lw=2.2, marker="o", ms=5, mec="white", mew=1, label=name)
-    for k, c, dy in (("D", GREY, 0.42), ("L", BLUE, -0.3), ("M", NAVY, -0.55)):
+    for k, c, dx, dy, ha in (("D", GREY, 0, 17, "center"), ("L", BLUE, 4, -14, "left"), ("M", NAVY, -4, -14, "right")):
         a.plot([req[k], req[k]], [0, 1], color=c, lw=1, ls=(0, (2, 2)))
         a.scatter([req[k]], [1], s=46, color=c, edgecolor="white", lw=1.2, zorder=5)
-        a.annotate(fmt(req[k]), (req[k], 1), xytext=(0, dy * 40), textcoords="offset points", ha="center", fontsize=7.5, color=c, fontweight="bold", path_effects=HALO)
+        a.annotate(fmt(req[k]), (req[k], 1), xytext=(dx, dy), textcoords="offset points", ha=ha, fontsize=7.5, color=c, fontweight="bold", path_effects=HALO)
     a.set_xscale("log"); a.set_xticks([int(n) for n in ns], [fmt(int(n)) for n in ns]); a.minorticks_off(); a.set_ylim(0, 3)
     a.set_xlabel("Users per arm (log scale)"); a.set_ylabel("Minimum detectable lift (pp)"); a.legend(loc="upper right", labelcolor=INK2); clean(a)
     panel(a, "A", "Minimum detectable lift")

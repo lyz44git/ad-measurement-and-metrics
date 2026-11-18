@@ -326,9 +326,10 @@ def p_clicked(ax, letter, title="Share of credit on clicked touches"):
     for i, u in enumerate(v):
         y = len(v) - 1 - i
         ax.plot([sc, u], [y, y], color=NAVY, lw=2, alpha=0.4)
-        dot(ax, u, y, NAVY, s=55); ax.text(u + 0.9, y, f"{u:.0f}%", va="center", fontsize=8.5, fontweight="bold")
+        left = u < sc  # a share below the reference line is labeled on its left, away from the line
+        dot(ax, u, y, NAVY, s=55); ax.text(u - 0.9 if left else u + 0.9, y, f"{u:.0f}%", va="center", ha="right" if left else "left", fontsize=8.5, fontweight="bold")
     ax.axvline(sc, color=ORANGE, lw=1.1, ls=(0, (4, 3)))
-    ax.text(sc, len(v) - 0.35, f"share of touches clicked {sc:.0f}%", ha="center", fontsize=7.5, color=ORANGE, fontweight="bold")
+    ax.text(sc + 0.5, len(v) - 0.35, f"share of touches clicked {sc:.0f}%", ha="left", fontsize=7.5, color=ORANGE, fontweight="bold")
     ax.set_yticks(range(len(v)), [r[1] for r in RULES][::-1]); ax.set_ylim(-0.6, len(v) - 0.1); ax.set_xlim(44, 72)
     ax.set_xticks([45, 50, 55, 60, 65, 70], [f"{t}%" for t in (45, 50, 55, 60, 65, 70)]); ax.grid(axis="x", color=GRID); ax.grid(axis="y", visible=False)
     ax.tick_params(axis="y", labelcolor=INK, labelsize=8); clean(ax, x=False)
@@ -373,8 +374,8 @@ def p_mmm_scatter(ax, letter, title="Recovery error and the signal-to-noise inde
     ax.scatter([u for u, v in pts if u < 2], [v for u, v in pts if u < 2], s=26, color=GREY, edgecolor="white", lw=0.7, zorder=3)
     ax.scatter([u for u, v in pts if u >= 2], [v for u, v in pts if u >= 2], s=30, color=NAVY, edgecolor="white", lw=0.7, zorder=3)
     ax.text(2.2, 2400, "index = 2", fontsize=7.2, color=ORANGE, fontweight="bold")
-    ax.set_xscale("log"); ax.set_yscale("log"); ax.set_xlim(0.03, 60); ax.set_ylim(0.6, 4000)
-    nice_log(ax, "x", [0.1, 1, 2, 10], ["0.1", "1", "2", "10"]); nice_log(ax, "y", [1, 10, 100, 1000])
+    ax.set_xscale("log"); ax.set_yscale("log"); ax.set_xlim(0.03, 60); ax.set_ylim(0.08, 4000)
+    nice_log(ax, "x", [0.1, 1, 2, 10], ["0.1", "1", "2", "10"]); nice_log(ax, "y", [0.1, 1, 10, 100, 1000], ["0.1", "1", "10", "100", "1,000"])
     ax.set_xlabel("Signal-to-noise index (log scale)"); ax.set_ylabel("Error of estimated ROAS (%)"); clean(ax)
     panel(ax, letter, title)
 

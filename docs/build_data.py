@@ -131,11 +131,12 @@ def study01():
 def study02():
     at = load(G2 + "02a_attribution_metric_validation/out/attribution_vs_experiment.json")["per_exposed_user_visit_effect"]
     inc = load(G1 + "01a_ad_incrementality/out/criteo/a_incrementality.json")
-    est = [{"label": "Experiment, unadjusted", "group": "exp", "v": r(100 * inc["cace_visit_unadjusted"]["est"], 2), "ci": r(196 * inc["cace_visit_unadjusted"]["se"], 2)},
-           {"label": "Experiment, adjusted", "group": "exp", "v": r(100 * inc["cace_visit_adjusted"]["est"], 2), "ci": r(196 * inc["cace_visit_adjusted"]["se"], 2)},
-           {"label": "Exposed vs. unexposed", "group": "obs", "v": r(100 * at["naive"], 2), "ci": r(196 * at["naive_se"], 2)},
-           {"label": "Regression adjustment", "group": "obs", "v": r(100 * at["ols_adjusted"], 2), "ci": r(196 * at["ols_se"], 2)},
-           {"label": "Double machine learning", "group": "obs", "v": r(100 * at["dml"], 2), "ci": r(196 * at["dml_se"], 2)}]
+    # point estimates rounded once to one decimal, as displayed (25.549 must not become 25.55 and then 25.6)
+    est = [{"label": "Experiment, unadjusted", "group": "exp", "v": r(100 * inc["cace_visit_unadjusted"]["est"], 1), "ci": r(196 * inc["cace_visit_unadjusted"]["se"], 2)},
+           {"label": "Experiment, adjusted", "group": "exp", "v": r(100 * inc["cace_visit_adjusted"]["est"], 1), "ci": r(196 * inc["cace_visit_adjusted"]["se"], 2)},
+           {"label": "Exposed vs. unexposed", "group": "obs", "v": r(100 * at["naive"], 1), "ci": r(196 * at["naive_se"], 2)},
+           {"label": "Regression adjustment", "group": "obs", "v": r(100 * at["ols_adjusted"], 1), "ci": r(196 * at["ols_se"], 2)},
+           {"label": "Double machine learning", "group": "obs", "v": r(100 * at["dml"], 1), "ci": r(196 * at["dml_se"], 2)}]
     m = load(G2 + "02b_multi_touch_attribution/out/mta.json")
     clicked = {k: r(100 * m["credit_on_clicked_touches"][k], 2) for k in ("cr_last", "cr_decay", "cr_linear", "cr_first")}
     S = G2 + "02c_marketing_mix_modeling/out/"
