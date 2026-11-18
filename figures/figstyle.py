@@ -147,42 +147,44 @@ def segments():
 
 # ------------------------------------------------------------------ panels
 def p_rates(fig, spec, letter, title="Visit and conversion rates by group"):
-    """Two dumbbells, control to ad group, each on its own scale."""
-    E = experiment(); sub = spec.subgridspec(2, 1, hspace=0.9); axes = []
-    for j, (k, name, ticks, d) in enumerate((("visit", "Visit rate", [0, .02, .04, .06], 0), ("conversion", "Conversion rate", [0, .001, .002, .003, .004], 1))):
-        ax = fig.add_subplot(sub[j]); r = E[k]; axes.append(ax)
-        pill(ax, 0, ticks[-1], 0, PALE, lw=7, z=1, alpha=0.7)
-        pill(ax, r["p0"], r["p1"], 0, ORANGE, lw=7, z=2, alpha=0.75)
-        dot(ax, r["p0"], 0, GREY, s=70); dot(ax, r["p1"], 0, NAVY, s=80)
-        ax.text(r["p0"], 0.55, f"Control\n{100 * r['p0']:.2f}%", ha="right", va="bottom", fontsize=7.5, color=MUTED, linespacing=1.1)
-        ax.text(r["p1"], 0.55, f"Ad group\n{100 * r['p1']:.2f}%", ha="left", va="bottom", fontsize=7.5, color=NAVY, fontweight="bold", linespacing=1.1)
-        ax.text(ticks[-1], -0.95, f"+{100 * r['lift']:.0f}%", ha="right", va="center", fontsize=10, color=ORANGE, fontweight="bold")
-        ax.set_xlim(0, ticks[-1] * 1.02); ax.set_ylim(-1.3, 1.9); ax.set_yticks([])
-        ax.set_xticks(ticks, [f"{100 * t:.{d + 0}f}%" if d == 0 else f"{100 * t:.1f}%" for t in ticks]); ax.grid(False); clean(ax, x=False)
-        ax.text(0, 1.75, name, fontsize=8.5, fontweight="bold", color=INK, va="bottom")
-    axes[0].set_title(f"{letter}   {title}", loc="left", fontweight="bold", color=INK, pad=16)
-    return axes
+    """Two dumbbells, control to ad group, on one shared index scale (control = 100) so the two lifts compare by length."""
+    E = experiment(); ax = fig.add_subplot(spec); top = 185
+    for k, name, y in (("visit", "Visit rate", 3.0), ("conversion", "Conversion rate", 0.0)):
+        r = E[k]; i1 = 100 * r["p1"] / r["p0"]
+        pill(ax, 0, top, y, PALE, lw=7, z=1, alpha=0.7)
+        pill(ax, 100, i1, y, ORANGE, lw=7, z=2, alpha=0.75)
+        dot(ax, 100, y, GREY, s=70); dot(ax, i1, y, NAVY, s=80)
+        ax.text(97, y + 0.42, f"Control\n{100 * r['p0']:.2f}%", ha="right", va="bottom", fontsize=7.5, color=MUTED, linespacing=1.1)
+        ax.text(min(i1 - 5, top - 48), y + 0.42, f"Ad group\n{100 * r['p1']:.2f}%", ha="left", va="bottom", fontsize=7.5, color=NAVY, fontweight="bold", linespacing=1.1)
+        ax.text((100 + i1) / 2, y - 0.42, f"+{100 * r['lift']:.0f}%", ha="center", va="top", fontsize=10, color=ORANGE, fontweight="bold")
+        ax.text(0, y + 1.55, name, fontsize=8.5, fontweight="bold", color=INK, va="bottom")
+    ax.set_xlim(0, top * 1.01); ax.set_ylim(-1.15, 4.85); ax.set_yticks([])
+    ax.set_xticks([0, 50, 100, 150]); ax.grid(False); clean(ax, x=False)
+    ax.set_xlabel("% of control rate", fontsize=7.5, color=MUTED)
+    ax.set_title(f"{letter}   {title}", loc="left", fontweight="bold", color=INK, pad=10)
+    return [ax]
 
 
 def p_gap(fig, spec, letter, title="Credited by the count, and caused by the ads"):
-    """For conversions and visits: the experiment's estimate against the count, on one line each."""
-    E = experiment(); sub = spec.subgridspec(2, 1, hspace=0.9); axes = []
-    for j, (k, name, step) in enumerate((("conversion", "Conversions", 5000), ("visit", "Visits", 50000))):
-        ax = fig.add_subplot(sub[j]); r = E[k]; axes.append(ax); top = r["credited"] * 1.18
-        pill(ax, r["caused"], r["credited"], 0, OSOFT, lw=11, z=1)
-        ax.plot([r["caused"] - r["ci"], r["caused"] + r["ci"]], [0, 0], color=NAVY, lw=1.6, zorder=3)
-        for e in (r["caused"] - r["ci"], r["caused"] + r["ci"]):
-            ax.plot([e, e], [-0.22, 0.22], color=NAVY, lw=1.4, zorder=3)
-        dot(ax, r["caused"], 0, NAVY, s=80, z=5); dot(ax, r["credited"], 0, ORANGE, s=95, z=5, marker="D")
-        ax.text(r["caused"], -0.62, f"{fmt(r['caused'])}\ncaused", ha="center", va="top", fontsize=7.5, color=NAVY, fontweight="bold", linespacing=1.1)
-        ax.text(r["credited"], -0.62, f"{fmt(r['credited'])}\ncredited", ha="center", va="top", fontsize=7.5, color=ORANGE, fontweight="bold", linespacing=1.1)
-        ax.text((r["caused"] + r["credited"]) / 2, 0.5, f"+{fmt(r['credited'] - r['caused'])}  ({100 * (r['ratio'] - 1):.0f}% more)", ha="center", va="bottom",
+    """For conversions and visits: the count against the experiment's estimate, on one shared index scale (caused = 100)."""
+    E = experiment(); ax = fig.add_subplot(spec); top = 185
+    for k, name, y in (("conversion", "Conversions", 3.0), ("visit", "Visits", 0.0)):
+        r = E[k]; ia = 100 * r["credited"] / r["caused"]; e = 100 * r["ci"] / r["caused"]
+        pill(ax, 100, ia, y, OSOFT, lw=11, z=1)
+        ax.plot([100 - e, 100 + e], [y, y], color=NAVY, lw=1.6, zorder=3)
+        for v in (100 - e, 100 + e):
+            ax.plot([v, v], [y - 0.2, y + 0.2], color=NAVY, lw=1.4, zorder=3)
+        dot(ax, 100, y, NAVY, s=80, z=5); dot(ax, ia, y, ORANGE, s=95, z=5, marker="D")
+        ax.text(100, y - 0.45, f"{fmt(r['caused'])}\ncaused", ha="center", va="top", fontsize=7.5, color=NAVY, fontweight="bold", linespacing=1.1)
+        ax.text(ia, y - 0.45, f"{fmt(r['credited'])}\ncredited", ha="center", va="top", fontsize=7.5, color=ORANGE, fontweight="bold", linespacing=1.1)
+        ax.text((100 + ia) / 2, y + 0.42, f"+{fmt(r['credited'] - r['caused'])}  ({100 * (r['ratio'] - 1):.0f}% more)", ha="center", va="bottom",
                 fontsize=8, color=INK, fontweight="bold")
-        ax.set_xlim(0, top); ax.set_ylim(-1.9, 1.5); ax.set_yticks([])
-        ax.set_xticks([t for t in range(0, int(top), step)], [fmt(t) for t in range(0, int(top), step)]); ax.grid(axis="x", color=GRID); clean(ax, x=False)
-        ax.text(0, 1.35, name, fontsize=8.5, fontweight="bold", color=INK, va="bottom")
-    axes[0].set_title(f"{letter}   {title}", loc="left", fontweight="bold", color=INK, pad=16)
-    return axes
+        ax.text(0, y + 1.0, name, fontsize=8.5, fontweight="bold", color=INK, va="bottom")
+    ax.set_xlim(0, top * 1.01); ax.set_ylim(-1.75, 4.4); ax.set_yticks([])
+    ax.set_xticks([0, 50, 100, 150]); ax.grid(axis="x", color=GRID); ax.set_axisbelow(True); clean(ax, x=False)
+    ax.set_xlabel("% of caused", fontsize=7.5, color=MUTED)
+    ax.set_title(f"{letter}   {title}", loc="left", fontweight="bold", color=INK, pad=10)
+    return [ax]
 
 
 def p_hundred(ax, letter, key="conversion", title=None):

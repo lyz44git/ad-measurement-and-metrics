@@ -71,24 +71,26 @@ document.querySelectorAll("[data-count]").forEach(n => { const [v, d] = heroVals
   if (!document.getElementById("c-rates")) return;
   const host = $("#c-rates");
   function draw(animateIn) {
-    const w = W(host), rowsH = 86, h = 2 * rowsH + 10, L = Math.min(150, w * .28), R = w - 70;
-    const svg = svgIn(host, w, h);
+    // one shared index scale (control = 100) for both rows, so the two relative lifts compare by length
+    const w = W(host), nar = w < 480, rowsH = 74, h = 2 * rowsH + 50, L = Math.max(125, Math.min(150, w * .28)), R = w - 16, top = 185, x = lin(0, top, L, R), ticks = [0, 50, 100, 150];
+    const svg = svgIn(host, w, h), yA = 2 * rowsH + 4;
+    ticks.forEach(v => { el("line", { x1: x(v), x2: x(v), y1: 14, y2: yA - 6, class: "gridl" }, svg); txt(svg, x(v), yA + 10, String(v), { "text-anchor": "middle", class: "t-muted", "font-size": 11 }); });
+    txt(svg, (x(0) + x(150)) / 2, yA + 30, "% of control rate", { "text-anchor": "middle", class: "t-muted", "font-size": 11 });
     [["visit", "Visit rate"], ["conversion", "Conversion rate"]].forEach(([k, name], i) => {
-      const r = E[k], g = el("g", { transform: `translate(0,${i * rowsH})` }, svg), y = 40;
-      const ticks = k === "visit" ? [0, .01, .02, .03, .04, .05, .06] : [0, .001, .002, .003, .004], hi = ticks[ticks.length - 1], x = lin(0, hi, L, R);
+      const r = E[k], g = el("g", { transform: `translate(0,${i * rowsH})` }, svg), y = 40, i1 = 100 * r.ad_rate / r.control_rate;
       txt(g, 0, y - 6, name, { class: "t-strong" });
       txt(g, 0, y + 12, `+${fmt(100 * r.relative_lift)}% relative`, { class: "t-orange" });
       el("line", { x1: x(0), x2: R, y1: y, y2: y, class: "gridl", "stroke-width": 6, "stroke-linecap": "round" }, g);
-      ticks.forEach(v => { el("line", { x1: x(v), x2: x(v), y1: y + 8, y2: y + 13, class: "axis" }, g); txt(g, x(v), y + 27, (100 * v).toFixed(k === "visit" ? 0 : 1) + "%", { "text-anchor": "middle", class: "t-muted", "font-size": 11 }); });
-      const bar = el("line", { x1: x(r.control_rate), x2: x(r.control_rate), y1: y, y2: y, "stroke-width": 6, "stroke-linecap": "round", class: "s-orange", opacity: .55 }, g);
-      const c0 = el("circle", { cx: x(r.control_rate), cy: y, r: 7, class: "f-grey s-card", "stroke-width": 2 }, g);
-      const c1 = el("circle", { cx: x(r.control_rate), cy: y, r: 8, class: "f-navy s-card", "stroke-width": 2 }, g);
-      const l0 = txt(g, x(r.control_rate), y - 16, `Control ${(100 * r.control_rate).toFixed(2)}%`, { "text-anchor": "end", class: "t-muted" });
-      const l1 = txt(g, x(r.ad_rate) + 4, y - 16, `Ad group ${(100 * r.ad_rate).toFixed(2)}%`, { "text-anchor": "start", class: "t-navy", opacity: 0 });
-      const dl = txt(g, (x(r.control_rate) + x(r.ad_rate)) / 2, y + 4 - 18, `+${(100 * (r.ad_rate - r.control_rate)).toFixed(k === "visit" ? 2 : 3)} pp`, { "text-anchor": "middle", class: "t-orange", "font-size": 11, opacity: 0 });
-      hoverTip(c0, `Control group: ${(100 * r.control_rate).toFixed(2)}%`); hoverTip(c1, `Ad group: ${(100 * r.ad_rate).toFixed(2)}%`);
-      const go = () => animate([[c1, { cx: x(r.ad_rate) }], [bar, { x2: x(r.ad_rate) }], [l1, { opacity: 1 }], [dl, { opacity: 1 }]], 1100);
-      if (animateIn) whenVisible(host, () => setTimeout(go, 200 + 250 * i)); else { c1.setAttribute("cx", x(r.ad_rate)); bar.setAttribute("x2", x(r.ad_rate)); l1.setAttribute("opacity", 1); dl.setAttribute("opacity", 1); }
+      const bar = el("line", { x1: x(100), x2: x(100), y1: y, y2: y, "stroke-width": 6, "stroke-linecap": "round", class: "s-orange", opacity: .55 }, g);
+      const c0 = el("circle", { cx: x(100), cy: y, r: 7, class: "f-grey s-card", "stroke-width": 2 }, g);
+      const c1 = el("circle", { cx: x(100), cy: y, r: 8, class: "f-navy s-card", "stroke-width": 2 }, g);
+      const l0 = txt(g, x(100) - 4, y - 16, `Control ${(100 * r.control_rate).toFixed(2)}%`, { "text-anchor": "end", class: "t-muted" });
+      const l1 = txt(g, x(i1) + 4, y - 16, `${nar ? "Ad" : "Ad group"} ${(100 * r.ad_rate).toFixed(2)}%`, { "text-anchor": "start", class: "t-navy", opacity: 0 });
+      l1.setAttribute("x", Math.min(x(i1) + 4, w - 2 - l1.getComputedTextLength()));
+      const dl = txt(g, (x(100) + x(i1)) / 2, y + 22, `+${(100 * (r.ad_rate - r.control_rate)).toFixed(k === "visit" ? 2 : 3)} pp`, { "text-anchor": "middle", class: "t-orange", "font-size": 11, opacity: 0 });
+      hoverTip(c0, `Control group: ${(100 * r.control_rate).toFixed(2)}% (100% of control)`); hoverTip(c1, `Ad group: ${(100 * r.ad_rate).toFixed(2)}% (${fmt(i1)}% of control)`);
+      const go = () => animate([[c1, { cx: x(i1) }], [bar, { x2: x(i1) }], [l1, { opacity: 1 }], [dl, { opacity: 1 }]], 1100);
+      if (animateIn) whenVisible(host, () => setTimeout(go, 200 + 250 * i)); else { c1.setAttribute("cx", x(i1)); bar.setAttribute("x2", x(i1)); l1.setAttribute("opacity", 1); dl.setAttribute("opacity", 1); }
     });
   }
   draw(true); redrawers.push(() => draw(false));
@@ -170,7 +172,7 @@ document.querySelectorAll("[data-count]").forEach(n => { const [v, d] = heroVals
   const host = $("#c-gap"), hHost = $("#c-hundred"), lgH = $("#lg-hundred");
   let key = "conversion", parts = null;
   function build() {
-    const w = W(host), h = 190, L = 12, R = w - 16, y = 104, svg = svgIn(host, w, h);
+    const w = W(host), h = 206, L = 12, R = w - 16, y = 104, svg = svgIn(host, w, h);
     const g = el("g", {}, svg);
     parts = { svg, w, L, R, y, ticks: el("g", {}, svg),
       band: el("rect", { x: L, y: y - 9, width: 0, height: 18, rx: 9, class: "f-osoft" }, g),
@@ -188,11 +190,12 @@ document.querySelectorAll("[data-count]").forEach(n => { const [v, d] = heroVals
     set(key, 0);
   }
   function set(k, dur = 900) {
-    key = k; const r = E[k], p = parts, x = lin(0, r.credited * 1.12, p.L + 20, p.R);
+    // one index scale (caused = 100) for both outcomes, so switching keeps the axis and the gaps compare by length
+    key = k; const r = E[k], p = parts, x = lin(0, 185, p.L + 20, p.R), ia = 100 * r.credited / r.caused, ie = 100 * r.caused_ci / r.caused;
     p.ticks.innerHTML = "";
-    const step = (k === "conversion" ? 5000 : 50000) * (p.w < 480 ? 2 : 1);
-    for (let v = 0; v <= r.credited * 1.12; v += step) { el("line", { x1: x(v), x2: x(v), y1: 28, y2: p.y + 58, class: "gridl" }, p.ticks); txt(p.ticks, x(v), p.y + 74, fmt(v), { "text-anchor": "middle", class: "t-muted", "font-size": 11 }); }
-    const xc = x(r.caused), xa = x(r.credited), xl = x(r.caused - r.caused_ci), xh = x(r.caused + r.caused_ci), mid = (xc + xa) / 2;
+    [0, 50, 100, 150].forEach(v => { el("line", { x1: x(v), x2: x(v), y1: 28, y2: p.y + 58, class: "gridl" }, p.ticks); txt(p.ticks, x(v), p.y + 74, String(v), { "text-anchor": "middle", class: "t-muted", "font-size": 11 }); });
+    txt(p.ticks, (x(0) + x(150)) / 2, p.y + 92, "% of caused", { "text-anchor": "middle", class: "t-muted", "font-size": 11 });
+    const xc = x(100), xa = x(ia), xl = x(100 - ie), xh = x(100 + ie), mid = (xc + xa) / 2;
     const nar = p.w < 520, roomR = p.w - xa > (nar ? 70 : 135), xt = roomR ? xa - 10 : xa + 10;
     [p.lCred, p.lCred2].forEach(t => t.setAttribute("text-anchor", roomR ? "start" : "end"));
     animate([[p.band, { x: xc, width: xa - xc }], [p.ci, { x1: xl, x2: xh }], [p.ciA, { x1: xl, x2: xl }], [p.ciB, { x1: xh, x2: xh }],

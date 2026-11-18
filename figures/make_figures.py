@@ -17,7 +17,7 @@ def figure1():
     gs = fig.add_gridspec(1, 3, width_ratios=[1.0, 1.15, 0.78], wspace=0.3, left=0.03, right=0.975, top=0.83, bottom=0.12)
     p_rates(fig, gs[0], "A", "Rates by group")
     p_gap(fig, gs[1], "B", "Credited by the count vs. caused")
-    p_hundred(fig.add_subplot(gs[2]), "C")
+    p_hundred(fig.add_subplot(gs[2]), "C", title="Of 100 conversions\n      credited by the count")
     save(fig, "figures/figure1.png")
 
 
