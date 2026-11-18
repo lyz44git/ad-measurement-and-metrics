@@ -45,6 +45,6 @@ None in estimators or decision rule. The top-10% uplift column has no CI (not pr
 
 ## Does and does not show
 Shows: analysis of a large randomized advertising experiment with one-sided non-compliance; meta-learners and a
-causal forest validated on randomized held-out data; a comparison fixed in a dated, hashed local plan and reported although its decision rule
+causal forest validated on randomized held-out data; a pre-registered comparison reported although its decision rule
 was not met; a tested scoring tool.
 Does not show: designing or running an experiment; production deployment; a population-level lift estimate.

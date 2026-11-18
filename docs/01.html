@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ad Measurement: Experiment</title>
 <meta name="description" content="Interactive figures for the four studies of one randomized ad experiment.">
-<link rel="stylesheet" href="assets/site.css?v=20261117b">
+<link rel="stylesheet" href="assets/site.css">
 </head>
 <body data-page="01">
 <div class="top"><div class="wrap">
@@ -16,31 +16,31 @@
 <header class="pagehero"><div class="wrap">
   <div class="kicker">Part 1 · With an experiment</div>
   <h1 class="serif">What did the ads cause, and for whom?</h1>
-  <p class="dek">Criteo ran the experiments. I used its public release of 13.98 million user records to estimate lift, test whom to target and audit the readout.</p>
+  <p class="dek">Four studies read the same randomized experiment on 14.0 million users: the effect, the effect by segment, the definitions and checks behind the numbers, and segment effects when the counts carry privacy noise.</p>
 </div></header>
 
 <section class="part" id="s01a"><div class="wrap">
   <div class="kicker study-k"><span class="code">01a</span></div>
   <h2 class="serif">How many site visits did the ads cause, as opposed to visits that would have happened anyway?</h2>
-  <p class="lead">Assignment to the ad-eligible group raised the visit rate from 3.82% to 4.85% (+1.03 pp; 0.77 pp adjusted) and the conversion rate from 0.194% to 0.309%. Only 3.6% of the eligible group recorded an exposure. The pre-specified uplift model did not beat a plain response model at ranking users for targeting.</p>
-  <a class="gh" href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/01_with_an_experiment/01a_ad_incrementality">01a estimates and test-set results →</a>
+  <p class="lead">Assignment to the ad group raised the visit rate from 3.82% to 4.85% and the conversion rate from 0.19% to 0.31%. The pre-specified uplift model did not beat a plain response model at ranking users for targeting.</p>
+  <a class="gh" href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/01_with_an_experiment/01a_ad_incrementality">Full study on GitHub →</a>
   <div class="card">
     <h3>Effect of assignment to the ad group</h3>
     <p class="sub">Unadjusted, and adjusted for the 12 user features recorded before the ads; 95% confidence intervals.</p>
-    <div class="ctrl"><div class="seg" id="seg-01a-eff"></div></div><div id="c-01a-eff"></div><p class="sub" id="ro-01a-eff" style="margin:6px 0 0"></p>
+    <div class="ctrl"><div class="seg" id="seg-01a-eff"></div></div><div id="c-01a-eff"></div>
     
     
   </div>  <div class="card">
     <h3>Effect by decile of predicted uplift</h3>
-    <p class="sub">Held-out users ranked by the selected uplift model (T-learner). Blue: realized treatment–control difference in visit rate within each decile, with 95% interval.</p>
+    <p class="sub">Test users ranked by the selected uplift model (T-learner). The band is the 95% interval of the realized effect. Zoom in to see the lower deciles.</p>
     <div class="ctrl"><div class="seg" id="seg-01a-dec"></div></div><div id="c-01a-dec"></div><div class="legend"><span><i style="background:var(--navy)"></i>Realized in the experiment</span><span><i style="background:var(--orange)"></i>Predicted by the model</span><span><i style="background:var(--grey)"></i>Average effect (dashed)</span></div>
     
     
   </div>  <div class="card">
     <h3>Ranking users for targeting: Qini coefficient on the test set</h3>
-    <p class="sub">Higher is better; values ×10⁴ per user, 95% bootstrap intervals, 4.19 million test users.</p>
+    <p class="sub">Higher is better; ×10⁴ per user, 95% bootstrap intervals. Hover a row for the share of extra visits in the top 20% of users.</p>
     <div id="c-01a-qini"></div>
-    <p class="note">Pre-set rule: the selected uplift model must beat the response model. Paired difference −1.2 (95% CI −3.0 to +0.6, ×10⁻⁴ per user), so it did not. The top 20% of users held 75.4% (uplift) and 75.5% (response) of the extra visits.</p>
+    <p class="note">The rule fixed before the run required the selected uplift model to beat the response model; the interval of the difference includes zero, so it did not.</p>
     
   </div>
 </div></section>
@@ -48,13 +48,13 @@
 <section class="part" id="s01b"><div class="wrap">
   <div class="kicker study-k"><span class="code">01b</span></div>
   <h2 class="serif">Can segment-level ad effects be read from a 2% sample?</h2>
-  <p class="lead">Across ten 2% samples, a Bayesian multilevel model reduced the mean error of 100 segment estimates from 1.08 to 0.79 pp against separate estimates; error fell in every sample. Its 90% intervals contained the held-out estimate in 96% of segment–sample comparisons.</p>
-  <a class="gh" href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/01_with_an_experiment/01b_bayesian_segment_effects">01b segment results →</a>
+  <p class="lead">Across ten 2% samples, a Bayesian multilevel model cut the error of 100 segment estimates by 27% against separate per-segment estimates, in 10 of 10 samples. Its 90% intervals are conservative (96% coverage).</p>
+  <a class="gh" href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/01_with_an_experiment/01b_bayesian_segment_effects">Full study on GitHub →</a>
   <div class="card">
     <h3>Error of segment estimates from a 2% sample</h3>
-    <p class="sub">Choose a sample and an estimator.</p>
-    <div class="ctrl"><span class="lab">Sample</span><div class="seg" id="seg-samples"></div></div><div class="row2 w"><div><div id="c-slope"></div></div><div><div class="ctrl"><div class="seg" id="seg-pool"><button type="button" data-v="nopool">Separate estimates</button><button type="button" data-v="bayes">Pooled estimates</button></div><button class="btn" id="play-pool" type="button">▶ Replay the comparison</button></div><div id="c-scatter"></div><div class="readout" id="ro-seg"></div></div></div>
-    <p class="note">Error summary: RMSE of the 100 segment effects per sample. Group estimates: one dot per segment, against the estimate from the other 98% of users.</p>
+    <p class="sub">Choose a sample, then pool the estimates with the multilevel model.</p>
+    <div class="ctrl"><span class="lab">Sample</span><div class="seg" id="seg-samples"></div></div><div class="row2 w"><div><div id="c-slope"></div></div><div><div class="ctrl"><div class="seg" id="seg-pool"><button type="button" data-v="nopool">Each segment alone</button><button type="button" data-v="bayes">Multilevel model</button></div><button class="btn" id="play-pool" type="button">▶ Pool</button></div><div id="c-scatter"></div><div class="readout" id="ro-seg"></div></div></div>
+    <p class="note">Left: RMSE of the 100 segment effects in each sample; the thick line is the mean over the ten samples. Right: the selected sample's estimates against the benchmark from the other 98% of users.</p>
     
   </div>
 </div></section>
@@ -63,24 +63,24 @@
   <div class="kicker study-k"><span class="code">01c</span></div>
   <h2 class="serif">Is every number of the readout defined, checked and reproducible from the raw file?</h2>
   <p class="lead">Every number in the readout comes from one short SQL query with a stated numerator and denominator, and agrees with the Python pipeline of studies 01a and 02a in 29 of 29 comparisons. The file has no user identifier, so a user is a row, and 16% of rows are identical to another row.</p>
-  <a class="gh" href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/01_with_an_experiment/01c_sql_metric_readout">01c definitions and reconciliation →</a>
+  <a class="gh" href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/01_with_an_experiment/01c_sql_metric_readout">Full study on GitHub →</a>
   <div class="card">
     <h3>Data checks on the raw file</h3>
     
     <div id="c-01c-checks" class="chks"></div>
-    <p class="note">Four checks had pre-set targets; three counts are recorded without a target.</p>
+    <p class="note">Checks marked pass must be zero for the readout to be valid; the two marked recorded are facts the readout depends on.</p>
     
   </div>  <div class="card">
     <h3>SQL against Python, quantity by quantity</h3>
-    <p class="sub">Each comparison has a pre-specified tolerance. Filter by the study whose result file is compared.</p>
+    <p class="sub">Filter by the study whose result file is compared.</p>
     <div class="ctrl"><div class="seg" id="seg-01c"></div></div><div class="readout" id="ro-01c" style="margin-bottom:10px"></div><div class="tblwrap" id="c-01c-recon"></div>
     
     
   </div>  <div class="card">
-    <h3>Users per arm needed to detect a relative lift</h3>
+    <h3>Users per arm needed to detect a lift</h3>
     
-    <div class="ctrl"><span class="lab">Target relative lift</span><div class="seg" id="seg-lift"></div></div><div id="c-size"></div>
-    <p class="note">Planning calculation: equal arms, 80% power, two-sided 5% test, at this experiment's control rates (visits 3.82%, conversions 0.19%). The axis rescales with the target.</p>
+    <div class="ctrl"><span class="lab">Relative lift</span><div class="seg" id="seg-lift"></div></div><div id="c-size"></div>
+    <p class="note">80% power, two-sided 5% test, at this experiment's control rates (visits 3.82%, conversions 0.19%).</p>
     
   </div>
 </div></section>
@@ -88,29 +88,29 @@
 <section class="part" id="s01d"><div class="wrap">
   <div class="kicker study-k"><span class="code">01d</span></div>
   <h2 class="serif">If segment counts are released with differential-privacy noise, how much accuracy is left?</h2>
-  <p class="lead">With Laplace noise at ε = 1, mean error was 1.06 pp for the noise-aware multilevel model, 1.08 for separate estimates without noise, and 0.95 for the same multilevel model without noise. A second test did not meet its rule: ranking segments by estimated lift beat ranking by response rate at 10% and 20% reach, but only in 4 of 10 samples at 30%.</p>
-  <a class="gh" href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/01_with_an_experiment/01d_private_segment_effects">01d privacy and reach results →</a>
+  <p class="lead">With Laplace noise at epsilon = 1, a multilevel model that knows the noise scale is as accurate (1.06 points) as per-segment estimates on the unprotected counts (1.08). A second test in the same plan did not meet its rule: ranking segments by estimated lift beat ranking by response rate at 10% and 20% budgets, but not at 30%.</p>
+  <a class="gh" href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/01_with_an_experiment/01d_private_segment_effects">Full study on GitHub →</a>
   <div class="card">
     <h3>Error of segment effects by privacy budget</h3>
-    <p class="sub">Smaller ε means more noise. The vertical line is the error of separate estimates without noise.</p>
+    <p class="sub">Smaller epsilon means more noise. Choose a level; the vertical line is the per-segment error without any noise.</p>
     <div class="ctrl"><span class="lab">Epsilon</span><div class="seg" id="seg-01d-eps"></div></div><div id="c-01d-eps"></div><div class="readout" id="ro-01d-eps"></div>
     
     
   </div>  <div class="card">
-    <h3>Incremental visits captured at a fixed reach, by ranking</h3>
-    <p class="sub">Top-ranked segments are selected up to the share of users reached; rankings from the noise-free 01b estimates; mean over ten samples.</p>
-    <div class="ctrl"><span class="lab">Share of users selected</span><div class="seg" id="seg-01d-budget"></div></div><div id="c-01d-alloc"></div><div class="readout" id="ro-01d-alloc"></div>
-    <p class="note">Pre-set rule: the multilevel lift ranking must capture more than the response ranking in at least 8 of 10 samples at every reach level.</p>
+    <h3>Incremental visits captured by budget and ranking</h3>
+    <p class="sub">Spend goes to the segments ranked highest by each rule, up to the budget; mean over ten samples.</p>
+    <div class="ctrl"><span class="lab">Budget</span><div class="seg" id="seg-01d-budget"></div></div><div id="c-01d-alloc"></div><div class="readout" id="ro-01d-alloc"></div>
+    <p class="note">The rule fixed before the run required the multilevel lift ranking to capture more than the response ranking in at least 8 of 10 samples at every budget.</p>
     
   </div>
 </div></section>
 <footer><div class="wrap">
   <div class="pager"><a href="index.html"><small>Previous</small>Overview</a><a class="next" href="02.html"><small>Next</small>2 · Without an experiment</a></div>
-  <p>Charts use committed result files and documented calculations, collected by <code>docs/build_data.py</code>. Methods, pre-specified rules and limits are in each study's page on GitHub. Data: Criteo uplift and attribution datasets (public research releases); a public marketing mix dataset released by Conjura; Zillow Research metro series (Data Provided by Zillow Group); Online Retail II (UCI Machine Learning Repository).</p>
+  <p>All numbers on these pages are read from the result files of the repository by <code>docs/build_data.py</code>. Methods, pre-specified rules and limits are in each study's page on GitHub. Data: Criteo uplift and attribution datasets (public research releases); a public marketing mix dataset released by Conjura; Zillow Research metro series (Data Provided by Zillow Group); Online Retail II (UCI Machine Learning Repository).</p>
   <p><a href="https://github.com/lyz44git/ad-measurement-and-metrics">The repository on GitHub</a></p>
 </div></footer>
 <div id="tip" role="tooltip"></div>
-<script src="data.js?v=20261117b"></script>
-<script src="assets/explorer.js?v=20261117b"></script>
+<script src="data.js"></script>
+<script src="assets/explorer.js"></script>
 </body>
 </html>

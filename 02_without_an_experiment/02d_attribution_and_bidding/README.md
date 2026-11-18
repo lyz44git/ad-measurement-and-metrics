@@ -2,10 +2,9 @@
 
 **[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02d)**
 
-> **Takeaway.** At the primary budget, half of the logged cost, bidders that value impressions by last-touch and by
-> time-decay credit select largely the same logged impressions: they share 90.4% of their spend, and bidding with the
-> other rule's model loses at most 2.2% of that rule's credit. The pre-specified threshold of 5% was not met. This
-> replay holds observed histories and logged prices fixed. The rule
+> **Takeaway.** Hardly, in this log. Two bidders that value impressions by last-touch and by time-decay credit buy
+> nearly the same impressions: at half the logged budget they share 90% of their spend, and a bidder trained on one
+> rule gives up at most 2.2% of the other rule's credit. The pre-specified threshold of 5% was not met. The rule
 > changes who gets the credit ([study 02b](../02b_multi_touch_attribution)) far more than it changes what gets bought.
 > What does move is the marginal spend: the time-decay bidder buys fewer impressions shortly after a click and more
 > from users who have not clicked before.
@@ -13,8 +12,8 @@
 ## Question
 
 A bidder values an impression by the conversion credit it expects the impression to earn. If the credit rule changes
-from last touch to time decay, how different are the impressions it buys? For example, how much time-decay credit does the
-last-touch bidder capture relative to the time-decay bidder?
+from last touch to time decay, how different are the impressions it buys, and how much of the other rule's credit does
+it give up?
 
 ## Data
 
@@ -23,13 +22,12 @@ Criteo Attribution Modeling for Bidding dataset, the data of [study 02b](../02b_
 user's first conversion, as in study 02b, 15,498,865 impressions remain: 10,854,116 of training users
 and 4,644,749 of 1,842,430 test users, who have 98,387 conversions. Criteo released `cost`
 in a transformed form, so money amounts are not interpretable and profit is not computed. Pass the path to the
-`criteo_attr.parquet` file written by study 02b's
-[`code/load_attribution.py`](../02b_multi_touch_attribution/code/load_attribution.py).
+`criteo_attr.parquet` file written by study 02b's `code/load_attribution.py`.
 
 ## Method
 
 The analysis plan, [`design/analysis_plan.md`](design/analysis_plan.md), was fixed before any model was fitted
-(SHA-256 in `logs/plan_hash.txt`; it checks that the text is unchanged, not when it was written). The results of study 02b and the distribution of `cost` were known; no bidder
+(SHA-256 in `logs/plan_hash.txt`). The results of study 02b and the distribution of `cost` were known; no bidder
 outcome had been computed.
 
 1. **Credit.** Paths, the 70/30 user split and the two rules are those of study 02b. Last touch gives the last
@@ -42,14 +40,14 @@ outcome had been computed.
    cost until it has spent 25%, 50% or 75% of the logged cost. This is what a bidder whose bids are proportional to
    predicted value would win at the logged prices.
 4. **Comparison.** Credit captured under each rule, the loss from bidding with the other rule's model, the overlap of
-   the two bidders' spend, and where the spend goes. Intervals come from 500 bootstrap draws of test users, with the models and the purchased impressions held fixed.
+   the two bidders' spend, and where the spend goes. Intervals come from 500 bootstrap draws of test users.
 5. **Decision rule.** The rule matters for what a bidder buys if, at the 50% budget, the cross-rule loss is at least
    5% under both rules with the lower end of both 95% intervals above 0.
 
 ## Results
 
-Source: [`out/bidding.json`](out/bidding.json). Total predicted credit was 99.9% of total observed credit under each
-scoring rule.
+Source: [`out/bidding.json`](out/bidding.json). Both value models are calibrated on the test users (predicted over
+realized credit 0.999 and 0.999).
 
 | Budget | Spend overlap | Last-touch credit captured: last-touch bidder / time-decay bidder | Time-decay credit captured: time-decay bidder / last-touch bidder | Loss under last touch (95% CI) | Loss under time decay (95% CI) |
 |---|---|---|---|---|---|
@@ -57,7 +55,7 @@ scoring rule.
 | 50% | 90.4% | 88.4% / 88.6% | 90.7% / 88.8% | −0.2% (−0.4 to −0.1) | 2.2% (2.1 to 2.3) |
 | 75% | 94.9% | 96.6% / 96.9% | 97.8% / 96.8% | −0.2% (−0.3 to −0.2) | 1.0% (0.9 to 1.0) |
 
-Where the spend goes at the 50% budget (each row is a separate share; the rows overlap):
+Where the spend goes at the 50% budget:
 
 | Share of spend on | Last-touch bidder | Time-decay bidder | All logged spend |
 |---|---|---|---|
@@ -67,7 +65,7 @@ Where the spend goes at the 50% budget (each row is a separate share; the rows o
 
 - **The pre-specified rule was not met.** At the 50% budget the loss is 2.2% under time decay and
   −0.2% under last touch: the time-decay bidder captures slightly more last-touch credit than the last-touch
-  bidder itself (88.6% against 88.4%). The largest loss at any budget is 3.1%.
+  bidder itself. The largest loss at any budget is 3.1%.
 - **The two bidders buy mostly the same impressions:** 85% of spend in common at a quarter of the budget, 90% at
   half, 95% at three quarters.
 - **The difference is at the margin.** The time-decay bidder puts 20% of its spend on impressions within a day of

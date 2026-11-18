@@ -4,9 +4,9 @@
 
 > **Takeaway.** In placebo tests on historical metro listing counts, regression adjustment on pre-period volume
 > lowered the smallest detectable effect of a two-month, 100-metro test from 9.5% (year-over-year growth) to 6.7%;
-> matched pairs did not lower it further once the estimate was adjusted. When the target is total volume, randomization inference
+> matched pairs added nothing once the estimate was adjusted. When the target is total volume, randomization inference
 > kept the false-positive rate between 4.2% and 5.8%, where the t-test reached 9.1%, at the cost of a larger detectable
-> effect (8.8%, against 8.2% with the t-test). These results hold for the metros, windows and designs tested here.
+> effect (8.8%). These results hold for the metros, windows and designs tested here.
 
 ## Question
 
@@ -22,7 +22,7 @@ in this repository.
 
 Of 900 metros with data, 372 have complete series and 158 meet the size threshold. Seven with coverage breaks are
 dropped ([`out/coverage_breaks.csv`](out/coverage_breaks.csv)), leaving 151 metros that account for 62% of all
-volume ([`out/pool_summary.csv`](out/pool_summary.csv)). Each placebo test draws its metros from this pool.
+volume ([`out/pool_summary.csv`](out/pool_summary.csv)).
 
 ## Method
 
@@ -30,12 +30,11 @@ Placebo experiments on historical data; no real experiment is run.
 
 1. **Null draws.** Each draw picks a start month and N metros and assigns half to treatment. With no true effect, the
    share of draws that reject at 5% is the false-positive rate.
-2. **Power.** Adding a known multiplicative lift to the treated metros gives power; the minimum detectable effect (MDE) is the
+2. **Power.** Adding a known lift to the treated metros gives power; the minimum detectable effect (MDE) is the
    smallest lift detected with 80% power in a two-sided 5% test.
 3. **Grid.** 5,000 draws per cell, for 1-, 2- and 3-month tests with 20, 50, 100 and 150 metros.
 4. **Designs compared.** Difference in means; year-over-year difference; regression adjustment on the same months a
-   year earlier and the last three months (ANCOVA, the idea behind CUPED); a volume-weighted version (weights: prior 12-month volume), which estimates the lift in total volume rather
-   than in the average metro; and the same
+   year earlier and the last three months (ANCOVA, the idea behind CUPED); a volume-weighted version; and the same
    estimators within matched pairs of metros.
 5. **Inference check.** For the two regression-adjusted estimators, randomization inference (2,000 draws for
    2-month tests, 199 re-randomizations each) alongside the t-test.
@@ -50,16 +49,14 @@ Minimum detectable effect with 80% power, 2-month test:
 | Design | 20 metros | 50 | 100 | 150 |
 |---|---|---|---|---|
 | Year-over-year difference | 22.0% | 13.7% | 9.5% | 7.6% |
-| ANCOVA (CUPED) | 16.3% | 9.7% | 6.7% | 5.3% |
-| Matched-pair ANCOVA | 19.6% | 10.0% | 6.8% | 5.4% |
-| Volume-weighted ANCOVA, t-test | 16.6% | 11.3% | 8.2% | 6.9% |
-| Volume-weighted ANCOVA, randomization inference | 19.0% | 12.3% | 8.8% | 6.9% |
+| Regression-adjusted (ANCOVA / CUPED) | 16.3% | 9.7% | 6.7% | 5.3% |
+| Matched pairs, regression-adjusted | 19.6% | 10.0% | 6.8% | 5.4% |
 
 - **Regression adjustment is the main gain.** At 100 metros it lowers the MDE from 9.5% under a year-over-year
   comparison to 6.7%. A plain difference in levels cannot detect even a 50% change, because metros differ in size.
   The user-level counterpart, adjustment for user features, is in [study 03a](../03a_lift_study_sizing).
 - **Market tests detect only large effects:** 5.3% with all 150 metros, 16.3% with 20.
-- **Matched pairs did not lower the MDE once the estimate was adjusted**, and cost degrees of freedom with few metros.
+- **Matched pairs add nothing once the estimate is adjusted**, and cost degrees of freedom with few metros.
 - **Longer tests help little:** 1, 2 and 3 months give 7.2%, 6.7% and 6.4% at 100 metros, because metro-level shocks
   persist from month to month.
 - **The volume-weighted estimate needs a different test.** Weighting metros by volume (the lift in total volume) makes
@@ -67,7 +64,7 @@ Minimum detectable effect with 80% power, 2-month test:
   dominate. Randomization inference keeps the rate between 4.2% and 5.8%, at the cost of a larger MDE (8.8% at 100
   metros).
 
-[![Smallest detectable effect of a market-level test by number of markets and by test length, for three designs; and the false-alarm rate of a volume-weighted estimate under a standard t-test and under a randomization test](out/fig1_mde_by_metros.png)](https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03b)
+[![Smallest detectable effect by metros and test length, three designs compared, and false-positive rate of the volume-weighted estimate](out/fig1_mde_by_metros.png)](https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03b)
 
 ## Reproduce
 
@@ -76,13 +73,10 @@ python code/geo_experiment_power.py /path/to/Metro_new_pending_uc_sfrcondo_month
 python ../../figures/make_study_figures.py                                             # redraws the figure from out/
 ```
 
-The script is seeded; with the same input file a re-run reproduces `out/`. Zillow revises its files, and `out/`
-does not record the input file's hash or download date. `tests/test_geo_power.py` runs the same simulation on
+The script is seeded; a re-run reproduces `out/` exactly. `tests/test_geo_power.py` runs the same simulation on
 synthetic panels.
 
 ## Scope
 
 - Simulation on historical data, not a real experiment.
 - Assumes no interference between markets; the outcome is listing volume only.
-- The design steps carry over to other market tests; the thresholds do not. An ad test needs the same simulation on
-  its own market outcome.

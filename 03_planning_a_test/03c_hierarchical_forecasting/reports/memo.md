@@ -107,8 +107,7 @@ non-baseline method at that level.**
 
 ![Relative RMSSE by horizon](figures/relative_rmsse_by_horizon_inventory_ets.png)
 
-*Figure 1. Panel A shows the gap across reporting levels. Panel B compares forecast error with carrying forward the
-latest count: RMSSE relative to no-change by horizon. At the metro level bottom-up is identical to base (bottom-up keeps
+*Figure 1. RMSSE relative to no-change by horizon. At the metro level bottom-up is identical to base (bottom-up keeps
 the leaves' base forecasts). Data Provided by Zillow Group.*
 
 **Table 2. RMSSE relative to no-change at selected horizons.**

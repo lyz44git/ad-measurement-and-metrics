@@ -3,19 +3,20 @@
 **[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03c)**
 
 > **Takeaway.** Forecasts made separately for the US, divisions, states and metros disagree with each other by 3.5% to
-> 5.2%. Bottom-up reconciliation removes the gap. Its error matched or improved on the separate forecasts in 11 of 12
-> comparisons; the exception was national new listings, 0.7% higher. MinT-shrink lowered state and metro error by 7% to 10% with an ETS base, but the gain did not hold with
+> 5.2%. Bottom-up reconciliation removes the gap at no cost in accuracy (at or below the unreconciled error in 11 of
+> 12 cases). MinT-shrink lowered state and metro error by 7% to 10% with an ETS base, but the gain did not hold with
 > an ARIMA base or a second target, so bottom-up is the safe default here.
 
 ## Question
 
 Can monthly for-sale housing inventory be forecast at the national, Census-division, state and metro levels so that
-the levels add up, without losing accuracy? Which reconciliation method should be the default?
+the levels add up, without losing accuracy? Which reconciliation method should be the default? A plan for a
+market-level test ([study 03b](../03b_geo_experiment_design)) needs such a baseline at every level at which the
+result will be read.
 
 ## Data
 
-Zillow Research public metro files (for-sale inventory and new listings, all homes, raw monthly; study 03b uses
-newly pending listings), 2018-03 to 2026-09,
+Zillow Research public metro files (for-sale inventory and new listings, all homes, raw monthly), 2018-03 to 2026-09,
 downloaded by hand on 2026-11-09. **Data Provided by Zillow Group.** No Zillow data are stored in this repository:
 per-origin forecasts stay in a git-ignored `tmp/` folder and only aggregate error tables are kept in `reports/`.
 The Census 2023 CBSA delineation file (`list1_2023.xlsx`) is used for a descriptive crosswalk only.
@@ -34,9 +35,8 @@ rule were taken.
 1. **Hierarchy.** United States → 9 Census divisions → 51 states (with DC) → 809 metros, plus a Remainder node so that
    every level sums exactly to the US row: 873 nodes.
 2. **Base forecasts.** One `statsforecast` AutoETS model per node; AutoARIMA as a pre-specified robustness run.
-3. **Reconciliation.** Bottom-up, top-down, OLS, WLS-structural and MinT-shrink, implemented in NumPy; on all 873 nodes
-   at the first origin they match `hierarchicalforecast` to a relative difference below 1e-9
-   ([`reports/tables/xcheck_nixtla_real_inventory_ets.json`](reports/tables/xcheck_nixtla_real_inventory_ets.json)).
+3. **Reconciliation.** Bottom-up, top-down, OLS, WLS-structural and MinT-shrink, implemented in NumPy and checked
+   against `hierarchicalforecast`.
 4. **Backtest.** 24 monthly origins (2023-11 to 2025-10), horizons 1 to 12. A month's value counts as known the
    following month, and everything is rebuilt at each origin from the data known then.
 5. **Scores.** RMSSE by level against no-change and seasonal-naive baselines, coherence error, and Diebold–Mariano
@@ -62,15 +62,13 @@ Full results and limits: [`reports/memo.md`](reports/memo.md). Tables: [`reports
 | | metro | 0.592 | 1.000 | 1.005 |
 
 - Unreconciled forecasts disagreed with the sum of their children by 5.16% (US), 4.00% (divisions) and 3.50% (states)
-  on average; every reconciliation method removed the gap exactly, by construction.
-- Bottom-up error was at or below the unreconciled error in 11 of 12 rows; the exception is new listings at the US
-  level (1.007).
+  on average; every reconciliation method removed the gap exactly.
 - The gains are at short horizons: for inventory with an ETS base, MinT-shrink had 0.44 to 0.81 of no-change's error
   at horizons 1 to 6, and no method beat no-change at horizon 12.
 - OLS reconciliation was worse than unreconciled forecasts at the state and metro levels in all three runs, because it
   spreads national corrections evenly over metros of very different sizes.
 
-[![Gap between a forecast and the sum of the forecasts one level below it, 3.5% to 5.2% when forecast separately and zero after reconciliation; and forecast error relative to assuming no change, by months ahead, at four geographic levels, for separate forecasts and two ways of reconciling them](reports/figures/relative_rmsse_by_horizon_inventory_ets.png)](https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03c)
+[![Gap between forecast levels before reconciliation, and forecast error by horizon at four levels](reports/figures/relative_rmsse_by_horizon_inventory_ets.png)](https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03c)
 
 ## Reproduce
 

@@ -2,9 +2,10 @@
 
 **[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02b)**
 
-> **Takeaway.** On multi-touch converting paths, moving from last touch to a time-decay rule fitted to observed
-> touch-to-conversion delays cuts the credit on the last touch from 100% to 39%. These rules split credit; they do not show
-> which touches caused the conversion, which needs an experiment (study 01a).
+> **Takeaway.** Last-touch reporting hides most of the path: 65% of converting paths have several touches, and last
+> touch gives no credit to 82% of the touches in them. A time-decay rule fitted to observed touch-to-conversion delays
+> leaves 39% of the credit on the last touch. These rules split credit; they do not show which touches caused the
+> conversion, which needs an experiment (study 01a).
 
 ## Question
 
@@ -18,17 +19,15 @@ Criteo Attribution Modeling for Bidding dataset (Diemert, Meynet, Galland and Le
 16,468,027 display impressions, 6,142,256 users, 675 campaigns and 30 days, with 327,860 converting users. This is
 attribution across the touches of a path within one display network, not cross-channel attribution.
 
-Download `criteo_attribution_dataset.tsv.gz` from
-[Criteo's dataset page on Hugging Face](https://huggingface.co/datasets/criteo/criteo-attribution-dataset) into `data_raw/`
+Download `criteo_attribution_dataset.tsv.gz` from Criteo's dataset page on Hugging Face into `data_raw/`
 (git-ignored). The file labels conversions on clicked impressions only, so the per-conversion touch counts in the file
 profile ([`out/00_profile.json`](out/00_profile.json)) understate path length; paths here are rebuilt from all
-impressions (deviation 1). Among the 435,810 labeled conversion IDs, 0.7% touch more than one campaign; among the
-rebuilt multi-touch test paths, 45% do.
+impressions (deviation 1).
 
 ## Method
 
 The analysis plan, [`design/analysis_plan.md`](design/analysis_plan.md) (Part B; Part A is study 02c), was fixed before
-the run. `logs/plan_hash.txt` records its SHA-256, which checks that the text is unchanged, not when it was written. Deviations are in [`design/deviations.md`](design/deviations.md).
+the run; its SHA-256 is in `logs/plan_hash.txt`. Deviations are in [`design/deviations.md`](design/deviations.md).
 
 1. **Paths.** One path per user: for converters, every impression up to the first conversion, clicked or not; for
    other users, every impression. Users are split 70/30 into training and test by a hash of the user id.
@@ -37,12 +36,12 @@ the run. `logs/plan_hash.txt` records its SHA-256, which checks that the text is
 3. **Path conversion model.** Logistic regression on counts of eight touch types (clicked or not, by recency relative
    to the last touch) and log(1 + touches), compared on test AUC with a model using the number of touches alone
    (paired user bootstrap, 500 draws).
-4. **Model-based credit.** Excluded: removing a touch left the recency buckets of the remaining touches stale. The
-   removal effects are kept in the output but not used (deviation 2).
+4. **Model-based credit.** Removal effects from the path model are computed but not used in any conclusion
+   (deviation 2).
 
 ## Results
 
-Sources: [`out/mta.json`](out/mta.json); campaign counts in [`out/campaign_span.json`](out/campaign_span.json).
+Source: [`out/mta.json`](out/mta.json).
 
 Among the 64,159 multi-touch conversions of test users (349,355 touches, 5.4 per path):
 
@@ -53,21 +52,21 @@ Among the 64,159 multi-touch conversions of test users (349,355 touches, 5.4 per
 | Linear | 29% | 56% |
 | Time decay (half-life 7.9 days) | 39% | 59% |
 
-[![How four attribution rules divide conversion credit between the last ad and earlier ads, by time before the last ad; and the share of credit each rule gives to ads that were clicked, against the 52% of ads on these paths that were clicked](out/fig_credit_by_rule.png)](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02b)
+[![Share of conversion credit by rule and timing of the touch, and credit on clicked touches](out/fig_credit_by_rule.png)](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02b)
 
-- 65.2% of all converting paths have more than one touch. On the multi-touch test paths, last touch gives no credit
-  to 81.6% of the touches; clicked impressions are 52% of those touches.
-- Moving from last touch to time decay shifts 3.6% of the credit on these 64,159 paths between campaigns, although
-  44.7% of them touch two or more campaigns.
-- In retrospective classification of complete paths, the path model separates converting from non-converting paths
-  with test AUC 0.827, against 0.624 for the number of touches alone (difference 0.203, 95% CI 0.201 to 0.205).
+- 65.2% of converting paths have more than one touch, and last touch gives no credit to 81.6% of the touches in
+  multi-touch converting paths. Clicked impressions are 52% of those touches.
+- Moving from last touch to time decay shifts 3.6% of conversion credit between campaigns. Of the 64,159 multi-touch
+  conversions of test users, 44.7% touch two or more campaigns ([`out/campaign_span.json`](out/campaign_span.json)).
+- The path model separates converting from non-converting paths with test AUC 0.827, against 0.624 for the number of
+  touches alone (difference 0.203, 95% CI 0.201 to 0.205).
 
 ## Reproduce
 
 ```bash
 python code/load_attribution.py data_raw/criteo_attribution_dataset.tsv.gz derived out
 python code/mta.py derived/criteo_attr.parquet out
-python code/campaign_span_count.py derived/criteo_attr.parquet out   # added later; under a minute
+python code/campaign_span_count.py derived/criteo_attr.parquet out   # added later; share of paths spanning campaigns
 ```
 
 `tests/` checks the path construction, that every rule gives each conversion one unit of credit, that time decay

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ad Measurement: Test Design</title>
 <meta name="description" content="Interactive figures for sizing user-level and market-level tests and forecasting the baseline.">
-<link rel="stylesheet" href="assets/site.css?v=20261117b">
+<link rel="stylesheet" href="assets/site.css">
 </head>
 <body data-page="03">
 <div class="top"><div class="wrap">
@@ -15,25 +15,25 @@
 </div></div>
 <header class="pagehero"><div class="wrap">
   <div class="kicker">Part 3 · Planning a test</div>
-  <h1 class="serif">What would it take to detect a change worth acting on?</h1>
-  <p class="dek">Study 03a resamples the Criteo visit data to size a user-level test. Study 03b injects hypothetical changes into Zillow's historical counts of newly pending listings to size a test where whole markets are assigned; no ads were served. In both, adjusting for pre-test data is the main way to make a test smaller. Study 03c switches to for-sale inventory and tests whether local forecasts can add up to the national total.</p>
+  <h1 class="serif">How large must the test be, and what is the baseline?</h1>
+  <p class="dek">Studies 03a and 03b size the next experiment, by user and by market; in both, adjusting for what is known before the test is the main way to make it smaller. Study 03c forecasts the baseline of a metric so that national, state and metro levels agree.</p>
 </div></header>
 
 <section class="part" id="s03a"><div class="wrap">
   <div class="kicker study-k"><span class="code">03a</span></div>
   <h2 class="serif">How many users per arm does a lift study need, and how much does covariate adjustment save?</h2>
-  <p class="lead">To detect a rise in visit rate from about 3.8% to 4.8% with 80% power (two-sided 5% test), the estimated requirement is 6,458 users per arm unadjusted, 4,682 adjusting for the 12 pre-test user features, and 4,430 adjusting for a model prediction built from them, with A/A false-positive rates near 5%.</p>
+  <p class="lead">For a one-point lift in site visits on a 3.8% base rate, an unadjusted readout needs about 6,500 users per arm for 80% power. Adjusting for the 12 user features recorded before the ad cuts this to about 4,700, and adjusting for a model prediction built from them to about 4,400, with false-positive rates still near 5%.</p>
   <a class="gh" href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/03_planning_a_test/03a_lift_study_sizing">Full study on GitHub →</a>
   <div class="card">
     <h3>Power and false positives by users per arm</h3>
-    <p class="sub">2,000 resampled studies per size; 95% Monte Carlo intervals. The z-test is two-sided; the Bayesian rule flags a positive effect when its posterior probability exceeds 95%.</p>
+    <p class="sub">2,000 resampled studies per size; 95% intervals. Point at a sample size to read both panels.</p>
     <div id="c-03a-power"></div><div class="readout" id="ro-03a"></div>
     
     
   </div>  <div class="card">
     <h3>Minimum detectable lift with and without adjustment</h3>
-    <p class="sub">Curves: the five simulated sizes. Marked points: users per arm calculated for a 1 pp lift.</p>
-    <div id="c-03a-mde"></div><details class="more"><summary>Sampling variance relative to the unadjusted readout (0.70 for the model prediction at 5,000 per arm, 95% bootstrap interval 0.66–0.73)</summary><div id="c-03a-var" style="margin-top:10px"></div></details>
+    <p class="sub">The marked points are the users per arm needed for a one-point lift.</p>
+    <div id="c-03a-mde"></div><details class="more"><summary>Sampling variance relative to the unadjusted readout</summary><div id="c-03a-var" style="margin-top:10px"></div></details>
     
     
   </div>
@@ -42,50 +42,49 @@
 <section class="part" id="s03b"><div class="wrap">
   <div class="kicker study-k"><span class="code">03b</span></div>
   <h2 class="serif">If a change can only be randomized by market, how large a test is needed, and does the usual t-test keep its 5% false-positive rate?</h2>
-  <p class="lead">In placebo tests on 151 eligible metros' newly pending listings, regression adjustment on pre-period volume lowered the smallest detectable change of a two-month, 100-metro test (50 per group) from 9.5% (year-over-year growth) to 6.7%; pairing then changed it to 6.8%. For total volume in two-month tests, the volume-weighted t-test flagged up to 9.1% of placebo tests and randomization inference 4.2% to 5.8%.</p>
+  <p class="lead">In placebo tests on historical metro listing counts, regression adjustment on pre-period volume lowered the smallest detectable effect of a two-month, 100-metro test from 9.5% (year-over-year growth) to 6.7%; matched pairs added nothing once the estimate was adjusted. For total volume, randomization inference kept the false-positive rate between 4.2% and 5.8%, where the t-test reached 9.1%.</p>
   <a class="gh" href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/03_planning_a_test/03b_geo_experiment_design">Full study on GitHub →</a>
   <div class="card">
     <h3>Smallest detectable effect by design</h3>
-    <p class="sub">Choose an estimator and a cell (metros in both groups, test length). Lower is more sensitive.</p>
-    <div class="ctrl"><div class="seg" id="seg-geo"><button type="button" data-v="adjusted">Regression-adjusted</button><button type="button" data-v="pairs">Matched pairs + regression adjustment</button><button type="button" data-v="yoy">Year over year</button><button type="button" data-v="vw">Volume-weighted</button></div></div><div id="c-geo"></div><div id="c-geo-ro"></div>
-    <p class="note">80% power, two-sided 5% t-test unless stated; 5,000 placebo tests per cell.</p>
-    <p class="src">Data Provided by Zillow Group. <a href="https://github.com/lyz44git/ad-measurement-and-metrics/blob/main/03_planning_a_test/03b_geo_experiment_design/out/design_summary.csv">Design results</a>.</p>
+    <p class="sub">Choose an estimator, then a cell: metros in the test and test length.</p>
+    <div class="ctrl"><div class="seg" id="seg-geo"><button type="button" data-v="adjusted">Regression-adjusted</button><button type="button" data-v="pairs">Matched pairs</button><button type="button" data-v="yoy">Year over year</button><button type="button" data-v="vw">Volume-weighted</button></div></div><div id="c-geo"></div><div id="c-geo-ro"></div>
+    <p class="note">80% power, two-sided 5% test; 5,000 placebo tests per cell.</p>
+    <p class="src">Data Provided by Zillow Group.</p>
   </div>  <div class="card">
     <h3>False-positive rate of the volume-weighted estimate</h3>
-    <p class="sub">Placebo tests with no injected change; a valid test rejects about 5%. 5,000 t-test draws; 2,000 randomization draws with 199 permutations each; 95% Monte Carlo intervals.</p>
+    <p class="sub">Placebo tests with no true effect; a valid test rejects about 5% of them. 95% intervals.</p>
     <div id="c-03b-fp"></div>
     
-    <p class="src">Data Provided by Zillow Group. <a href="https://github.com/lyz44git/ad-measurement-and-metrics/blob/main/03_planning_a_test/03b_geo_experiment_design/out/randomization_inference_check.csv">Randomization inference results</a>.</p>
+    <p class="src">Data Provided by Zillow Group.</p>
   </div>
 </div></section>
 
 <section class="part" id="s03c"><div class="wrap">
   <div class="kicker study-k"><span class="code">03c</span></div>
-  <h2 class="serif">Can local inventory forecasts add up to the national total without losing accuracy?</h2>
-  <p class="lead">Separate forecasts for the US, divisions, states and metros fail to add up by 3.5% to 5.2% on average. Adding up local forecasts (bottom-up) closes every gap by construction. Forecast error matched or improved on separate forecasts in 11 of 12 comparisons; the exception was national new listings, where error rose 0.7%. MinT-shrink lowered state and metro error with this base model, but the gain did not hold with a second model or target, so bottom-up is the safe default here.</p>
+  <h2 class="serif">Can the baseline of a metric be forecast at national, state and metro levels so that the levels add up, without losing accuracy?</h2>
+  <p class="lead">Forecasts made separately for the US, divisions, states and metros disagree with each other by 3.5% to 5.2%. Bottom-up reconciliation removes the gap at no cost in accuracy. MinT-shrink lowered state and metro error with this base model, but the gain did not hold with a second model or target, so bottom-up is the safe default here.</p>
   <a class="gh" href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/03_planning_a_test/03c_hierarchical_forecasting">Full study on GitHub →</a>
   <div class="card">
     <h3>Gap between a level and the sum of the level below</h3>
-    <p class="sub">Mean absolute gap as a share of the actual value at the upper level.</p>
     
     <div class="ctrl"><div class="seg" id="seg-03c-gap"></div></div><div id="c-03c-gap"></div>
     
     <p class="src">Data Provided by Zillow Group.</p>
   </div>  <div class="card">
-    <h3>How long do inventory forecasts beat carrying the last count forward?</h3>
-    <p class="sub">RMSSE relative to a no-change forecast: below 1×, a method is more accurate. All four panels use the same scale. For-sale inventory, ETS base model, 24 monthly origins. At the metro level, bottom-up and unreconciled forecasts coincide.</p>
+    <h3>Forecast error by horizon at each level</h3>
+    <p class="sub">For-sale inventory, ETS base model, 24 monthly origins. Choose methods; point at a horizon to read all four panels.</p>
     <div class="ctrl"><span class="lab">Methods</span><div id="seg-03c"></div></div><div id="c-03c-multi"></div>
     
-    <p class="src">Data Provided by Zillow Group. <a href="https://github.com/lyz44git/ad-measurement-and-metrics/blob/main/03_planning_a_test/03c_hierarchical_forecasting/reports/tables/cross_spec_summary.csv">All three model and target checks</a>.</p>
+    <p class="src">Data Provided by Zillow Group.</p>
   </div>
 </div></section>
 <footer><div class="wrap">
   <div class="pager"><a href="02.html"><small>Previous</small>2 · Without an experiment</a><a class="next" href="04.html"><small>Next</small>4 · Customer metrics</a></div>
-  <p>Charts use committed result files and documented calculations, collected by <code>docs/build_data.py</code>. Methods, pre-specified rules and limits are in each study's page on GitHub. Data: Criteo uplift and attribution datasets (public research releases); a public marketing mix dataset released by Conjura; Zillow Research metro series (Data Provided by Zillow Group); Online Retail II (UCI Machine Learning Repository).</p>
+  <p>All numbers on these pages are read from the result files of the repository by <code>docs/build_data.py</code>. Methods, pre-specified rules and limits are in each study's page on GitHub. Data: Criteo uplift and attribution datasets (public research releases); a public marketing mix dataset released by Conjura; Zillow Research metro series (Data Provided by Zillow Group); Online Retail II (UCI Machine Learning Repository).</p>
   <p><a href="https://github.com/lyz44git/ad-measurement-and-metrics">The repository on GitHub</a></p>
 </div></footer>
 <div id="tip" role="tooltip"></div>
-<script src="data.js?v=20261117b"></script>
-<script src="assets/explorer.js?v=20261117b"></script>
+<script src="data.js"></script>
+<script src="assets/explorer.js"></script>
 </body>
 </html>

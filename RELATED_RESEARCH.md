@@ -4,7 +4,8 @@ Each result of this repository is set here against what peer-reviewed work has f
 differs, and what could explain the difference. The repository's results come from a handful of public datasets, so
 where they differ from a large published study, the published study is the stronger evidence.
 
-These studies ask when observational metrics agree with experimental evidence and when they diverge.
+The common thread, in marketing and in finance, is that the effect of advertising is real and that the raw comparison
+overstates it until the comparison is made by an experiment or another design that removes selection.
 
 ## 1. Observational estimates against experiments
 
@@ -20,15 +21,15 @@ and neither performs well.
 
 In study [02a](02_without_an_experiment/02a_attribution_metric_validation) the adjusted estimates (24.6 to 25.5) do land between the two experimental ones. This is one
 experiment and one outcome, so it is not a counterexample. A possible reason is that the 12 released features capture
-much of what decided exposure in these data; a single experiment cannot test that. The adjusted point estimates lay between the two
-assignment-based benchmarks in this sample; that does not show confounding was removed.
+much of what decided exposure in these data; a single experiment cannot test that. The reading consistent with the
+literature is that adjustment worked here and cannot be assumed to work elsewhere.
 
 ## 2. How large a test must be
 
 Lewis and Rao (2015) analyze 25 large advertising experiments run with major U.S. retailers and brokerages and
 conclude that informative experiments can require more than 10 million person-weeks, because the effect of
 advertising is small next to the variation in what people buy. The same arithmetic appears in study [01c](01_with_an_experiment/01c_sql_metric_readout): a
-conversion test needs about 20 times the users of a visit test, 848,944 per group against 41,413 for a 10% relative lift.
+conversion test needs about 20 times the users of a visit test, 849,000 per group against 41,000 for a 10% lift.
 
 Deng, Xu, Kohavi and Walker (2013) introduced the use of pre-experiment data to reduce the variance of an experiment's
 readout. The adjustment in study [03a](03_planning_a_test/03a_lift_study_sizing) follows that idea and removes about 31% of the variance, which lowers the
@@ -37,13 +38,14 @@ that Lewis and Rao describe.
 
 Feit and Berman (2019) show that when a test is sized to maximize profit and not to reach a fixed statistical power,
 the best sample is substantially smaller than the one a hypothesis test calls for. The sizes in studies
-[03a](03_planning_a_test/03a_lift_study_sizing), [01c](01_with_an_experiment/01c_sql_metric_readout) and [03b](03_planning_a_test/03b_geo_experiment_design) are of the hypothesis-test kind; profit-based sizing needs costs and payoffs these data lack.
+[03a](03_planning_a_test/03a_lift_study_sizing), [01c](01_with_an_experiment/01c_sql_metric_readout) and [03b](03_planning_a_test/03b_geo_experiment_design) are of the hypothesis-test kind and can therefore be read as upper bounds for a firm that
+only needs to choose the better of two options.
 
 ## 3. Who to target
 
 Blake, Nosko and Tadelis (2015) find at eBay that non-brand search ads moved new and infrequent users and not the
 frequent buyers who account for most spending, so the users most likely to buy were the wrong ones to target. In
-the visit ranking on the held-out users in this display-ad sample (study [01a](01_with_an_experiment/01a_ad_incrementality)), the reverse holds: the users most likely to visit are also the ones the ads move most, and a
+study [01a](01_with_an_experiment/01a_ad_incrementality) the reverse holds: the users most likely to visit are also the ones the ads move most, and a
 response model targets as well as an uplift model (each puts about 75% of incremental visits in its top fifth).
 
 Fernández-Loría and Provost (2022) give the condition that reconciles the two results: predicting the outcome can be
@@ -56,14 +58,15 @@ checked in each one, which is what the pre-specified comparison in study [01a](0
 ## 4. Marketing mix models and the returns to advertising
 
 Chan and Perry (2017) group the obstacles to marketing mix modeling into data limitations, selection bias and model
-choice, and note that its estimates are correlational. The simulation in study [02c](02_without_an_experiment/02c_marketing_mix_modeling) isolates one obstacle to estimating channel
-returns: with weekly data, 19% of brand-channel pairs reach the signal-to-noise threshold in a simulation that puts a
-known response on the brands' real spend. Spend there does not respond to demand, so selection bias needs separate evidence.
+choice, and note that its estimates are correlational. The simulations in study [02c](02_without_an_experiment/02c_marketing_mix_modeling) isolate the first obstacle
+and put a number on it: with weekly data, 19% of brand-channel pairs have enough independent variation in spend for
+the channel's return to be measured. Because spend in the simulations does not respond to demand, this is an upper
+bound; selection bias in real data can only make it worse.
 
 Shapiro, Hitsch and Tuchman (2021) estimate the effect of television advertising for 288 consumer brands and find
 elasticities substantially smaller than earlier work, with a negative return at the margin for more than 80% of
-brands. In the experiment used here, by contrast, eligibility for ads raised the conversion rate by 59%. The two are
-different media, designs and quantities (marginal return vs. conversion lift). Together they say that the return to advertising varies widely from one setting to
+brands. In the experiment used here, by contrast, the ads raised the conversion rate by 59%. The two are different
+media, products and designs. Together they say that the return to advertising varies widely from one setting to
 another, which is the case for measuring it in each.
 
 ## 5. Attribution and bidding
@@ -72,7 +75,7 @@ Diemert, Meynet, Galland and Lefortier (2017), who released the data used in stu
 report that a bidder that accounts for attribution is more efficient, and that it differs from the baseline mainly in
 how it bids right after a click. The replay in study [02d](02_without_an_experiment/02d_attribution_and_bidding) finds the same direction: the time-decay bidder puts
 20% of its spend on impressions within a day of a click, against 25% for the last-touch bidder. The effect on what is
-bought and on the credit captured is small (at most 2.2% at half the logged budget, replayed at logged prices). The two are not directly
+bought and on the credit captured is small (at most 2.2% at half the logged budget). The two are not directly
 comparable: theirs is a production bidder evaluated by a utility metric and by online tests, this one a six-feature
 value model replayed at logged prices. Neither credit rule is validated against an experiment in these data.
 
@@ -85,11 +88,10 @@ six-month repeat buyers among high-value accounts better than recency alone (AUC
 rule ranks 12-month sales better than the model.
 
 McCarthy and Fader (2018) value publicly traded retailers from their customer data. When customer counts feed a
-valuation in this way, the definition of a new customer is not a reporting detail: in study [04](04_customer_metrics_retention), of the 1,036
-accounts that bought in March to May 2011 and not in the three months before, 640 already appeared in the December
-2009 to November 2010 purchase records.
+valuation in this way, the definition of a new customer is not a reporting detail: in study [04](04_customer_metrics_retention) a three-month
+look-back labels 1,036 accounts new, of which 640 had bought in the prior 12 months.
 
-## 7. A parallel identification problem in finance
+## 7. The same lesson in finance
 
 The finance literature asks whether advertising moves investors as well as customers, and it shows the same
 correction. Lou (2014) finds, in annual data, that higher advertising spending comes with more retail buying and
@@ -100,9 +102,10 @@ relation between advertising and returns to reverse causality. Liaukonyte and Za
 from time zones, which expose viewers to the same national advertising at different times, and find that a television
 advertisement raises searches for the advertiser's financial filings by 3% within 15 minutes.
 
-The parallel is the identification problem: the raw association misleads until the design removes selection.
+The pattern matches the one here. Advertising has an effect, the raw association overstates it, and the size of the
+effect is known only once the design removes selection.
 
-## 8. Privacy and measurement precision
+## 8. Privacy and forecast reconciliation
 
 The privacy study [01d](01_with_an_experiment/01d_private_segment_effects) uses the Laplace mechanism of Dwork, McSherry, Nissim and Smith (2006). What privacy
 costs advertisers has been measured at scale by Wernerfelt, Tuchman, Shapiro and Moakler (2025), in an experiment
@@ -110,19 +113,19 @@ with more than 70,000 advertisers: losing data from outside the platform raised 
 customer by 31%. Study [01d](01_with_an_experiment/01d_private_segment_effects) addresses a narrower question, how much accuracy a readout loses when its counts are
 noised, and finds that a model which knows the noise scale recovers much of it.
 
-## 9. Coherent forecasts across levels
-
 Wickramasuriya, Athanasopoulos and Hyndman (2019) derive the reconciliation of hierarchical forecasts that minimizes
 the variance of the reconciled errors, given the covariance of the base forecast errors. With 873 series and an
 estimated covariance, its gain in study [03c](03_planning_a_test/03c_hierarchical_forecasting) held with one base model and not with another, and bottom-up
 reconciliation was the safe default.
 
-## 10. Where the field is going
+## 9. Where the field is going
 
 Gordon, Moakler and Zettelmeyer (working paper) use 2,226 experiments at Meta to predict the incremental effect of
 campaigns that have no experiment, from campaign-level measures that include last-click conversion counts. Their
 model explains 88% of the out-of-sample variation in incremental conversions per dollar, against 19% for last-click
-attribution alone. Here I check one exposure-based count against one experiment (studies [02a](02_without_an_experiment/02a_attribution_metric_validation) and [01c](01_with_an_experiment/01c_sql_metric_readout)); cross-campaign prediction would require many experiments.
+attribution alone. This is the constructive answer to the gap this repository starts from: attribution counts are
+informative once they are calibrated against experiments, and studies [02a](02_without_an_experiment/02a_attribution_metric_validation) and [01c](01_with_an_experiment/01c_sql_metric_readout) are a one-experiment
+version of that calibration.
 
 ## References
 

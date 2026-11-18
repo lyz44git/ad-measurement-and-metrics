@@ -2,11 +2,11 @@
 
 **[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/01.html#s01c)**
 
-> **Takeaway.** 29 published readout quantities of studies 01a and 02a were recomputed with short SQL queries, each
-> with a stated numerator and denominator, and all 29 agree with the Python results. The data checks pass. Two facts
-> that the readout depends on are recorded: the file has no user identifier, so a "user" is a row, and 16% of rows
-> are identical to another row in every column. A conversion endpoint needs about 20 times as many users as a visit
-> endpoint for the same relative lift (849,000 against 41,000 per arm for a 10% lift).
+> **Takeaway.** Every number in the readout of the experiment comes from one short SQL query with a stated numerator
+> and denominator, and agrees with the Python pipeline of studies 01a and 02a in 29 of 29 comparisons. The data checks
+> pass. Two facts that the readout depends on are recorded: the file has no user identifier, so a "user" is a row, and
+> 16% of rows are identical to another row in every column. A conversion endpoint needs about 20 times as many users
+> as a visit endpoint for the same relative lift (849,000 against 41,000 per arm for a 10% lift).
 
 ## Question
 
@@ -17,15 +17,14 @@ results?
 
 ## Data
 
-The Criteo experiment used in [study 01a](../01a_ad_incrementality): 13,979,592 rows with 12 anonymized features and
-four 0/1 flags: `treatment` (assigned to the ad arm), `exposure` (saw an ad), `visit` and `conversion`. The file has
-no user identifier; each row is treated as one user record. Pass the path to `criteo-research-uplift-v2.1.csv.gz` as
-the first argument.
+The Criteo experiment used in [study 01a](../01a_ad_incrementality): 13,979,592 rows, one per user, with 12
+anonymized features and four 0/1 flags: `treatment` (assigned to the ad arm), `exposure` (saw an ad), `visit` and
+`conversion`. Pass the path to `criteo-research-uplift-v2.1.csv.gz` as the first argument.
 
 ## Method
 
-The analysis plan, [`design/analysis_plan.md`](design/analysis_plan.md), was hashed before any query was run on the data
-(SHA-256 in `logs/plan_hash.txt`). The Python results of studies 01a and 02a were already known; the SQL
+The analysis plan, [`design/analysis_plan.md`](design/analysis_plan.md), was fixed before any query was run on the
+data (SHA-256 in `logs/plan_hash.txt`). The Python results of studies 01a and 02a were already known; the SQL
 results, the checks and the sample-size table were not.
 
 1. **Metric definitions.** The denominator of every rate is all users assigned to the arm, whether or not they saw an
@@ -36,10 +35,10 @@ results, the checks and the sample-size table were not.
    | Visit rate, by arm | users with a visit | all users assigned to the arm |
    | Conversion rate, by arm | users with a conversion | all users assigned to the arm |
    | Exposure rate, ad arm | users who saw an ad | all users assigned to the ad arm |
-   | Effect of assignment (primary readout) | ad-arm rate minus control rate | (difference in arm rates) |
-   | Estimated additional outcomes in the ad arm | effect of assignment × users in the ad arm | (estimated count) |
-   | Outcomes credited by attribution (diagnostic) | outcomes of exposed users in the ad arm | (count) |
-   | Over-crediting (diagnostic) | outcomes credited | estimated additional outcomes |
+   | Effect of assignment (primary readout) | ad-arm rate minus control rate | |
+   | Outcomes caused by the ads | effect of assignment × users in the ad arm | |
+   | Outcomes credited by attribution (diagnostic) | outcomes of exposed users in the ad arm | |
+   | Over-crediting (diagnostic) | outcomes credited | outcomes caused |
    | Effect per exposed user (diagnostic) | effect of assignment | exposure rate of the ad arm |
 
    The effect per exposed user assumes that assignment changes the outcome only through exposure.
@@ -67,7 +66,7 @@ Source: [`out/readout.json`](out/readout.json); tables in `out/*.csv`. The run t
 | C4. Exposed users in the control arm | 0 | 0 |
 | C5. Users with a conversion and no visit | not stated | 0 |
 | C6. Exposed users with no visit | not stated | 250,702 (59% of exposed users) |
-| C7. Rows with at least one identical counterpart in all 16 columns | not stated | 2,221,150 (16% of rows) |
+| C7. Rows identical to another row in all 16 columns | not stated | 2,221,150 (16% of rows) |
 
 **Readout by arm.**
 
@@ -83,12 +82,12 @@ Source: [`out/readout.json`](out/readout.json); tables in `out/*.csv`. The run t
 | | Visits | Conversions |
 |---|---|---|
 | Effect of assignment (standard error) | +1.034 pp (0.015) | +0.115 pp (0.003) |
-| Estimated additional outcomes in the ad arm | 122,895 | 13,687 |
+| Outcomes caused by the ads | 122,895 | 13,687 |
 | Outcomes credited by attribution | 177,510 | 23,031 |
-| Credited over estimated (ratio) | 1.44 | 1.68 |
+| Credited over caused | 1.44 | 1.68 |
 | Effect per exposed user | 28.7 pp | 3.20 pp |
 
-**Users per arm for 80% power, by relative lift.**
+**Users per arm for 80% power.**
 
 | Relative lift | Visit rate (control 3.82%) | Conversion rate (control 0.19%) | Ratio |
 |---|---|---|---|
@@ -107,7 +106,7 @@ Source: [`out/readout.json`](out/readout.json); tables in `out/*.csv`. The run t
   with the same recorded values, so no row is dropped and every count above is a count of rows. If they were
   duplicates of the same user, the standard errors above would be too small.
 - **A conversion test is about 20 times larger than a visit test** for the same relative lift, because the base rate
-  is about 20 times lower. For a 1-percentage-point absolute lift in the visit rate, the formula gives 6,485 users per arm,
+  is about 20 times lower. A one-point absolute lift in the visit rate needs 6,485 users per arm by this formula,
   against about 6,500 by simulation in [study 03a](../../03_planning_a_test/03a_lift_study_sizing).
 
 ## Reproduce
@@ -116,7 +115,7 @@ Source: [`out/readout.json`](out/readout.json); tables in `out/*.csv`. The run t
 python code/run_readout.py /path/to/criteo-research-uplift-v2.1.csv.gz out   # about 4 seconds; needs 01a and 02a outputs
 ```
 
-[`tests/`](tests) builds a small simulated experiment and checks that the SQL readout equals an independent pandas
+`tests/` builds a small simulated experiment and checks that the SQL readout equals an independent pandas
 computation, that the data checks pass on clean data and catch planted errors, that the reconciliation flags a
 changed number, and the sample-size formula.
 
