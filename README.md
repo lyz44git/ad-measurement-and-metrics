@@ -133,7 +133,7 @@ past sales performed better than the model ([04](04_customer_metrics_retention))
 
 ## 5. Six pre-specified tests were not passed.
 
-Each of the following fell short of a threshold that was fixed before the result was seen, and is reported as such.
+Each of the following fell short of a threshold that was fixed before the result was seen.
 
 - The uplift model did not outperform a simple response model in ranking users for targeting ([01a](01_with_an_experiment/01a_ad_incrementality)).
 - Adding media variables to a revenue forecast did not reliably improve it ([02c](02_without_an_experiment/02c_marketing_mix_modeling)).
