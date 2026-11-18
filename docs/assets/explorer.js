@@ -79,7 +79,7 @@ document.querySelectorAll("[data-count]").forEach(n => { const [v, d] = heroVals
     [["visit", "Visit rate"], ["conversion", "Conversion rate"]].forEach(([k, name], i) => {
       const r = E[k], g = el("g", { transform: `translate(0,${i * rowsH})` }, svg), y = 40, i1 = 100 * r.ad_rate / r.control_rate;
       txt(g, 0, y - 6, name, { class: "t-strong" });
-      txt(g, 0, y + 12, `+${fmt(100 * r.relative_lift)}% relative`, { class: "t-orange" });
+      
       el("line", { x1: x(0), x2: R, y1: y, y2: y, class: "gridl", "stroke-width": 6, "stroke-linecap": "round" }, g);
       const bar = el("line", { x1: x(100), x2: x(100), y1: y, y2: y, "stroke-width": 6, "stroke-linecap": "round", class: "s-orange", opacity: .55 }, g);
       const c0 = el("circle", { cx: x(100), cy: y, r: 7, class: "f-grey s-card", "stroke-width": 2 }, g);
@@ -87,8 +87,8 @@ document.querySelectorAll("[data-count]").forEach(n => { const [v, d] = heroVals
       const l0 = txt(g, x(100) - 4, y - 16, `Control ${(100 * r.control_rate).toFixed(2)}%`, { "text-anchor": "end", class: "t-muted" });
       const l1 = txt(g, x(i1) + 4, y - 16, `${nar ? "Ad" : "Ad group"} ${(100 * r.ad_rate).toFixed(2)}%`, { "text-anchor": "start", class: "t-navy", opacity: 0 });
       l1.setAttribute("x", Math.min(x(i1) + 4, w - 2 - l1.getComputedTextLength()));
-      const dl = txt(g, (x(100) + x(i1)) / 2, y + 22, `+${(100 * (r.ad_rate - r.control_rate)).toFixed(k === "visit" ? 2 : 3)} pp`, { "text-anchor": "middle", class: "t-orange", "font-size": 11, opacity: 0 });
-      hoverTip(c0, `Control group: ${(100 * r.control_rate).toFixed(2)}% (100% of control)`); hoverTip(c1, `Ad group: ${(100 * r.ad_rate).toFixed(2)}% (${fmt(i1)}% of control)`);
+      const dl = txt(g, (x(100) + x(i1)) / 2, y + 22, `+${fmt(100 * r.relative_lift)}% relative`, { "text-anchor": "middle", class: "t-orange", "font-size": 11, opacity: 0 });
+      hoverTip(c0, `Control group: ${(100 * r.control_rate).toFixed(2)}% (100% of control)`); hoverTip(c1, `Ad group: ${(100 * r.ad_rate).toFixed(2)}% (${fmt(i1)}% of control; +${(100 * (r.ad_rate - r.control_rate)).toFixed(k === "visit" ? 2 : 3)} pp)`);
       const go = () => animate([[c1, { cx: x(i1) }], [bar, { x2: x(i1) }], [l1, { opacity: 1 }], [dl, { opacity: 1 }]], 1100);
       if (animateIn) whenVisible(host, () => setTimeout(go, 200 + 250 * i)); else { c1.setAttribute("cx", x(i1)); bar.setAttribute("x2", x(i1)); l1.setAttribute("opacity", 1); dl.setAttribute("opacity", 1); }
     });

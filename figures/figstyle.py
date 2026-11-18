@@ -202,20 +202,43 @@ def p_hundred(ax, letter, key="conversion", title=None):
 
 
 def p_deciles(ax, letter, title="Effect by decile of predicted uplift"):
-    tg = load(f"{S01A}/out/criteo/c_targeting.json"); cal = tg["calibration_selected"]
-    x = [r["decile"] for r in cal]; y = [100 * r["realized"] for r in cal]; h = [196 * r["se"] for r in cal]
-    ax.axhline(0, color="#b9bec5", lw=0.8)
-    ax.axhline(100 * tg["test_overall_itt"]["est"], color=GREY, lw=1, ls=(0, (4, 3)))
-    ax.text(10.4, 100 * tg["test_overall_itt"]["est"] + 0.25, "average", ha="right", fontsize=7, color=MUTED)
-    ax.fill_between(x, [u - v for u, v in zip(y, h)], [u + v for u, v in zip(y, h)], color=NAVY, alpha=0.14, lw=0)
-    ax.plot(x, y, color=NAVY, lw=2.2, zorder=3)
-    for u, v in zip(x, y):
-        dot(ax, u, v, NAVY, s=30)
-    ax.plot(x, [100 * r["predicted"] for r in cal], color=ORANGE, lw=1.4, ls=(0, (4, 2)), zorder=2)
-    ax.text(1.35, y[0], f"realized {y[0]:.1f}", fontsize=7.5, color=NAVY, fontweight="bold", va="center")
-    ax.text(10, 100 * cal[-1]["predicted"] - 0.45, "predicted", fontsize=7.5, color=ORANGE, fontweight="bold", ha="right", va="top")
-    ax.set_xticks(x); ax.set_xlim(0.5, 10.6); ax.set_ylim(-1.8, 7.6); ax.set_xlabel("Decile of predicted uplift (1 = highest)")
-    ax.set_ylabel("Effect on visit rate (pp)"); clean(ax)
+    """Realized effect (line, 95% band) against the model's prediction (dashed) by decile, on a broken axis.
+
+    Decile 1 (about 6 pp) sits in its own upper band so deciles 2-10 (about -1 to 1 pp) are not flattened.
+    """
+    tg = load(f"{S01A}/out/criteo/c_targeting.json"); cal = tg["calibration_selected"]; avg = 100 * tg["test_overall_itt"]["est"]
+    x = [r["decile"] for r in cal]; y = [100 * r["realized"] for r in cal]; h = [196 * r["se"] for r in cal]; pr = [100 * r["predicted"] for r in cal]
+    for sp in ax.spines.values():
+        sp.set_visible(False)
+    ax.set_xticks([]); ax.set_yticks([]); ax.grid(False); ax.patch.set_alpha(0)
+    top = ax.inset_axes([0, 0.70, 1, 0.30]); low = ax.inset_axes([0, 0, 1, 0.62])
+    for a, (y0, y1) in ((top, (5.2, 7.3)), (low, (-1.25, 1.45))):
+        a.set_xlim(0.4, 10.6); a.set_ylim(y0, y1); a.grid(axis="y", color=GRID); a.set_axisbelow(True)
+        a.patch.set_alpha(0)  # transparent, so the segment drawn across the break is not covered
+        a.fill_between(x[1:], [u - v for u, v in zip(y[1:], h[1:])], [u + v for u, v in zip(y[1:], h[1:])], color=NAVY, alpha=0.14, lw=0)
+        a.plot(x[1:], y[1:], color=NAVY, lw=2.2, zorder=3)
+        a.plot(x[1:], pr[1:], color=ORANGE, lw=1.4, ls=(0, (4, 2)), zorder=4)
+        for u, v in zip(x, y):
+            dot(a, u, v, NAVY, s=30, z=5)
+    # join decile 1 (upper band) to decile 2 (lower band) across the break, so each line stays continuous
+    from matplotlib.patches import ConnectionPatch
+    for vals, kw in ((y, dict(color=NAVY, lw=2.2, zorder=3)), (pr, dict(color=ORANGE, lw=1.4, ls=(0, (4, 2)), zorder=4))):
+        ax.add_artist(ConnectionPatch((x[0], vals[0]), (x[1], vals[1]), "data", "data", axesA=top, axesB=low, **kw))
+    top.plot([x[0], x[0]], [y[0] - h[0], y[0] + h[0]], color=NAVY, alpha=0.14, lw=9, solid_capstyle="butt", zorder=2)  # 95% CI of decile 1, same shade as the band
+    low.axhline(0, color="#b9bec5", lw=0.8, zorder=1)
+    low.axhline(avg, color=GREY, lw=1, ls=(0, (4, 3)), zorder=1)
+    low.text(9.55, avg + 0.1, "average", ha="right", va="bottom", fontsize=7, color=MUTED)
+    top.set_xticks([]); top.spines["bottom"].set_visible(False); top.set_yticks([6, 7])
+    low.set_xticks(x); low.set_yticks([-1, 0, 1]); low.spines["top"].set_visible(False)
+    d = dict(transform=top.transAxes, color="#b9bec5", lw=0.9, clip_on=False)
+    top.plot([-0.015, 0.015], [-0.04, 0.04], **d)
+    low.plot([-0.015, 0.015], [0.985, 1.025], transform=low.transAxes, color="#b9bec5", lw=0.9, clip_on=False)
+    top.text(1.35, y[0], f"realized {y[0]:.1f}", fontsize=7.5, color=NAVY, fontweight="bold", va="center")
+    top.text(1.35, pr[0] + 0.05, f"predicted {pr[0]:.1f}", fontsize=7.5, color=ORANGE, fontweight="bold", va="bottom")
+    low.text(9.6, pr[-1], f"predicted {pr[-1]:.1f}", fontsize=7, color=ORANGE, fontweight="bold", ha="right", va="center")
+    low.text(9.6, y[-1] + 0.12, f"realized {y[-1]:.1f}", fontsize=7, color=NAVY, fontweight="bold", ha="right", va="bottom")
+    low.set_xlabel("Decile of predicted uplift (1 = highest)")
+    ax.set_ylabel("Effect on visit rate (pp)", labelpad=18)
     panel(ax, letter, title)
 
 
