@@ -85,7 +85,7 @@ def hbars(ax, labels, values, colors, fmtv, vmax=None, lw=12, note=None, label_w
     ax.tick_params(axis="y", labelsize=8, labelcolor=INK)
 
 
-def dotrows(ax, labels, est, lo, hi, colors, fmtv, xlim, band=None, ref=None, ref_label=None, bold=None):
+def dotrows(ax, labels, est, lo, hi, colors, fmtv, xlim, band=None, ref=None, ref_label=None, bold=None, pad=0.02):
     """Point estimates with intervals, one row each, value written to the right."""
     n = len(labels)
     if band:
@@ -94,7 +94,7 @@ def dotrows(ax, labels, est, lo, hi, colors, fmtv, xlim, band=None, ref=None, re
         y = n - 1 - i
         ax.plot([lo[i], hi[i]], [y, y], color=colors[i], lw=2.2, zorder=3, solid_capstyle="round")
         dot(ax, est[i], y, colors[i], s=52)
-        ax.text(hi[i] + (xlim[1] - xlim[0]) * 0.02, y, fmtv(est[i]), va="center", fontsize=8.5, fontweight="bold", color=INK)
+        ax.text(hi[i] + (xlim[1] - xlim[0]) * pad, y, fmtv(est[i]), va="center", fontsize=8.5, fontweight="bold", color=INK)
     if ref is not None:
         ax.axvline(ref, color=ORANGE, lw=1.1, ls=(0, (4, 3)), zorder=1)
         if ref_label:
@@ -296,7 +296,7 @@ def p_exposure(ax, letter, title="Effect of exposure on the visit rate"):
            ("Double machine learning", pe["dml"], pe["dml_se"], BLUE)]
     v = [100 * e[1] for e in est]; h = [196 * e[2] for e in est]
     dotrows(ax, [e[0] for e in est], v, [a - b for a, b in zip(v, h)], [a + b for a, b in zip(v, h)], [e[3] for e in est], lambda u: f"{u:.1f}",
-            (15, 43), band=(min(v[:2]), max(v[:2])), bold=["Experiment, unadjusted", "Experiment, adjusted"])
+            (15, 43), band=(min(v[:2]), max(v[:2])), bold=["Experiment, unadjusted", "Experiment, adjusted"], pad=0.045)
     ax.text((v[0] + v[1]) / 2, 4.75, "experimental range", ha="center", fontsize=7, color=MUTED)
     ax.set_xlabel("Percentage points"); panel(ax, letter, title)
 
@@ -314,7 +314,7 @@ def p_heat(ax, letter, title="Share of credit by rule and timing of the touch"):
             rbox(ax, j + 0.05, y + 0.06, 0.9, 0.88, c, r=0.1)
             ax.text(j + 0.5, y + 0.5, f"{v:.0f}%", ha="center", va="center", fontsize=8.5, fontweight="bold", color="white" if v >= 45 else INK)
     ax.set_xlim(0, 4); ax.set_ylim(0, 4)
-    ax.set_xticks([j + 0.5 for j in range(4)], [b[1] for b in BUCKETS]); ax.xaxis.tick_top(); ax.tick_params(axis="x", labelsize=6.8, labelcolor=INK2)
+    ax.set_xticks([j + 0.5 for j in range(4)], [b[1] for b in BUCKETS]); ax.xaxis.tick_top(); ax.tick_params(axis="x", labelsize=6.2, labelcolor=INK2)
     ax.set_yticks([len(RULES) - 1 - i + 0.5 for i in range(4)], [r[1] for r in RULES]); ax.tick_params(axis="y", labelsize=8, labelcolor=INK)
     ax.grid(False); clean(ax, x=False)
     ax.set_title(f"{letter}   {title}", loc="left", fontweight="bold", color=INK, pad=26)
@@ -366,7 +366,10 @@ def p_mmm_scatter(ax, letter, title="Recovery error and the signal-to-noise inde
     ax.axvline(2, color=ORANGE, lw=1.2, ls=(0, (4, 3)))
     for lo_, hi_, m, c in ((0.03, 2, 100 * t1["index_below_2"]["median_err"], GREY), (2, 60, 100 * t1["index_2_or_more"]["median_err"], NAVY)):
         ax.plot([lo_ * 1.15, hi_ / 1.15], [m, m], color=c, lw=1.4, ls=(0, (5, 3)), zorder=2)
-        ax.text(lo_ * 1.3 if c == GREY else hi_ / 1.3, m * 1.35, f"median error {m:.0f}%", ha="left" if c == GREY else "right", fontsize=7.5, color=c, fontweight="bold", path_effects=HALO, zorder=5)
+        if c == GREY:
+            ax.text(lo_ * 1.3, m * 1.35, f"median {m:.0f}%", ha="left", fontsize=7.5, color=c, fontweight="bold", path_effects=HALO, zorder=5)
+        else:  # below the line at the right edge, clear of the points
+            ax.text(hi_ / 1.08, m / 1.3, f"median {m:.0f}%", ha="right", va="top", fontsize=7.5, color=c, fontweight="bold", path_effects=HALO, zorder=5)
     ax.scatter([u for u, v in pts if u < 2], [v for u, v in pts if u < 2], s=26, color=GREY, edgecolor="white", lw=0.7, zorder=3)
     ax.scatter([u for u, v in pts if u >= 2], [v for u, v in pts if u >= 2], s=30, color=NAVY, edgecolor="white", lw=0.7, zorder=3)
     ax.text(2.2, 2400, "index = 2", fontsize=7.2, color=ORANGE, fontweight="bold")
