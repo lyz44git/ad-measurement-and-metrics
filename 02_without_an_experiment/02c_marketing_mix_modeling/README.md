@@ -2,11 +2,12 @@
 
 **[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02c)**
 
-> **Takeaway.** A marketing mix model recovers a channel's return only where that channel's spend moves enough on its
-> own, and this can be checked before fitting. In a pre-specified test on held-out simulations with real spend,
-> the median absolute relative error of a channel's estimated return was 19% for brand-channels with a
-> signal-to-noise index of 2 or more (rank correlation 0.80 with the truth) and 50% for the rest. Only 19% of brand-channels reach that level on weekly data, against 55% on daily
-> data, and pooling the brands in one model did not help. Model ROAS should be checked this way first and calibrated
+> **Takeaway.** In simulations on real spend, a marketing mix model estimated a channel's return more accurately
+> where that channel's spend varied more on its own, and a signal-to-noise index computed before fitting, under an
+> assumed response shape, picked out those brand-channels. In the pre-specified test, the median absolute relative
+> error of a channel's estimated return was 19% for brand-channels with an index of 2 or more (33 of 54; rank
+> correlation 0.80 with the truth) and 50% for the rest. In these simulations 19% of brand-channels reach that level
+> on weekly data and 55% on daily data. Pooling the brands in one model failed its pre-specified rule. Model ROAS should be checked this way first and calibrated
 > with experiments (studies 01a and 03b) before it guides a budget.
 
 ## Questions
@@ -19,7 +20,8 @@
 ## Data
 
 Conjura, "Multi-Region Marketing Mix Modelling (MMM) Dataset for Several eCommerce Brands" (Figshare 25314841,
-CC BY 4.0): daily spend by channel and purchases for 93 anonymized e-commerce brands. Download `conjura_mmm_data.csv`
+CC BY 4.0): daily spend by channel and purchases for 93 anonymized e-commerce brands, of which 34 (weekly) and 31 (daily) are
+eligible. Download `conjura_mmm_data.csv`
 into `data_raw/` (git-ignored).
 
 Revenue is purchases at original price minus discounts. Google spend is the sum of the five Google columns and Meta
@@ -28,7 +30,8 @@ offline media or competitor information.
 
 ## Method
 
-Each part has its own plan, fixed and hashed before that part was run (hashes in `logs/`). Parts 2 and 3 were added
+Each part has its own plan, fixed and hashed before that part was run (hashes in `logs/`; they check that the plans
+are unchanged, not when they were written). Parts 2 and 3 were added
 after the results of the part before them had been read, and each plan states what had been seen.
 
 **Part 1, one model per brand** ([`design/analysis_plan.md`](design/analysis_plan.md), Part A; Part B is study 02b).
@@ -60,8 +63,9 @@ and channel:
     index = sqrt(n) x SD(part of the channel's revenue contribution not explained by trend, season, day of week
             and the other channel) / SD(revenue around trend and season)
 
-It is the t-statistic the channel's effect would have if its carry-over and saturation were known, and it needs no
-model fit. The index and the threshold of 2 were suggested by the weekly simulation with brand-specific shapes and
+It is the t-statistic the channel's effect would have if its carry-over and saturation were known. It needs no
+marketing mix model fit, but it uses the channel's contribution, which is known only in a simulation; on real data it
+rests on an assumed response shape. The index and the threshold of 2 were suggested by the weekly simulation with brand-specific shapes and
 then tested on three simulations that had not been examined: daily data with brand-specific shapes (T1, primary),
 daily data with common shapes (T2) and weekly data with common shapes (T3). Predictions: the index is negatively
 rank-correlated with the error of the per-brand estimate (95% interval below 0), and brand-channels with an index of 2
@@ -69,12 +73,14 @@ or more have a median error below 25% and below that of the rest.
 
 ## Results
 
+The diagnostic of part 3 met its pre-specified rule; forecasting (part 1) and pooling (part 2) did not.
+
 ### Part 1: one model per brand
 
 Sources: [`out/mmm_summary.json`](out/mmm_summary.json) (weekly), [`out/mmm_summary_daily.json`](out/mmm_summary_daily.json)
 (daily); per-brand tables in `out/mmm_brands*.csv` and recovery draws in `out/mmm_recovery*.csv`.
 
-| | Weekly (plan) | Daily (deviation 1) |
+| | Weekly (plan) | Daily (added afterwards; deviation 1) |
 |---|---|---|
 | Eligible brands / converged (R-hat < 1.05) | 34 / 30 | 31 / 27 |
 | Holdout wMAPE, median: media model / no media / seasonal naive | 0.19 / 0.22 / 0.32 | 0.35 / 0.38 / 0.42 |
@@ -86,11 +92,14 @@ Sources: [`out/mmm_summary.json`](out/mmm_summary.json) (weekly), [`out/mmm_summ
 | Revenue / total spend, median across converged brands | 5.9 | 6.4 |
 | Media share of revenue, median across brands | 61% | 43% |
 
-[![Estimated against known channel ROAS in the recovery test, weekly and daily data, on logarithmic axes](out/fig_roas_recovery.png)](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02c)
+[![Estimated against known simulated return on ad spend for each brand-channel pair, with 90% intervals: weekly data, the planned analysis (rank agreement 0.01), and daily data, added afterwards (0.75)](out/fig_roas_recovery.png)](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02c)
 
 - **The pre-specified forecasting rule was not met** in either run: the interval of the mean wMAPE difference
   includes 0.
-- Weekly brand-level ROAS is not recovered (0.01). Daily data make it recoverable in rank (0.75), with wide intervals.
+- Weekly brand-level ROAS is not recovered (0.01). On daily data the rank correlation is 0.75, with wide intervals;
+  the two checks use different random samples of 20 brands. On the 54 brand-channels converged at both frequencies
+  in part 2 (same simulation design, separate draws), the median error was 40% weekly and 26% daily
+  ([`out/same_brand_frequency_check.json`](out/same_brand_frequency_check.json)).
   Model ROAS is well below revenue per unit of spend, as expected when part of revenue would occur without media.
 - Moving 10% of spend toward the channel with the higher marginal return has a model-implied median gain of about 1%
   of revenue; its 90% interval is above 0 in 16 of 27 brands in the daily run. This is not validated.
@@ -109,13 +118,14 @@ Recovery rows cover the brand-channels converged under both models; each cell is
 | Coverage of 90% intervals | 92% / 88% | 94% / 85% |
 | **Common shapes:** rank correlation | 0.31 / 0.33 | 0.74 / 0.74 |
 | Median absolute relative error | 57% / 48% | 26% / 31% |
-| **Holdout forecast, real revenue:** pooled model better than the no-media model | 15 of 32 | 18 of 28 (fit not converged) |
-| Mean wMAPE difference, pooled minus no media (95% CI over brands) | +0.045 (−0.064 to 0.167) | −0.012 (−0.106 to 0.097) (fit not converged) |
+| **Holdout forecast, real revenue:** pooled model better than the no-media model | 15 of 32 | 18 of 28 (fit failed diagnostics; not interpreted) |
+| Mean wMAPE difference, pooled minus no media (95% CI over brands) | +0.045 (−0.064 to 0.167) | −0.012 (−0.106 to 0.097) (fit failed diagnostics; not interpreted) |
 
-- **Neither pre-specified rule was met.** In the primary simulation (brand-specific shapes) pooling did not lower
-  the median error or raise the rank correlation at either frequency. With common shapes it lowered the weekly median
-  error (57% to 48%) but raised the daily one (26% to 31%). On weekly data it lowered the mean error (the 95% interval of the difference is below
-  0) by shrinking a few extreme estimates, but the rule also required a lower median.
+- **Neither pre-specified rule was met.** In the primary simulation (brand-specific shapes) pooling moved the median
+  error from 44% to 45% on weekly data and from 25.78% to 25.75% on daily data. On weekly data it lowered the mean
+  error (the 95% interval of the difference is below 0) by shrinking a few extreme estimates, but the rule also
+  required a lower median; on daily data the interval of the mean difference includes 0. With common shapes pooling
+  lowered the weekly median error (57% to 48%) but raised the daily one (26% to 31%).
 - The pooled model's 90% intervals covered the truth less often than the per-brand model's.
 - With all eligible brands, the per-brand weekly model has a rank correlation of 0.19 to 0.31 with the truth, against
   0.01 in the 20-brand check of part 1. Both say that weekly ROAS is not recovered.
@@ -132,16 +142,16 @@ Source: [`out/detectability.json`](out/detectability.json); the index of every b
 |---|---|---|---|---|
 | T1: daily, brand-specific shapes (primary) | 54 | −0.49 (−0.68 to −0.24) | 61% / 19% / 0.80 | 50% / 0.35 |
 | T2: daily, common shapes | 50 | −0.47 (−0.65 to −0.26) | 62% / 18% / 0.75 | 40% / 0.77 |
-| T3: weekly, common shapes | 64 | −0.83 (−0.90 to −0.70) | 20% / 25% / 0.55 | 75% / 0.28 |
+| T3: weekly, common shapes | 64 | −0.83 (−0.90 to −0.70) | 20% / 25.1% / 0.55 | 75% / 0.28 |
 | Not a test: weekly, brand-specific shapes (where the index was found) | 66 | −0.72 (−0.85 to −0.53) | 20% / 17% / 0.48 | 71% / 0.15 |
 
-[![Recovery error against the signal-to-noise index, and the smallest detectable ROAS on real spend](out/fig_detectability.png)](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02c)
+[![In a simulation, error of the estimated return against the signal-to-noise index, with median error 50% below an index of 2 and 19% at or above it; and the smallest return each brand-channel pair's real spend could detect with 80% power, where 6% of weekly and 42% of daily pairs could detect a return of 2](out/fig_detectability.png)](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02c)
 
 - **The pre-specified rule was met.** In T1 and T2 both predictions held. In T3 the first held and the second missed
   its limit by a hair (median error 25.1% against 25%).
 - **Most weekly brand-channels have too little signal.** Counting every brand-channel of the simulation with brand-specific
-  shapes, 19% have an index of 2 or more on weekly data (13 of 68) and 55% on daily data (34 of 62). In these simulations, low signal explains why weekly ROAS is not
-  recovered and why pooling does not help; on real data the index rests on an assumed response shape (see Scope).
+  shapes, 19% have an index of 2 or more on weekly data (13 of 68) and 55% on daily data (34 of 62). In these simulations, low signal is consistent with weekly ROAS not
+  being recovered and with pooling not helping; on real data the index rests on an assumed response shape (see Scope).
 - **On real spend,** the smallest ROAS detectable with 80% power, for an assumed carry-over and saturation shape, has
   a median of 7.5 on weekly data (quartiles 3.7 to 12.8) and 2.7 on daily data (1.2 to 5.0). An ROAS of 2 could be
   detected for 6% of brand-channels on weekly data and 42% on daily data. For comparison, model ROAS on real data is
@@ -151,6 +161,8 @@ Source: [`out/detectability.json`](out/detectability.json); the index of every b
 
 ## Reproduce
 
+The committed summaries in `out/` can be checked without the raw data or any refit.
+
 ```bash
 pip install -r requirements-mmm.txt
 python code/run_mmm.py data_raw/conjura_mmm_data.csv out W 14   # part 1, weekly (plan), about 2 minutes on 14 processes
@@ -158,6 +170,7 @@ python code/run_mmm.py data_raw/conjura_mmm_data.csv out D 14   # part 1, daily,
 python code/run_pooled.py data_raw/conjura_mmm_data.csv out W 12   # part 2, weekly, about 35 minutes
 python code/run_pooled.py data_raw/conjura_mmm_data.csv out D 12   # part 2, daily, about 2 hours
 python code/detectability.py data_raw/conjura_mmm_data.csv out     # part 3, under a minute; reads the part 2 output
+python code/same_brand_frequency_check.py out    # added later; weekly vs daily on the same brand-channels, from part 2 output
 ```
 
 MCMC draws depend on package versions and hardware, so numbers can differ slightly from those in `out/`; the

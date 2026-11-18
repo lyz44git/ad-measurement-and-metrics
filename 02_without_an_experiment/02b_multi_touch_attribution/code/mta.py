@@ -131,7 +131,7 @@ def main(src, out):
         coef=dict(zip([f"{a}|{b}" for a in ("unclicked", "clicked") for b in BUCKETS] + ["log1p_touches"],
                       [float(v) for v in full.coef_[0]])),
     )
-    # how much credit moves between campaigns (small: 0.7% of conversions span more than one campaign)
+    # how much credit moves between campaigns (45% of multi-touch test paths span more than one campaign; out/campaign_span.json)
     camp = c.groupby("campaign")[RULES].sum()
     res["campaign_credit_moved_decay_vs_last"] = float((camp.cr_decay - camp.cr_last).abs().sum() / 2 / nconv)
     Path(out).mkdir(parents=True, exist_ok=True)

@@ -35,7 +35,7 @@ def experiment():
         out[key] = {
             "control_rate": r(itt["control_mean"], 6), "ad_rate": r(itt["control_mean"] + itt["est"], 6),
             "relative_lift": r(itt["relative_lift"]), "credited": int(round(at[key]["attributed"])),
-            "caused": int(round(at[key]["incremental"])), "caused_ci": int(round(1.96 * itt["se"] * at["n_treated"])),
+            "caused": int(round(at[key]["incremental"])), "caused_ci": int(round(1.96 * itt["se"] * at["n_treated"])), "caused_lo": int(round(at[key]["incremental"] - 1.96 * itt["se"] * at["n_treated"])), "caused_hi": int(round(at[key]["incremental"] + 1.96 * itt["se"] * at["n_treated"])),
             "ratio": r(at[key]["attributed_over_incremental"])}
     return out
 
@@ -75,8 +75,10 @@ def mmm():
     for f in ("W", "D"):
         v = [float(x["index"]) for x in det if x["freq"] == f]
         share[f] = {"share": r(100 * sum(u >= 2 for u in v) / len(v), 1), "n": len(v)}
+    rs = load(S + "detectability.json")
+    roas2 = {f: r(100 * rs[f]["real_spend"]["share_at_most"]["2"], 1) for f in ("W", "D")}
     return {"points": pts, "median_below": r(100 * t1["index_below_2"]["median_err"], 1), "median_above": r(100 * t1["index_2_or_more"]["median_err"], 1),
-            "share": share}
+            "n_below": t1["index_below_2"]["n"], "n_above": t1["index_2_or_more"]["n"], "share": share, "roas2": roas2}
 
 
 def sizing():
@@ -115,7 +117,7 @@ def study01():
     qini = [{"model": k, "label": names[k], "qini": r(1e4 * v["qini"], 3), "lo": r(1e4 * v["qini_ci"][0], 3), "hi": r(1e4 * v["qini_ci"][1], 3),
              "top20": r(100 * v["share_incremental_top20"], 1)} for k, v in tg["test"].items() if k in names]
     ro = load(G1 + "01c_sql_metric_readout/out/readout.json")
-    checks = [{"name": k.split("_", 1)[1].replace("_", " "), "value": v} for k, v in ro["checks"].items()]
+    checks = [{"name": k.split("_", 1)[1].replace("_", " "), "value": v, "target": int(k[1]) <= 4} for k, v in ro["checks"].items()]  # plan: C1-C4 have targets
     rec = [{"metric": x["metric"], "kind": x["kind"], "sql": x["sql"], "python": x["python"], "diff": x["abs_diff"], "agree": x["agree"]} for x in ro["reconciliation"]]
     pr = load(G1 + "01d_private_segment_effects/out/a_private_summary.json")
     al = load(G1 + "01d_private_segment_effects/out/c_allocation.json")
@@ -131,11 +133,11 @@ def study01():
 def study02():
     at = load(G2 + "02a_attribution_metric_validation/out/attribution_vs_experiment.json")["per_exposed_user_visit_effect"]
     inc = load(G1 + "01a_ad_incrementality/out/criteo/a_incrementality.json")
-    est = [{"label": "Experiment, unadjusted", "group": "exp", "v": r(100 * inc["cace_visit_unadjusted"]["est"], 2), "ci": r(196 * inc["cace_visit_unadjusted"]["se"], 2)},
-           {"label": "Experiment, adjusted", "group": "exp", "v": r(100 * inc["cace_visit_adjusted"]["est"], 2), "ci": r(196 * inc["cace_visit_adjusted"]["se"], 2)},
-           {"label": "Exposed vs. unexposed", "group": "obs", "v": r(100 * at["naive"], 2), "ci": r(196 * at["naive_se"], 2)},
-           {"label": "Regression adjustment", "group": "obs", "v": r(100 * at["ols_adjusted"], 2), "ci": r(196 * at["ols_se"], 2)},
-           {"label": "Double machine learning", "group": "obs", "v": r(100 * at["dml"], 2), "ci": r(196 * at["dml_se"], 2)}]
+    est = [{"label": "Experiment, unadjusted", "group": "exp", "v": r(100 * inc["cace_visit_unadjusted"]["est"], 1), "ci": r(196 * inc["cace_visit_unadjusted"]["se"], 2)},
+           {"label": "Experiment, adjusted", "group": "exp", "v": r(100 * inc["cace_visit_adjusted"]["est"], 1), "ci": r(196 * inc["cace_visit_adjusted"]["se"], 2)},
+           {"label": "Observed, eligible group", "group": "obs", "v": r(100 * at["naive"], 1), "ci": r(196 * at["naive_se"], 2)},
+           {"label": "Regression adjustment", "group": "obs", "v": r(r(100 * at["ols_adjusted"], 6), 1), "ci": r(196 * at["ols_se"], 2)},
+           {"label": "Double machine learning", "group": "obs", "v": r(100 * at["dml"], 1), "ci": r(196 * at["dml_se"], 2)}]
     m = load(G2 + "02b_multi_touch_attribution/out/mta.json")
     clicked = {k: r(100 * m["credit_on_clicked_touches"][k], 2) for k in ("cr_last", "cr_decay", "cr_linear", "cr_first")}
     S = G2 + "02c_marketing_mix_modeling/out/"
@@ -183,12 +185,14 @@ def study04():
              "mean": r(x["mean_next6m_sales"], 0), "lo": r(x["mean_ci_boot"][0], 0), "hi": r(x["mean_ci_boot"][1], 0)} for x in s["rule_segments"]]
     E2 = e["E2"]
     auc = {"model": [r(E2["auc_model"], 3)] + [r(v, 3) for v in E2["auc_model_ci"]], "recency": [r(E2["auc_recency"], 3)] + [r(v, 3) for v in E2["auc_recency_ci"]],
-           "n": E2["n_high_value"], "terciles": [{"t": x["tercile"], "rate": r(100 * x["repurchase_rate"], 1), "lo": r(100 * x["ci"][0], 1), "hi": r(100 * x["ci"][1], 1), "n": x["n"]} for x in E2["by_tercile"]]}
+           "n": E2["n_high_value"], "diff": [r(E2["auc_diff"], 3)] + [r(v, 3) for v in E2["auc_diff_ci"]], "terciles": [{"t": x["tercile"], "rate": r(100 * x["repurchase_rate"], 1), "lo": r(100 * x["ci"][0], 1), "hi": r(100 * x["ci"][1], 1), "n": x["n"]} for x in E2["by_tercile"]]}
     ev6, ev12 = s["eval"], e["E1"]["eval"]
     rank = {"6": {"label": "6 months from 2011-06-01", "n": s["n_test"], "model": [r(ev6["BGNBD_GG"]["spearman"], 3)] + [r(v, 3) for v in ev6["BGNBD_GG"]["spearman_ci"]],
-                  "rule": [r(ev6["P0_last6m"]["spearman"], 3)] + [r(v, 3) for v in ev6["P0_last6m"]["spearman_ci"]]},
+                  "rule": [r(ev6["P0_last6m"]["spearman"], 3)] + [r(v, 3) for v in ev6["P0_last6m"]["spearman_ci"]],
+                  "diff": (lambda d: [r(d["observed"], 3)] + [r(v, 3) for v in d["ci"]])(s["paired_diffs"]["BGNBD_GG-P0_last6m:spearman"])},
             "12": {"label": "12 months from 2010-12-01", "n": e["E1"]["n_accounts"], "model": [r(ev12["bgnbd_gg"]["spearman"], 3)] + [r(v, 3) for v in ev12["bgnbd_gg"]["spearman_ci"]],
-                   "rule": [r(ev12["past_sales"]["spearman"], 3)] + [r(v, 3) for v in ev12["past_sales"]["spearman_ci"]]}}
+                   "rule": [r(ev12["past_sales"]["spearman"], 3)] + [r(v, 3) for v in ev12["past_sales"]["spearman_ci"]],
+                   "diff": (lambda d: [r(d["observed"], 3)] + [r(v, 3) for v in d["ci"]])(e["E1"]["paired_diff_bgnbd_minus_past"]["spearman"])}}
     cal = {k: [[r(x["pred"], 1), r(x["actual"], 1)] for x in s[f"calib_{k}"]] for k in ("BGNBD_GG", "ML_lgbm_tweedie")}
     return {"segments": segs, "auc": auc, "rank": rank, "calibration": cal}
 

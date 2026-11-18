@@ -1,0 +1,42 @@
+{
+ "visit": {
+  "unadjusted": {
+   "additional": 122895.20825518364,
+   "ci95": [
+    119487.49756330211,
+    126302.91894706516
+   ],
+   "attributed": 177510,
+   "attributed_over_additional": 1.4444013116558005
+  },
+  "regression_adjusted": {
+   "additional": 91898.09798712783,
+   "ci95": [
+    88959.67421654995,
+    94836.5217577057
+   ],
+   "attributed": 177510,
+   "attributed_over_additional": 1.9315960165450197
+  }
+ },
+ "conversion": {
+  "unadjusted": {
+   "additional": 13687.310082277148,
+   "ci95": [
+    12886.793284810794,
+    14487.826879743503
+   ],
+   "attributed": 23031,
+   "attributed_over_additional": 1.6826534842533756
+  },
+  "regression_adjusted": {
+   "additional": 11902.36080441834,
+   "ci95": [
+    11147.790700130725,
+    12656.930908705957
+   ],
+   "attributed": 23031,
+   "attributed_over_additional": 1.9349942736948906
+  }
+ }
+}

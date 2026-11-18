@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ad Measurement: Customers</title>
 <meta name="description" content="Interactive figures for customer counts, segments and retention.">
-<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/site.css?v=20261117b">
 </head>
 <body data-page="04">
 <div class="top"><div class="wrap">
@@ -16,53 +16,57 @@
 <header class="pagehero"><div class="wrap">
   <div class="kicker">Part 4 · Customer metrics</div>
   <h1 class="serif">Does the new-customer metric count returning buyers, and who is least likely to return?</h1>
-  <p class="dek">Two years of transactions of a UK online retailer (794,163 lines, 5,875 accounts). The metric tables are rebuilt in SQL and match the Python results in all 92 cells.</p>
+  <p class="dek">Before reporting a cost per new customer, check who counts as new. Two years of transactions of a UK online retailer (794,163 lines, 5,875 accounts), with purchases and returns but no campaign assignments. The metric tables are rebuilt in SQL and match the Python results in all 92 cells.</p>
 </div></header>
 
 <section class="part" id="s04"><div class="wrap">
   <div class="kicker study-k"><span class="code">04</span></div>
   <h2 class="serif">Does the "new customer" metric count returning buyers as new, and which high-value customers are least likely to return?</h2>
-  <p class="lead">Of the 1,036 accounts this retailer would label new under a 3-month look-back, 640 (62%) had bought in the prior 12 months, so acquisition metrics here use a 12-month look-back. Among high-value accounts, a purchase-model score ranks who buys again within six months better than recency alone (AUC 0.79 against 0.75). For ranking sales over the next 12 months, a simple past-sales rule did better in this holdout.</p>
+  <p class="lead">Of 1,036 accounts that bought in March–May 2011 after no purchases in December–February, 640 (61.8%) had also bought in December 2009–November 2010, so acquisition metrics here use a 12-month look-back. Among high-value accounts, a purchase-model score ranks who buys again within six months better than recency alone (AUC 0.79 against 0.75). For ranking sales over the next 12 months, a simple past-sales rule did better in this holdout.</p>
   <a class="gh" href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/04_customer_metrics_retention">Full study on GitHub →</a>
   <div class="card">
     <h3>Accounts labeled new under a 3-month look-back</h3>
     <p class="sub">Accounts that bought in March to May 2011 and not in the three months before.</p>
-    <div class="ctrl"><button class="btn" id="btn-look" type="button">Check the 12 months before</button><button class="btn ghost" id="btn-reset" type="button">Reset</button></div><div id="c-timeline"></div><div id="c-newbar"></div>
+    <div class="ctrl"><button class="btn" id="btn-look" type="button">Check purchases in Dec 2009–Nov 2010</button><button class="btn ghost" id="btn-reset" type="button">Reset</button></div><div id="c-timeline"></div><div id="c-newbar"></div>
+    <p class="note">396 accounts had no purchase in the additional year checked; this does not show they were first-time buyers. The cohort chart below uses a rolling 12-month look-back instead.</p>
     
     
   </div>  <div class="card">
-    <h3>Monthly repeat-purchase rate of new-account cohorts</h3>
-    <p class="sub">New accounts have no purchase in the previous 12 months. Choose a cohort to follow it.</p>
+    <h3>Share of each new-account cohort buying in each later month (%)</h3>
+    <p class="sub">New accounts: no purchase in the 12 months before the entry month. Each month uses the original cohort size.</p>
     <div id="c-heat"></div><div id="c-curve"></div>
-    <p class="note">Hatched cells are after the end of the data (November 2011).</p>
+    <p class="note">Hatched cells are after November 2011, the last complete month.</p>
     
   </div>  <div class="card">
     <h3>Recency × value segments: accounts and next-six-month sales</h3>
-    <p class="sub">Existing accounts at 2011-06-01. Re-sort the rows.</p>
-    <div class="ctrl"><div class="seg" id="seg-04-sort"></div></div><div class="row2"><div><h3 style="font-size:14px;margin-bottom:4px">Share of accounts <span style="color:var(--grey)">●</span> and of sales <span style="color:var(--navy)">●</span></h3><div id="c-04-dumb"></div></div><div><h3 style="font-size:14px;margin-bottom:4px">Mean sales per account, 95% bootstrap interval</h3><div id="c-04-mean"></div></div></div>
+    <p class="sub">2,716 accounts active in the six months before 2011-06-01; 719 recent, high-spend accounts generated 72.5% of this group's next-six-month gross sales.</p>
+    <div class="ctrl"><div class="seg" id="seg-04-sort"></div></div><div class="row2"><div><h3 style="font-size:14px;margin-bottom:4px">Share of accounts <span style="color:var(--grey)">■</span> and of gross sales <span style="color:var(--navy)">●</span></h3><div id="c-04-dumb"></div></div><div><h3 style="font-size:14px;margin-bottom:4px">Mean gross sales per account (£, log scale), 95% bootstrap interval</h3><div id="c-04-mean"></div></div></div>
     
     
   </div>  <div class="card">
     <h3>Ranking who buys again: high-value accounts</h3>
     <p class="sub">1,442 accounts in the top third of 12-month sales at 2011-06-01; repeat purchase within six months.</p>
-    <div class="row2"><div><h3 style="font-size:14px;margin-bottom:4px">AUC, 95% interval</h3><div id="c-04-auc"></div></div><div><h3 style="font-size:14px;margin-bottom:4px">Repurchase rate by purchase-model score</h3><div id="c-04-terc"></div></div></div>
+    <div class="row2"><div><h3 style="font-size:14px;margin-bottom:4px">AUC, 95% interval</h3><div id="c-04-auc"></div><p class="note" style="margin-top:4px">Paired gain over recency 0.038 (95% CI 0.003–0.071).</p></div><div><h3 style="font-size:14px;margin-bottom:4px">Observed repurchase by score group</h3><div id="c-04-terc"></div></div></div>
     
     
   </div>  <div class="card">
     <h3>Ranking future sales: purchase model against a past-sales rule</h3>
-    <p class="sub">Rank correlation (Spearman) with actual sales; 95% intervals.</p>
-    <div class="ctrl"><div class="seg" id="seg-04-rank"></div></div><div id="c-04-rank"></div><div id="ro-04-rank"></div><details class="more"><summary>Model diagnostics: predicted against actual sales by decile</summary><div id="c-04-cal" style="margin-top:10px"></div></details>
+    <p class="sub">Choose a held-out sample. Rank correlation (Spearman) with actual gross sales; 95% intervals.</p>
+    <div class="ctrl"><div class="seg" id="seg-04-rank"></div></div><div id="c-04-rank"></div><div id="ro-04-rank"></div>
+    <p class="src"><a href="https://github.com/lyz44git/ad-measurement-and-metrics/blob/main/04_customer_metrics_retention/out/12_ltv_segments.json">Six-month results</a> · <a href="https://github.com/lyz44git/ad-measurement-and-metrics/blob/main/04_customer_metrics_retention/out/14_ltv_extension.json">Twelve-month and repeat-purchase results</a>.</p>
+  </div>  <div class="card">
+    <details class="more"><summary>Six-month sales calibration · June 2011 holdout only</summary><p class="sub" style="margin-top:8px">Each point averages one model's predicted and observed sales in one decile of its own predictions. Points above the diagonal are underpredicted. Not affected by the sample chosen above.</p><div id="c-04-cal" style="margin-top:10px"></div></details>
     
     
   </div>
 </div></section>
 <footer><div class="wrap">
   <div class="pager"><a href="03.html"><small>Previous</small>3 · Planning a test</a></div>
-  <p>All numbers on these pages are read from the result files of the repository by <code>docs/build_data.py</code>. Methods, pre-specified rules and limits are in each study's page on GitHub. Data: Criteo uplift and attribution datasets (public research releases); a public marketing mix dataset released by Conjura; Zillow Research metro series (Data Provided by Zillow Group); Online Retail II (UCI Machine Learning Repository).</p>
+  <p>Charts use committed result files and documented calculations, collected by <code>docs/build_data.py</code>. Methods, pre-specified rules and limits are in each study's page on GitHub. Data: Criteo uplift and attribution datasets (public research releases); a public marketing mix dataset released by Conjura; Zillow Research metro series (Data Provided by Zillow Group); Online Retail II (UCI Machine Learning Repository).</p>
   <p><a href="https://github.com/lyz44git/ad-measurement-and-metrics">The repository on GitHub</a></p>
 </div></footer>
 <div id="tip" role="tooltip"></div>
-<script src="data.js"></script>
-<script src="assets/explorer.js"></script>
+<script src="data.js?v=20261117b"></script>
+<script src="assets/explorer.js?v=20261117b"></script>
 </body>
 </html>

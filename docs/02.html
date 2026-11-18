@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ad Measurement: Attribution</title>
 <meta name="description" content="Interactive figures for attribution, marketing mix models and bidding without an experiment.">
-<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/site.css?v=20261117b">
 </head>
 <body data-page="02">
 <div class="top"><div class="wrap">
@@ -16,23 +16,24 @@
 <header class="pagehero"><div class="wrap">
   <div class="kicker">Part 2 · Without an experiment</div>
   <h1 class="serif">When can the usual metrics be trusted?</h1>
-  <p class="dek">Studies 02a and 02c check a metric used in place of an experiment against a benchmark: the experiment of study 01a, or a simulation with known returns. Study 02b shows how much the credit given to each touch depends on the rule chosen, and study 02d whether that changes what a bidder buys.</p>
+  <p class="dek">Study 02a hides the assignment label of the 01a experiment and compares exposure-based metrics with the randomized benchmark. Studies 02b and 02d use a separate Criteo display log, from credit rules to bidder choices. Study 02c uses brand spending to test when channel returns are measurable.</p>
+  <p class="ctas"><a href="#s02a">02a</a><a href="#s02b">02b</a><a href="#s02c">02c</a><a href="#s02d">02d</a></p>
 </div></header>
 
 <section class="part" id="s02a"><div class="wrap">
   <div class="kicker study-k"><span class="code">02a</span></div>
   <h2 class="serif">Can an exposure-based attribution metric be trusted as a measure of ad impact?</h2>
-  <p class="lead">Exposure-based attribution credited 23,031 conversions in the ad group; the experiment puts the conversions caused by the ads at 13,687, so the count is 68% higher. Without an experiment, covariate adjustment moved the per-exposed-user visit effect from a naive 38.0 points to 24.6–25.5, between the two experimental estimates.</p>
+  <p class="lead">Exposure-based attribution counted 23,031 conversions in the group eligible for ads; the experiment estimates 13,687 additional conversions (95% CI 12,887–14,488), so the count is 68% higher. Covariate adjustment moved the observed visit-rate difference between exposed and unexposed users from 38.0 pp to 24.6–25.5 pp, between the two experimental point estimates.</p>
   <a class="gh" href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/02_without_an_experiment/02a_attribution_metric_validation">Full study on GitHub →</a>
   <div class="card">
-    <h3>Outcomes credited by the simple count and caused by the ads</h3>
+    <h3>Outcomes counted by exposure, against the randomized estimate of additional outcomes</h3>
     
-    <div class="ctrl"><div class="seg" id="seg-gap"><button type="button" data-v="conversion">Conversions</button><button type="button" data-v="visit">Visits</button></div></div><div class="row2 v"><div id="c-gap"></div><div><div id="c-hundred"></div><div class="legend" id="lg-hundred"></div></div></div>
-    <p class="note">Ad group only. Caused = the experiment's estimate with its 95% confidence interval. Right: of every 100 outcomes credited, how many the ads caused.</p>
+    <div class="ctrl"><div class="seg" id="seg-gap"><button type="button" data-v="conversion">Conversions</button><button type="button" data-v="visit">Visits</button></div></div><div class="row2 v"><div id="c-gap"></div><div><h3 style="font-size:14px;margin-bottom:4px">Estimated additional outcomes per 100 counted</h3><div id="c-hundred"></div><div class="legend" id="lg-hundred"></div></div></div>
+    <p class="note">Group eligible for ads only. Each square is one percentage point of the aggregate comparison, not an identified conversion.</p>
     
   </div>  <div class="card">
-    <h3>Effect of exposure on the visit rate, by method</h3>
-    <p class="sub">Shaded: the range between the two experimental estimates. 95% confidence intervals.</p>
+    <h3>Visit-rate difference by exposure, by method</h3>
+    <p class="sub">The experimental rows divide the effect of assignment by the 3.6% exposure rate. Shaded: the span between their point estimates, not an interval. Whiskers: 95% confidence intervals.</p>
     <div id="c-02a-exp"></div>
     <p class="note">The comparison shows that adjustment moves the observational estimate into the experimental range; it cannot say how much of the bias was removed.</p>
     
@@ -42,18 +43,18 @@
 <section class="part" id="s02b"><div class="wrap">
   <div class="kicker study-k"><span class="code">02b</span></div>
   <h2 class="serif">When a user sees several ads before converting, how much does the credit rule change which touch gets credit?</h2>
-  <p class="lead">65% of converting paths have several touches, and last touch gives no credit to 82% of the touches in them. A time-decay rule fitted to observed touch-to-conversion delays leaves 39% of the credit on the last touch. These rules split credit; they do not show which touches caused the conversion.</p>
+  <p class="lead">65% of converting paths have several touches, and last touch gives no credit to 82% of the touches in them. On these paths, a time-decay rule fitted to observed touch-to-conversion delays moves last-touch credit from 100% to 39%. These rules split credit; they do not show which touches caused the conversion.</p>
   <a class="gh" href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/02_without_an_experiment/02b_multi_touch_attribution">Full study on GitHub →</a>
   <div class="card">
     <h3>Share of conversion credit by rule and timing of the touch</h3>
-    <p class="sub">Hover a row to compare a rule across timings; the chart on the right follows.</p>
-    <div class="row2"><div id="c-02b-heat"></div><div><h3 style="font-size:15px;margin-bottom:6px">Share of credit on clicked touches</h3><div id="c-02b-click"></div></div></div>
-    <p class="note">Multi-touch converting paths in the test set. Columns: how long before the last touch an ad was shown.</p>
+    <p class="sub">Hover or focus a row to highlight it in the clicked-credit chart.</p>
+    <div class="row2"><div id="c-02b-heat"></div><div><h3 style="font-size:15px;margin-bottom:6px">Share of assigned credit on clicked impressions</h3><div id="c-02b-click"></div></div></div>
+    <p class="note">64,159 multi-touch test paths, 349,355 impressions. Columns: how long before the final impression an ad was shown. The dashed line is the share of impressions that were clicked.</p>
     
   </div>  <div class="card">
     <h3>Conversion credit by attribution rule, square by square</h3>
-    <p class="sub">Each square is 1% of the credit. Switch the rule.</p>
-    <div class="ctrl"><span class="lab">Rule</span><div class="seg" id="seg-rule"><button type="button" data-v="cr_last">Last touch</button><button type="button" data-v="cr_decay">Time decay</button><button type="button" data-v="cr_linear">Linear</button><button type="button" data-v="cr_first">First touch</button></div><button class="btn ghost" id="play-rule" type="button">▶ Cycle</button></div><div id="c-waffle"></div><div class="legend" id="lg-waffle"></div>
+    <p class="sub">Each square is 1% of assigned credit.</p>
+    <div class="ctrl"><span class="lab">Rule</span><div class="seg" id="seg-rule"><button type="button" data-v="cr_last">Last touch</button><button type="button" data-v="cr_decay">Time decay</button><button type="button" data-v="cr_linear">Linear</button><button type="button" data-v="cr_first">First touch</button></div><button class="btn ghost" id="play-rule" type="button">▶ Play all four rules</button></div><div id="c-waffle"></div><div class="legend" id="lg-waffle"></div>
     
     
   </div>
@@ -62,23 +63,23 @@
 <section class="part" id="s02c"><div class="wrap">
   <div class="kicker study-k"><span class="code">02c</span></div>
   <h2 class="serif">Can a marketing mix model recover each channel's return from a brand's own spend and revenue, and can one tell in advance when it will?</h2>
-  <p class="lead">A marketing mix model recovers a channel's return only where that channel's spend moves enough on its own, and this can be checked before fitting: the median error was 19% for brand-channels with a signal-to-noise index of 2 or more and 50% for the rest. Only 19% of brand-channels reach that level on weekly data, against 55% on daily data.</p>
+  <p class="lead">In simulations built on each brand's observed spend, a marketing mix model recovered a channel's planted return more accurately where that channel's spend varied on its own: median error 19% for 33 brand-channels with a signal-to-noise index of 2 or more and 50% for the other 21 (daily data). 19% of weekly and 55% of daily brand-channels reach that index. On observed spend, a return of 2 would be detectable for 6% of weekly and 42% of daily brand-channels.</p>
   <a class="gh" href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/02_without_an_experiment/02c_marketing_mix_modeling">Full study on GitHub →</a>
   <div class="card">
-    <h3>Recovery test: estimated against known channel returns</h3>
-    <p class="sub">Returns are simulated on each brand's real spend, so the truth is known. Switch between weekly and daily data.</p>
+    <h3>Can the model recover a known return?</h3>
+    <p class="sub">Each dot is one simulated brand–channel return; distance from the dashed line is estimation error. Frequency controls this chart and the next.</p>
     <div class="ctrl"><div class="seg" id="seg-02c-freq"></div></div><div id="c-02c-rec"></div><div class="readout" id="ro-02c"></div>
     
     
   </div>  <div class="card">
-    <h3>Holdout forecast error (wMAPE, median over brands)</h3>
-    <p class="sub">The last 13 weeks (91 days for daily data); follows the frequency chosen above.</p>
+    <h3>Did media inputs improve forecasts of actual revenue?</h3>
+    <p class="sub">Holdout wMAPE (lower is better), median over brands; last 13 weeks or 91 days.</p>
     <div id="c-02c-hold"></div><div id="ro-02c-hold"></div>
     
     
   </div>  <div class="card">
-    <h3>Recovery error and the signal-to-noise index</h3>
-    <p class="sub">Daily data, held-out simulation. The index is computed from spend before any model is fitted.</p>
+    <h3>Simulated recovery error and the signal-to-noise index</h3>
+    <p class="sub">Daily data, primary simulation; 54 converged brand-channels. Fixed sample; not affected by the frequency control.</p>
     <div class="row2 v"><div id="c-mmm"></div><div><div id="c-share"></div></div></div>
     
     
@@ -88,23 +89,23 @@
 <section class="part" id="s02d"><div class="wrap">
   <div class="kicker study-k"><span class="code">02d</span></div>
   <h2 class="serif">If a bidder values impressions by expected credit, does the attribution rule change what it buys?</h2>
-  <p class="lead">Hardly, in this log. At half the logged budget the last-touch and time-decay bidders share 90% of their spend, and a bidder trained on one rule gives up at most 2.2% of the other rule's credit, below the pre-specified 5% threshold. What moves is the marginal spend: the time-decay bidder buys fewer impressions shortly after a click.</p>
+  <p class="lead">Hardly, in this log. At the primary budget (50% of logged cost) the two bidders overlap on 90.4% of cost, and cross-rule credit loss is −0.2% under last-touch scoring and 2.2% under time-decay scoring, below the pre-specified 5%. This is a replay at fixed logged prices, not an online experiment. The time-decay bidder puts a smaller share of its budget on impressions within 24 hours of a click (19.9% vs 24.9%).</p>
   <a class="gh" href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/02_without_an_experiment/02d_attribution_and_bidding">Full study on GitHub →</a>
   <div class="card">
-    <h3>Two bidders, one trained on each rule</h3>
+    <h3>How much credited value changes in a fixed-price replay</h3>
     <p class="sub">Choose a budget; both charts follow.</p>
-    <div class="ctrl"><span class="lab">Budget</span><div class="seg" id="seg-budget"><button type="button" data-v="0.25">25%</button><button type="button" data-v="0.5">50%</button><button type="button" data-v="0.75">75%</button></div></div><div class="row2"><div id="c-bid"></div><div><h3 style="font-size:15px;margin-bottom:6px">Where the spend goes</h3><div class="legend"><span><i style="background:var(--grey)"></i>Last-touch bidder</span><span><i style="background:var(--navy)"></i>Time-decay bidder</span><span><i style="background:var(--pale)"></i>All logged spend</span></div><div id="c-02d-comp"></div></div></div>
-    <p class="note">Budget is a share of logged spend. Credit lost: how much less credit a bidder captures, scored by one rule, when trained on the other; 95% intervals.</p>
+    <div class="ctrl"><span class="lab">Budget</span><div class="seg" id="seg-budget"><button type="button" data-v="0.25">25% · sensitivity</button><button type="button" data-v="0.5">50% · primary</button><button type="button" data-v="0.75">75% · sensitivity</button></div></div><div class="row2"><div id="c-bid"></div><div><h3 style="font-size:15px;margin-bottom:6px">Share of each policy's replay cost, by impression type</h3><div class="legend"><span><i style="background:var(--grey)"></i>Last-touch policy</span><span><i style="background:var(--navy)"></i>Time-decay policy</span><span><i style="background:var(--pale)"></i>Full test log</span></div><div id="c-02d-comp"></div></div></div>
+    <p class="note">Budget and overlap are shares of recorded cost. Credit lost: credit given up, under one rule's scoring, by the bidder trained on the other rule; a negative value means that bidder earned slightly more. 95% intervals. Impression types can overlap.</p>
     
   </div>
 </div></section>
 <footer><div class="wrap">
   <div class="pager"><a href="01.html"><small>Previous</small>1 · With an experiment</a><a class="next" href="03.html"><small>Next</small>3 · Planning a test</a></div>
-  <p>All numbers on these pages are read from the result files of the repository by <code>docs/build_data.py</code>. Methods, pre-specified rules and limits are in each study's page on GitHub. Data: Criteo uplift and attribution datasets (public research releases); a public marketing mix dataset released by Conjura; Zillow Research metro series (Data Provided by Zillow Group); Online Retail II (UCI Machine Learning Repository).</p>
+  <p>Charts use committed result files and documented calculations, collected by <code>docs/build_data.py</code>. Methods, pre-specified rules and limits are in each study's page on GitHub. Data: Criteo uplift and attribution datasets (public research releases); a public marketing mix dataset released by Conjura; Zillow Research metro series (Data Provided by Zillow Group); Online Retail II (UCI Machine Learning Repository).</p>
   <p><a href="https://github.com/lyz44git/ad-measurement-and-metrics">The repository on GitHub</a></p>
 </div></footer>
 <div id="tip" role="tooltip"></div>
-<script src="data.js"></script>
-<script src="assets/explorer.js"></script>
+<script src="data.js?v=20261117b"></script>
+<script src="assets/explorer.js?v=20261117b"></script>
 </body>
 </html>

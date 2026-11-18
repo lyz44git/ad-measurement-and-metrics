@@ -37,6 +37,8 @@ def _poison(src, a, value):
 @pytest.mark.parametrize("use_ets", [False, True])
 def test_poisoned_future_leaves_forecasts_unchanged(toy_src, use_ets):
     """Replace every value dated at or after the origin by huge numbers: all forecasts must be identical."""
+    if use_ets:
+        pytest.importorskip("statsforecast")         # the ETS case needs the forecasting package from requirements.txt
     a = TOY_ORIGINS[1]
     base_fn = None if use_ets else cheap_base
     outs = []

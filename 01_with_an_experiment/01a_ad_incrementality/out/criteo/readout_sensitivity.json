@@ -1,0 +1,47 @@
+{
+ "conversion_count": {
+  "unadjusted": {
+   "difference": 0.0011518730521316279,
+   "se": 3.437169028999274e-05,
+   "estimated_additional": 13687.310082277148,
+   "ci95": [
+    12886.807994494802,
+    14487.812170059495
+   ],
+   "credited": 23031,
+   "credited_over_estimated": 1.6826534842533756,
+   "excess": 9343.689917722852,
+   "excess_over_estimated": 0.6826534842533756,
+   "excess_over_credited": 0.40570057391007125
+  },
+  "regression_adjusted": {
+   "difference": 0.0010016583671257258,
+   "se": 3.239888283262607e-05,
+   "estimated_additional": 11902.36080441834,
+   "ci95": [
+    11147.804565533463,
+    12656.91704330322
+   ],
+   "credited": 23031,
+   "credited_over_estimated": 1.9349942736948906,
+   "excess": 11128.63919558166,
+   "excess_over_estimated": 0.9349942736948906,
+   "excess_over_credited": 0.48320260499247364
+  }
+ },
+ "effect_per_exposed_user": {
+  "visit_unadjusted": {
+   "est": 0.28699618005843747,
+   "se_fixed_share": 0.004060203600135422,
+   "se_delta": 0.004022446872458421,
+   "exposure_share": 0.036036727482199896
+  },
+  "conversion_unadjusted": {
+   "est": 0.031963863885825596,
+   "se_fixed_share": 0.000953796104459552,
+   "se_delta": 0.0009510303726449437,
+   "exposure_share": 0.036036727482199896
+  }
+ },
+ "notes": "Counts: difference x 11,882,655 ad-arm records; 95% interval = (difference +/- 1.96 SE) x records. No interval for ratios. Delta-method SE assumes independent records."
+}

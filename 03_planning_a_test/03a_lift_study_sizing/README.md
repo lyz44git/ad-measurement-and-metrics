@@ -12,7 +12,7 @@
 ## Question
 
 Lift studies that survey users, such as brand-lift studies, run on a few thousand respondents per arm. How often
-would a study of that size detect a real effect of about one point, how often would it report one that is not there,
+would a study of that size detect a real one-point lift in a binary outcome (here, site visits), how often would it report one that is not there,
 and how much smaller can the study be if the readout adjusts for what is known about each user beforehand?
 
 ## Data
@@ -28,9 +28,9 @@ part 2 needs the user-level file.
 
 1. For each size (1,000 to 20,000 users per arm), draw 2,000 studies by sampling users without replacement from each
    arm of the experiment.
-2. Read each study with a two-sided z-test at 5% and with a Beta-Binomial posterior, calling a detection when
+2. Read each study with a two-sided z-test at 5% and with a one-sided Beta-Binomial rule, calling a detection when
    P(lift > 0) > 0.95.
-3. A/A studies draw both arms from the control arm and give the false-positive rate.
+3. A/A studies draw both arms from the control arm and give the false-positive rate (either direction for the z-test).
 
 **Part 2, covariate adjustment.** Added after part 1 under [`design/followup_plan.md`](design/followup_plan.md), fixed
 before any adjusted estimate was computed (SHA-256 in `logs/followup_plan_hash.txt`). The plan uses the numbers the
@@ -48,22 +48,26 @@ studies had when it was written: its study 01 is 01a here and its study 03 is 03
 
 ## Results
 
+Users per arm for a one-point lift at 80% power, calculated from the simulated variance: 6,458 unadjusted, 4,682 with
+the 12 features and 4,430 with the model prediction, a 31% saving ([`out/covariate_adjustment.json`](out/covariate_adjustment.json)).
+
 ### Part 1: power of the unadjusted readout
 
 Source: [`out/lift_study_sizing.json`](out/lift_study_sizing.json).
 
 | Users per arm | Power, z-test | Bayesian detection | 95% CI coverage | A/A false positives, z-test / Bayesian |
 |---|---|---|---|---|
-| 1,000 | 19% | 29% | 95.9% | 5.3% / 4.4% |
-| 2,500 | 43% | 56% | 94.5% | 4.8% / 4.4% |
-| 5,000 | 73% | 82% | 95.3% | 5.1% / 5.5% |
-| 10,000 | 94% | 97% | 94.6% | 5.1% / 4.8% |
-| 20,000 | 99.9% | 100% | 95.5% | 5.7% / 4.9% |
+| 1,000 | 19% | 29% | 95.9% | 5.30% / 4.35% |
+| 2,500 | 43% | 56% | 94.5% | 4.75% / 4.35% |
+| 5,000 | 73% | 82% | 95.3% | 5.05% / 5.50% |
+| 10,000 | 94% | 97% | 94.6% | 5.05% / 4.80% |
+| 20,000 | 99.9% | 100% | 95.5% | 5.70% / 4.90% |
 
-[![Power and A/A false-positive rate by users per arm](out/fig_power_by_sample_size.png)](https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03a)
+[![Share of tests that detect a true one-point lift, and share that report a lift when there is none, by users per group, for a z-test and a Bayesian rule; false alarms stay near 5%](out/fig_power_by_sample_size.png)](https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03a)
 
-The smallest size on this grid with at least 80% power is 10,000 users per arm. The Bayesian rule detects more often
-because it is one-sided.
+The smallest of the five grid sizes with at least 80% power is 10,000 users per arm. The Bayesian rule detects more
+often because it is one-sided: a one-sided z-test on the same draws detects as often (82.6% at 5,000 users per arm;
+[`out/one_sided_z_check.json`](out/one_sided_z_check.json)).
 
 ### Part 2: covariate adjustment
 
@@ -77,13 +81,11 @@ Source: [`out/covariate_adjustment.json`](out/covariate_adjustment.json).
 | 10,000 | 0.79 / 0.69 / 0.66 | 0.70 (0.67 to 0.74) | 5.5% / 5.8% / 5.7% |
 | 20,000 | 0.56 / 0.48 / 0.47 | 0.69 (0.65 to 0.72) | 5.9% / 5.0% / 4.5% |
 
-[![Minimum detectable lift and sampling variance of adjusted and unadjusted readouts](out/fig_mde_by_adjustment.png)](https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03a)
+[![Smallest detectable lift by users per group with no adjustment and with two adjustments, against a one-point target; and the variance of the adjusted readouts relative to no adjustment, about 0.7 at every size](out/fig_mde_by_adjustment.png)](https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03a)
 
 - **The pre-specified rule was met for both adjusted readouts.** Adjusting for the model prediction cut the sampling
-  variance by 30% to 33% at every size; the 12 raw features cut it by 25% to 29%. Interval coverage stayed between
-  94% and 97%.
-- **Required sample for a one-point lift at 80% power:** about 6,500 users per arm unadjusted, 4,700 with the 12
-  features and 4,400 with the model prediction, a 31% saving.
+  variance by 30% to 33% at every size; the 12 raw features cut it by 25% to 29%. Coverage of each readout's own mean
+  stayed between 94% and 97%.
 - The model prediction explains 31% of the variance of the outcome among held-out control users (AUC 0.95), which is
   the share of variance the adjustment removes.
 - The same idea at market level, adjustment on pre-period volume, lowered the minimum detectable effect from 9.5% to
@@ -96,7 +98,8 @@ variance and minimum detectable effect, which do not depend on the size of this 
 ## Reproduce
 
 ```bash
-python code/lift_study_sizing.py                                                    # part 1, a few seconds
+python code/lift_study_sizing.py                                                    # part 1, a few seconds; reads 01b's out/part1_overall.json
+python code/one_sided_z_check.py                                                    # one-sided z-test on the part 1 draws
 python code/covariate_adjustment.py /path/to/criteo-research-uplift-v2.1.csv.gz     # part 2, about 5 minutes
 ```
 

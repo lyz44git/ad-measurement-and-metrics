@@ -1,0 +1,14 @@
+{
+ "test_multi_touch": {
+  "paths": 64159,
+  "share_two_or_more_campaigns": 0.44695210336819463
+ },
+ "test_all": {
+  "paths": 98387,
+  "share_two_or_more_campaigns": 0.29146127028977403
+ },
+ "all_converting": {
+  "paths": 327860,
+  "share_two_or_more_campaigns": 0.2916458244372598
+ }
+}
