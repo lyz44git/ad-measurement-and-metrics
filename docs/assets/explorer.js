@@ -31,10 +31,11 @@ function svgIn(host, w, h) { host.innerHTML = ""; return el("svg", { width: w, h
 const lin = (d0, d1, r0, r1) => v => r0 + (v - d0) / (d1 - d0) * (r1 - r0);
 const lg = (d0, d1, r0, r1) => { const a = Math.log10(d0), b = Math.log10(d1); return v => r0 + (Math.log10(v) - a) / (b - a) * (r1 - r0); };
 const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+// frame times can precede t0, so progress is clamped at 0 as well as 1
 function tween(dur, step, done) {
   if (reduce || dur <= 0 || document.hidden) { step(1); if (done) done(); return; }
   const t0 = performance.now();
-  (function f(now) { const t = Math.min(1, (now - t0) / dur); step(ease(t)); if (t < 1) requestAnimationFrame(f); else if (done) done(); })(t0);
+  (function f(now) { const t = Math.max(0, Math.min(1, (now - t0) / dur)); step(ease(t)); if (t < 1) requestAnimationFrame(f); else if (done) done(); })(t0);
 }
 /* animate numeric attributes of several elements together */
 function animate(items, dur = 650, done) {

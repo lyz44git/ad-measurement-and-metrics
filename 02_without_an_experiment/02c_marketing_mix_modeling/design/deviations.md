@@ -11,6 +11,10 @@ The plan covers this study (Part A) and study 02b (Part B); it was written and h
    80%+ of days. Recovery improved to 0.75. Both the weekly and the daily results are kept (`out/mmm_*` and
    `out/mmm_*_daily.*`). The real-data results of the weekly run had been seen before this decision.
 
+The data profile of the Criteo attribution file quoted in `analysis_plan.md` (0.7% of conversions across campaigns)
+belongs to Part B and is corrected in
+[`02b_multi_touch_attribution/design/deviations.md`](../../02b_multi_touch_attribution/design/deviations.md), item 3.
+
 ## `followup_plan.md` (pooled model)
 
 2. **Brand-channels used for the recovery rule.** The plan did not say on which brand-channels the rule is evaluated.

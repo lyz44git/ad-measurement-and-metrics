@@ -33,11 +33,11 @@ def figure2():
 
 def figure3():
     """Attribution without an experiment: the exposure effect, credit by rule, and bidding."""
-    fig, ax = plt.subplots(1, 3, figsize=(7.4, 3.2), dpi=300, gridspec_kw=dict(width_ratios=[0.95, 1.0, 1.05]))
+    fig, ax = plt.subplots(1, 3, figsize=(8.4, 3.5), dpi=300, gridspec_kw=dict(width_ratios=[0.84, 1.14, 1.0]))  # wider canvas: text is smaller relative to the page, B title fits beside C
     p_exposure(ax[0], "A", "Effect of exposure on visits")
     p_heat(ax[1], "B", "Credit by rule and touch timing")
     p_bidding(ax[2], "C", "Bidding by rule")
-    fig.subplots_adjust(left=0.19, right=0.985, top=0.8, bottom=0.2, wspace=0.62)
+    fig.subplots_adjust(left=0.185, right=0.965, top=0.8, bottom=0.2, wspace=0.6)
     save(fig, "figures/figure3.png")
 
 

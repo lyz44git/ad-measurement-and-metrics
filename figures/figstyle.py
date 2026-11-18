@@ -121,10 +121,53 @@ def nice_log(ax, axis, ticks, labels=None):
     ax.minorticks_off()
 
 
+def align_panel_titles(fig):
+    """Put the panel titles ("A   ...", "B   ...") of each row of panels on one baseline, the highest in that row."""
+    import re
+    fig.canvas.draw()
+    items = []
+    for ax in fig.axes:
+        t = ax._left_title
+        if t.get_visible() and re.match(r"^[A-Z] {2,}", t.get_text()):
+            x, y = t.get_transform().transform(t.get_position())
+            items.append((ax.get_position(), t, x, y))
+    rows = []
+    for it in sorted(items, key=lambda i: -i[0].y1):
+        for r in rows:
+            if it[0].y0 < r[0][0].y1 and it[0].y1 > r[0][0].y0:
+                r.append(it); break
+        else:
+            rows.append([it])
+    inv = fig.transFigure.inverted()
+    for r in rows:
+        if len(r) < 2:
+            continue
+        top = max(i[3] for i in r)
+        for _, t, x, y in r:
+            fx, fy = inv.transform((x, top))
+            fig.text(fx, fy, t.get_text(), fontproperties=t.get_fontproperties(), color=t.get_color(), ha="left", va="baseline")
+            t.set_visible(False)
+
+
 def save(fig, rel):
-    fig.savefig(ROOT / rel, dpi=300)
+    align_panel_titles(fig)
+    fig.savefig(ROOT / rel, dpi=300, bbox_inches="tight", pad_inches=0.3)
+    pad_to_content(ROOT / rel)
     plt.close(fig)
     print("wrote", rel)
+
+
+def pad_to_content(path, pad=54):
+    """Crop the saved PNG to its visible content and add the same white margin (0.18 in at 300 dpi) on every side."""
+    from PIL import Image, ImageChops
+    im = Image.open(path).convert("RGB")
+    box = ImageChops.difference(im, Image.new("RGB", im.size, "white")).point(lambda v: 255 if v > 30 else 0).getbbox()
+    if not box:
+        return
+    l, t, r, b = box
+    out = Image.new("RGB", (r - l + 2 * pad, b - t + 2 * pad), "white")
+    out.paste(im.crop(box), (pad, pad))
+    out.save(path, dpi=(300, 300))
 
 
 # ------------------------------------------------------------------ data in the units the charts use
