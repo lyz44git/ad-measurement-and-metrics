@@ -156,7 +156,7 @@ def p_rates(fig, spec, letter, title="Visit and conversion rates by group"):
         dot(ax, 100, y, GREY, s=70); dot(ax, i1, y, NAVY, s=80)
         ax.text(97, y + 0.42, f"Control\n{100 * r['p0']:.2f}%", ha="right", va="bottom", fontsize=7.5, color=MUTED, linespacing=1.1)
         ax.text(min(i1 - 5, top - 48), y + 0.42, f"Ad group\n{100 * r['p1']:.2f}%", ha="left", va="bottom", fontsize=7.5, color=NAVY, fontweight="bold", linespacing=1.1)
-        ax.text((100 + i1) / 2, y - 0.42, f"+{100 * r['lift']:.0f}%", ha="center", va="top", fontsize=10, color=ORANGE, fontweight="bold")
+        ax.text((100 + i1) / 2, y - 0.42, f"+{100 * r['lift']:.0f}% relative", ha="center", va="top", fontsize=9, color=ORANGE, fontweight="bold")
         ax.text(0, y + 1.55, name, fontsize=8.5, fontweight="bold", color=INK, va="bottom")
     ax.set_xlim(0, top * 1.01); ax.set_ylim(-1.15, 4.85); ax.set_yticks([])
     ax.set_xticks([0, 50, 100, 150]); ax.grid(False); clean(ax, x=False)
@@ -193,9 +193,11 @@ def p_hundred(ax, letter, key="conversion", title=None):
     for i in range(100):
         c, rr = i % 10, 9 - i // 10
         rbox(ax, c + 0.08, rr + 0.08, 0.84, 0.84, NAVY if i < n else OSOFT, r=0.16)
-    ax.set_xlim(0, 10); ax.set_ylim(-3.2, 10); ax.set_aspect("equal"); ax.axis("off")
+    ax.set_xlim(0, 10); ax.set_ylim(-4.9, 10); ax.set_aspect("equal"); ax.axis("off")
     ax.text(0, -0.5, f"■ caused by the ads: {n}", color=NAVY, fontsize=7.5, fontweight="bold", va="top")
     ax.text(0, -1.45, f"■ would have occurred\n   anyway: {100 - n}", color=ORANGE, fontsize=7.5, fontweight="bold", va="top", linespacing=1.1)
+    ax.text(0, -3.2, f"{fmt(r['caused'])} ÷ {fmt(r['credited'])} = {100 * r['caused'] / r['credited']:.0f}%; a share of the\ntotal, not a label for each conversion",
+            color=MUTED, fontsize=6.3, va="top", linespacing=1.15)
     ax.set_title(f"{letter}   {title or 'Of 100 credited'}", loc="left", fontweight="bold", color=INK, pad=10)
 
 

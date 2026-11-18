@@ -220,7 +220,7 @@ document.querySelectorAll("[data-count]").forEach(n => { const [v, d] = heroVals
   function hundred(k, dur) {
     const r = E[k], n = Math.round(100 * r.caused / r.credited);
     sq.forEach((s, i) => { s.style.transitionDelay = reduce ? "0ms" : `${(dur ? i * 7 : 0)}ms`; s.setAttribute("class", "sq " + (i < n ? "f-navy" : "f-osoft")); });
-    lgH.innerHTML = `<span><i style="background:var(--navy)"></i>Caused by the ads <b>${n}</b></span><span><i style="background:var(--orange-soft)"></i>Would have occurred anyway <b>${100 - n}</b></span>`;
+    lgH.innerHTML = `<span><i style="background:var(--navy)"></i>Caused by the ads <b>${n}</b></span><span><i style="background:var(--orange-soft)"></i>Would have occurred anyway <b>${100 - n}</b></span><span style="color:var(--muted)">${fmt(r.caused)} ÷ ${fmt(r.credited)}; a share of the total, not a label for each ${k === "conversion" ? "conversion" : "visit"}</span>`;
   }
   segControl($("#seg-gap"), v => set(v), key);
   drawHundred(); build();
