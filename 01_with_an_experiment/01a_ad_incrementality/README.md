@@ -14,7 +14,7 @@ Which users does the ad move most, and does targeting them beat targeting the us
 
 ## Data
 
-Criteo Uplift Prediction Dataset v2.1 (Diemert, Betlei, Renaudin and Amini 2018): 13,979,592 users, 85% assigned to
+Criteo Uplift Prediction Dataset v2.1 ([Diemert, Betlei, Renaudin and Amini 2018](https://ailab.criteo.com/criteo-uplift-prediction-dataset/)): 13,979,592 users, 85% assigned to
 the ad arm, 12 anonymized features, and exposure, visit and conversion flags. The experiment was designed, run and
 released by Criteo.
 
