@@ -155,8 +155,8 @@ suggests. The full comparison, result by result and with references, is in [RELA
 - **Test size.** Informative advertising experiments can need more than 10 million person-weeks ([Lewis and Rao 2015](https://doi.org/10.1093/qje/qjv023)),
   the same arithmetic that makes a conversion test here 20 times larger than a visit test ([01c](01_with_an_experiment/01c_sql_metric_readout)).
 - **Targeting.** At eBay the users most likely to buy were the wrong ones to target ([Blake, Nosko and Tadelis 2015](https://doi.org/10.3982/ECTA12423)).
-  In this experiment they were the appropriate ones, the case in which predicting the outcome is sufficient ([Fernández-Loría and Provost
-  2022](https://jmlr.org/papers/v23/19-480.html)) ([01a](01_with_an_experiment/01a_ad_incrementality)).
+  In this experiment they were the appropriate ones, the case in which predicting the outcome is sufficient (Fernández-Loría and Provost
+  2022) ([01a](01_with_an_experiment/01a_ad_incrementality)).
 - **Returns differ by setting.** Television advertising for 288 brands had a negative return at the margin for more
   than 80% of them ([Shapiro, Hitsch and Tuchman 2021](https://doi.org/10.3982/ECTA17674)); the ads in this experiment raised conversions by 59%. This
   variation is the reason to measure each case.
@@ -165,7 +165,7 @@ suggests. The full comparison, result by result and with references, is in [RELA
   identified effect on investor attention remains ([Liaukonyte and Zaldokas 2022](https://doi.org/10.1287/mnsc.2021.4003)).
 - **Where the field is going.** Calibrated on 2,226 experiments, campaign-level measures that include last-click
   counts explain 88% of the variation in incremental conversions per dollar, against 19% for last-click attribution
-  alone ([Gordon, Moakler and Zettelmeyer, working paper](https://arxiv.org/abs/2304.06828)). Attribution becomes informative once it is calibrated
+  alone (Gordon, Moakler and Zettelmeyer, working paper). Attribution becomes informative once it is calibrated
   against experiments, which this repository does on a small scale.
 
 ## The studies
@@ -223,7 +223,7 @@ Research files, study 04 the UCI Online Retail II data, and study 02c a public m
 
 | Data | Used in | Terms |
 |---|---|---|
-| Criteo Uplift Prediction Dataset v2.1 ([Diemert, Betlei, Renaudin and Amini 2018](https://ailab.criteo.com/criteo-uplift-prediction-dataset/), AdKDD) | 01a, 01b, 01c, 01d, 02a, 03a | Research, non-commercial use. The data pool several tests with non-uniform subsampling, so absolute lifts are not population effects. |
+| Criteo Uplift Prediction Dataset v2.1 (Diemert, Betlei, Renaudin and Amini 2018, AdKDD) | 01a, 01b, 01c, 01d, 02a, 03a | Research, non-commercial use. The data pool several tests with non-uniform subsampling, so absolute lifts are not population effects. |
 | Zillow Research, metro newly pending listings (03b), for-sale inventory and new listings (03c) | 03b, 03c | Data Provided by Zillow Group. Only derived simulation results and aggregate error tables are stored here. |
 | UCI Machine Learning Repository, Online Retail II (id 502) | 04 | CC BY 4.0. |
 | Criteo Attribution Modeling for Bidding Dataset ([Diemert, Meynet, Galland and Lefortier 2017](https://doi.org/10.1145/3124749.3124752), AdKDD) | 02b, 02d | CC BY-NC-SA 4.0. The derived results in the `out/` folders of studies 02b and 02d are shared under the same license. |

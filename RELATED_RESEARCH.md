@@ -48,7 +48,7 @@ frequent buyers who account for most spending, so the users most likely to buy w
 study [01a](01_with_an_experiment/01a_ad_incrementality) the reverse holds: the users most likely to visit are also the ones the ads move most, and a
 response model targets as well as an uplift model (each puts about 75% of incremental visits in its top fifth).
 
-[Fernández-Loría and Provost (2022)](https://jmlr.org/papers/v23/19-480.html) give the condition that reconciles the two results: predicting the outcome can be
+Fernández-Loría and Provost (2022) give the condition that reconciles the two results: predicting the outcome can be
 better for targeting than estimating the effect when outcomes are informative about effects, because the effect
 estimate carries the sampling error of two predictions. [Simester, Timoshenko and Zoumpoulis (2020)](https://doi.org/10.1287/mnsc.2019.3308) add that the more
 elaborate targeting methods win when the training data are ideal and lose that advantage when the data have the
@@ -57,7 +57,7 @@ checked in each one, which is what the pre-specified comparison in study [01a](0
 
 ## 4. Marketing mix models and the returns to advertising
 
-[Chan and Perry (2017)](https://research.google/pubs/challenges-and-opportunities-in-media-mix-modeling/) group the obstacles to marketing mix modeling into data limitations, selection bias and model
+Chan and Perry (2017) group the obstacles to marketing mix modeling into data limitations, selection bias and model
 choice, and note that its estimates are correlational. The simulations in study [02c](02_without_an_experiment/02c_marketing_mix_modeling) isolate the first obstacle
 and put a number on it: with weekly data, 19% of brand-channel pairs have enough independent variation in spend for
 the channel's return to be measured. Because spend in the simulations does not respond to demand, this is an upper
@@ -120,7 +120,7 @@ reconciliation was the safe default.
 
 ## 9. Where the field is going
 
-[Gordon, Moakler and Zettelmeyer (working paper)](https://arxiv.org/abs/2304.06828) use 2,226 experiments at Meta to predict the incremental effect of
+Gordon, Moakler and Zettelmeyer (working paper) use 2,226 experiments at Meta to predict the incremental effect of
 campaigns that have no experiment, from campaign-level measures that include last-click conversion counts. Their
 model explains 88% of the out-of-sample variation in incremental conversions per dollar, against 19% for last-click
 attribution alone. This is the constructive answer to the gap this repository starts from: attribution counts are
@@ -130,17 +130,18 @@ version of that calibration.
 ## References
 
 - Blake, T., Nosko, C. and Tadelis, S. (2015). Consumer heterogeneity and paid search effectiveness: a large-scale field experiment. *Econometrica* 83(1), 155-174. https://doi.org/10.3982/ECTA12423
-- Chan, D. and Perry, M. (2017). Challenges and opportunities in media mix modeling. Google Inc. https://research.google/pubs/challenges-and-opportunities-in-media-mix-modeling/
+- Chan, D. and Perry, M. (2017). Challenges and opportunities in media mix modeling. Google Inc.
 - Deng, A., Xu, Y., Kohavi, R. and Walker, T. (2013). Improving the sensitivity of online controlled experiments by utilizing pre-experiment data. *Proceedings of WSDM 2013*, 123-132. https://doi.org/10.1145/2433396.2433413
 - Diemert, E., Meynet, J., Galland, P. and Lefortier, D. (2017). Attribution modeling increases efficiency of bidding in display advertising. *Proceedings of AdKDD 2017*. https://doi.org/10.1145/3124749.3124752
+- Diemert, E., Betlei, A., Renaudin, C. and Amini, M.-R. (2018). A large scale benchmark for uplift modeling. *Proceedings of the AdKDD and TargetAd Workshop, KDD 2018*, London.
 - Dwork, C., McSherry, F., Nissim, K. and Smith, A. (2006). Calibrating noise to sensitivity in private data analysis. *Theory of Cryptography Conference*. https://doi.org/10.1007/11681878_14
 - Fader, P., Hardie, B. and Lee, K. L. (2005). "Counting your customers" the easy way: an alternative to the Pareto/NBD model. *Marketing Science* 24(2), 275-284. https://doi.org/10.1287/mksc.1040.0098
 - Feit, E. and Berman, R. (2019). Test & roll: profit-maximizing A/B tests. *Marketing Science* 38(6), 1038-1058. https://doi.org/10.1287/mksc.2019.1194
-- Fernández-Loría, C. and Provost, F. (2022). Causal classification: treatment effect estimation vs. outcome prediction. *Journal of Machine Learning Research* 23(59), 1-35. https://jmlr.org/papers/v23/19-480.html
+- Fernández-Loría, C. and Provost, F. (2022). Causal classification: treatment effect estimation vs. outcome prediction. *Journal of Machine Learning Research* 23(59), 1-35.
 - Focke, F., Ruenzi, S. and Ungeheuer, M. (2020). Advertising, attention, and financial markets. *Review of Financial Studies* 33(10), 4676-4720. https://doi.org/10.1093/rfs/hhz142
 - Gordon, B., Zettelmeyer, F., Bhargava, N. and Chapsky, D. (2019). A comparison of approaches to advertising measurement: evidence from big field experiments at Facebook. *Marketing Science* 38(2), 193-225. https://doi.org/10.1287/mksc.2018.1135
 - Gordon, B., Moakler, R. and Zettelmeyer, F. (2023). Close enough? A large-scale exploration of non-experimental approaches to advertising measurement. *Marketing Science* 42(4), 768-793. https://doi.org/10.1287/mksc.2022.1413
-- Gordon, B., Moakler, R. and Zettelmeyer, F. Predicted incrementality by experimentation (PIE) for ad measurement. NBER Working Paper 35044; arXiv:2304.06828. https://arxiv.org/abs/2304.06828
+- Gordon, B., Moakler, R. and Zettelmeyer, F. Predicted incrementality by experimentation (PIE) for ad measurement. NBER Working Paper 35044; arXiv:2304.06828.
 - Lewis, R. and Rao, J. (2015). The unfavorable economics of measuring the returns to advertising. *Quarterly Journal of Economics* 130(4), 1941-1973. https://doi.org/10.1093/qje/qjv023
 - Lewis, R., Rao, J. and Reiley, D. (2011). Here, there, and everywhere: correlated online behaviors can lead to overestimates of the effects of advertising. *Proceedings of WWW 2011*. https://doi.org/10.1145/1963405.1963431
 - Liaukonyte, J. and Zaldokas, A. (2022). Background noise? TV advertising affects real-time investor behavior. *Management Science* 68(4), 2465-2484. https://doi.org/10.1287/mnsc.2021.4003
