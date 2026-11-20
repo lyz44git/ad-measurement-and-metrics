@@ -15,7 +15,7 @@ credit? The rules split credit; none of them is validated against an experiment 
 
 ## Data
 
-Criteo Attribution Modeling for Bidding dataset ([Diemert, Meynet, Galland and Lefortier 2017](https://doi.org/10.1145/3124749.3124752), AdKDD; CC BY-NC-SA 4.0):
+Criteo Attribution Modeling for Bidding dataset ([Diemert et al. 2017](https://doi.org/10.1145/3124749.3124752), AdKDD; CC BY-NC-SA 4.0):
 16,468,027 display impressions, 6,142,256 users, 675 campaigns and 30 days, with 327,860 converting users. This is
 attribution across the touches of a path within one display network, not cross-channel attribution.
 
