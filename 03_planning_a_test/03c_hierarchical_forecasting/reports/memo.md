@@ -3,8 +3,9 @@
 2026-11-09. Pre-analysis plan `docs/pre_analysis_plan.md`, SHA-256
 `e551b5625e394e78e0428d83eeeb55dc714cea6087fe49df4dbb991ad5effba0`, recorded 2026-11-10 02:58 UTC before any
 forecast was scored; `scripts/run_backtest.py` refuses to run if the plan changes. Tables between
-`<!-- BEGIN -->` / `<!-- END -->` markers are written by `scripts/make_report.py`; every other number in this memo is
-checked against the generated `reports/results_tables.md` by `scripts/check_memo.py`.
+`<!-- BEGIN -->` / `<!-- END -->` markers are written by `scripts/make_report.py`; `scripts/check_memo.py` checks that
+every other decimal number, percentage or number with a thousands separator in the prose appears somewhere in the
+generated `reports/results_tables.md` (plain integers are not checked, nor which row or column a number comes from).
 **Data Provided by Zillow Group.**
 
 ## Summary

@@ -238,7 +238,7 @@ document.querySelectorAll("[data-count]").forEach(n => { const [v, d] = heroVals
   function hundred(k, dur) {
     const r = E[k], n = Math.round(100 * r.caused / r.credited);
     sq.forEach((s, i) => { s.style.transitionDelay = reduce ? "0ms" : `${(dur ? i * 7 : 0)}ms`; s.setAttribute("class", "sq " + (i < n ? "f-navy" : "f-osoft")); });
-    lgH.innerHTML = `<span><i style="background:var(--navy)"></i>Caused by the ads <b>${n}</b></span><span><i style="background:var(--orange-soft)"></i>Would have occurred anyway <b>${100 - n}</b></span><span style="color:var(--muted)">${fmt(r.caused)} ÷ ${fmt(r.credited)}; a share of the total, not a label for each ${k === "conversion" ? "conversion" : "visit"}</span>`;
+    lgH.innerHTML = `<span><i style="background:var(--navy)"></i>Estimated net lift <b>${n}</b></span><span><i style="background:var(--orange-soft)"></i>In excess of the net lift <b>${100 - n}</b></span><span style="color:var(--muted)">${fmt(r.caused)} ÷ ${fmt(r.credited)}; a share of the total, not a label for each ${k === "conversion" ? "conversion" : "visit"}</span>`;
   }
   segControl($("#seg-gap"), v => set(v), key);
   drawHundred(); build();
@@ -495,8 +495,8 @@ document.querySelectorAll("[data-count]").forEach(n => { const [v, d] = heroVals
       animate([[b.bNew, { width: split - b.L - 2 }], [b.bOld, { x: split + 2, width: b.R - split - 2 }], [b.tOld, { opacity: 1 }], [b.lOld, { opacity: 1 }]], dur);
       b.t0.textContent = `${fmt(b.old)} of ${fmt(b.n)} had bought in the 12 months before`;
       countTo(b.tNew, b.n - b.old, dur); b.tOld.textContent = fmt(b.old);
-      b.lNew.textContent = `No purchase in the prior 12 months (${fmt(100 * (b.n - b.old) / b.n, 1)}%)`;
-      b.lOld.textContent = `Bought in the prior 12 months (${fmt(100 * b.old / b.n, 1)}%)`;
+      b.lNew.textContent = `No purchase in Dec 2009–Nov 2010 (${fmt(100 * (b.n - b.old) / b.n, 1)}%)`;
+      b.lOld.textContent = `Bought in Dec 2009–Nov 2010 (${fmt(100 * b.old / b.n, 1)}%)`;
     } else {
       animate([[b.bNew, { width: b.R - b.L }], [b.bOld, { x: b.R, width: 0 }], [b.tOld, { opacity: 0 }], [b.lOld, { opacity: 0 }]], dur);
       b.t0.textContent = `${fmt(b.n)} accounts labeled new`; countTo(b.tNew, b.n, dur); b.lNew.textContent = "Labeled new under a 3-month look-back";

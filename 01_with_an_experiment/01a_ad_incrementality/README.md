@@ -55,8 +55,8 @@ Full tables: [`docs/11_results_criteo_incrementality_uplift.md`](docs/11_results
 - **The pre-specified targeting comparison was not met.** The selected T-learner did not beat the response model on
   Qini (difference −1.2 × 10⁻⁴ per user, 95% CI −3.0 to +0.6). Ranking by likelihood to visit was as good a targeting rule
   here as ranking by predicted uplift.
-- Predicted uplift is well calibrated in deciles 1–9, where decile 1 has the highest predicted uplift (6.6 pp
-  predicted, 6.0 pp realized). Decile 10 is predicted negative (−0.8 pp) but realized +0.7 pp, so the model does
+- Predicted uplift tracks realized uplift in deciles 1–9, except that the top decile (decile 1, the highest predicted
+  uplift) over-predicts: 6.62 pp predicted against 6.00 pp realized (SE 0.19). Decile 10 is predicted negative (−0.8 pp) but realized +0.7 pp, so the model does
   not identify a group the ad harms.
 
 ## Reproduce

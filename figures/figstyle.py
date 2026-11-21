@@ -231,14 +231,14 @@ def p_gap(fig, spec, letter, title="Credited by the count, and caused by the ads
 
 
 def p_hundred(ax, letter, key="conversion", title=None):
-    """Of every 100 outcomes the count credits to the ads, how many the ads caused."""
+    """Of every 100 outcomes the count credits to the ads, how many the estimated net lift accounts for."""
     E = experiment(); r = E[key]; n = round(100 * r["caused"] / r["credited"])
     for i in range(100):
         c, rr = i % 10, 9 - i // 10
         rbox(ax, c + 0.08, rr + 0.08, 0.84, 0.84, NAVY if i < n else OSOFT, r=0.16)
     ax.set_xlim(0, 10); ax.set_ylim(-4.9, 10); ax.set_aspect("equal"); ax.axis("off")
-    ax.text(0, -0.5, f"■ caused by the ads: {n}", color=NAVY, fontsize=7.5, fontweight="bold", va="top")
-    ax.text(0, -1.45, f"■ would have occurred\n   anyway: {100 - n}", color=ORANGE, fontsize=7.5, fontweight="bold", va="top", linespacing=1.1)
+    ax.text(0, -0.5, f"■ estimated net lift: {n}", color=NAVY, fontsize=7.5, fontweight="bold", va="top")
+    ax.text(0, -1.45, f"■ in excess of the\n   net lift: {100 - n}", color=ORANGE, fontsize=7.5, fontweight="bold", va="top", linespacing=1.1)
     ax.text(0, -3.2, f"{fmt(r['caused'])} ÷ {fmt(r['credited'])} = {100 * r['caused'] / r['credited']:.0f}%; a share of the\ntotal, not a label for each conversion",
             color=MUTED, fontsize=6.3, va="top", linespacing=1.15)
     ax.set_title(f"{letter}   {title or 'Of 100 credited'}", loc="left", fontweight="bold", color=INK, pad=10)
@@ -311,7 +311,7 @@ def p_seg_scatter(ax, letter, title="Segment estimates in sample 1"):
     ax.text(8.8, 7.0, "estimate = benchmark", ha="right", fontsize=7, color=ORANGE, path_effects=HALO)
     ax.text(-0.8, 10.2, "● multilevel model", color=NAVY, fontsize=7.5, fontweight="bold", va="top")
     ax.text(-0.8, 9.0, "● each segment alone", color=GREY, fontsize=7.5, fontweight="bold", va="top")
-    ax.set_xlim(-1, 9); ax.set_ylim(-3, 11); ax.set_xlabel("Benchmark effect, other 98% of users (pp)"); ax.set_ylabel("Estimate (pp)"); clean(ax)
+    ax.set_xlim(-1, 9); ax.set_ylim(-5.2, 11); ax.set_xlabel("Benchmark effect, other 98% of users (pp)"); ax.set_ylabel("Estimate (pp)"); clean(ax)
     panel(ax, letter, title)
 
 
@@ -485,8 +485,8 @@ def p_new_customers(ax, letter, title="Accounts labeled new under a 3-month look
     ax.text((n - old) / 2, 0, f"{n - old}", color="white", fontsize=10, fontweight="bold", ha="center", va="center")
     ax.text(n - old + old / 2, 0, f"{old}", color="white", fontsize=10, fontweight="bold", ha="center", va="center")
     ax.text(0, 0.42, f"{fmt(n)} accounts labeled new", fontsize=8, fontweight="bold", color=INK, va="bottom")
-    ax.text(0, -0.38, f"{100 * (n - old) / n:.1f}% no purchase in the prior 12 months", color=NAVY, fontsize=7.2, fontweight="bold", va="top")
-    ax.text(0, -0.72, f"{100 * old / n:.1f}% bought in the prior 12 months", color=ORANGE, fontsize=7.2, fontweight="bold", va="top")
+    ax.text(0, -0.38, f"{100 * (n - old) / n:.1f}% no purchase in Dec 2009–Nov 2010", color=NAVY, fontsize=7.2, fontweight="bold", va="top")
+    ax.text(0, -0.72, f"{100 * old / n:.1f}% bought in Dec 2009–Nov 2010", color=ORANGE, fontsize=7.2, fontweight="bold", va="top")
     ax.set_xlim(0, n); ax.set_ylim(-1.35, 1.0); ax.axis("off")
     panel(ax, letter, title)
 

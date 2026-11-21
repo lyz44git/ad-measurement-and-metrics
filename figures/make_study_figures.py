@@ -56,7 +56,7 @@ def fig01d():
     a = ax[1]; b = ["10", "20", "30"]; x = [10, 20, 30]
     a.plot(x, [al[k]["random"] * 100 for k in b], color=PALE, lw=2.4, zorder=1)
     a.text(10, al["10"]["random"] * 100 - 4, "random order", va="top", fontsize=7, color=MUTED)
-    for k, name, c, ls in (("oracle", "true segment effects", INK2, (0, (2, 2))), ("multilevel", "lift, multilevel model", NAVY, "-"),
+    for k, name, c, ls in (("oracle", "held-out benchmark", INK2, (0, (2, 2))), ("multilevel", "lift, multilevel model", NAVY, "-"),
                            ("nopool", "lift, each segment", BLUE, "-"), ("response", "response rate", ORANGE, "-")):
         y = [100 * al[q]["mean_share"][k] for q in b]
         a.plot(x, y, color=c, lw=2.2 if c != INK2 else 1.4, ls=ls, marker="o", ms=5.5, mec="white", mew=1, zorder=3, label=name)
@@ -119,6 +119,9 @@ def fig02c_detect():
         y_lab = 100 * sum(u <= 15.6 for u in v) / len(v) + 3 if f == "D" else 100 * sum(u <= 9 for u in v) / len(v) - 16  # weekly label sits below its curve
         b.text(15.6, y_lab, f"{name}: {sh:.0f}% at 2 or below", ha="right", fontsize=7.2, color=c, fontweight="bold", path_effects=HALO)
     b.axvline(2, color=ORANGE, lw=1.2, ls=(0, (4, 3)))
+    off = {f: (sum(float(r["min_detectable_roas"]) > 16 for r in rr if r["freq"] == f), sum(r["freq"] == f for r in rr)) for f in ("W", "D")}
+    b.text(15.6, 4, f"beyond 16, not shown: {off['W'][0]} of {off['W'][1]} weekly,\n{off['D'][0]} of {off['D'][1]} daily", ha="right", va="bottom", fontsize=6.5,
+           color=MUTED, path_effects=HALO, linespacing=1.1)
     b.set_xlim(0, 16); b.set_ylim(0, 100); b.set_xlabel("Smallest detectable ROAS (80% power)"); b.set_ylabel("Brand-channels, cumulative (%)"); clean(b)
     panel(b, "B", "Real spend: what could be detected")
     fig.subplots_adjust(left=0.09, right=0.98, top=0.86, bottom=0.17, wspace=0.32)

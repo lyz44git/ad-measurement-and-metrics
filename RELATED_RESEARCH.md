@@ -1,6 +1,6 @@
 # How the results compare with published research
 
-Each result of this repository is set here against what peer-reviewed work has found: where it agrees, where it
+Each result of this repository is set here against what published research has found: where it agrees, where it
 differs, and what could explain the difference. The repository's results come from a handful of public datasets, so
 where they differ from a large published study, the published study is the stronger evidence.
 
@@ -19,8 +19,10 @@ extensive demographic and behavioral variables. [Gordon, Moakler, and Zettelmeye
 experiments with more than 5,000 features each: double machine learning does better than propensity-score matching,
 and neither performs well.
 
-In study [02a](02_without_an_experiment/02a_attribution_metric_validation) the adjusted estimates (24.6 to 25.5) do land between the two experimental ones. This is one
-experiment and one outcome, so it is not a counterexample. A possible reason is that the 12 released features capture
+In study [02a](02_without_an_experiment/02a_attribution_metric_validation) the adjusted estimates (24.6 to 25.5) fall between the two experimental ones. The comparison is
+descriptive: the adjusted estimates are associations within the ad arm, while the experimental ones are complier
+effects under instrumental-variable assumptions, and the range between them is not a bound. This is one experiment and
+one outcome, so it is not a counterexample. A possible reason is that the 12 released features capture
 much of what decided exposure in these data; a single experiment cannot test that. The reading consistent with the
 literature is that adjustment worked here and cannot be assumed to work elsewhere.
 
@@ -38,8 +40,9 @@ that Lewis and Rao describe.
 
 [Feit and Berman (2019)](https://doi.org/10.1287/mksc.2019.1194) show that when a test is sized to maximize profit and not to reach a fixed statistical power,
 the best sample is substantially smaller than the one a hypothesis test calls for. The sizes in studies
-[03a](03_planning_a_test/03a_lift_study_sizing), [01c](01_with_an_experiment/01c_sql_metric_readout) and [03b](03_planning_a_test/03b_geo_experiment_design) are of the hypothesis-test kind and can therefore be read as upper bounds for a firm that
-only needs to choose the better of two options.
+[03a](03_planning_a_test/03a_lift_study_sizing), [01c](01_with_an_experiment/01c_sql_metric_readout) and [03b](03_planning_a_test/03b_geo_experiment_design) are of the hypothesis-test kind; for a firm that only needs to choose the better of two
+options, the profit-maximizing size may be smaller, depending on margins, prior uncertainty about the effect and the
+population the decision is rolled out to.
 
 ## 3. Who to target
 
@@ -60,14 +63,15 @@ checked in each one, which is what the pre-specified comparison in study [01a](0
 [Chan and Perry (2017)](https://research.google/pubs/challenges-and-opportunities-in-media-mix-modeling/) group the obstacles to marketing mix modeling into data limitations, selection bias and model
 choice, and note that its estimates are correlational. The simulations in study [02c](02_without_an_experiment/02c_marketing_mix_modeling) isolate the first obstacle
 and put a number on it: with weekly data, 19% of brand-channel pairs have enough independent variation in spend for
-the channel's return to be measured. Because spend in the simulations does not respond to demand, this is an upper
-bound; selection bias in real data can only make it worse.
+the channel's return to be measured. Spend in the simulations does not respond to demand, so
+selection bias is absent there; in real data it can change the apparent signal in either direction.
 
 [Shapiro, Hitsch, and Tuchman (2021)](https://doi.org/10.3982/ECTA17674) estimate the effect of television advertising for 288 consumer brands and find
 elasticities substantially smaller than earlier work, with a negative return at the margin for more than 80% of
 brands. In the experiment used here, by contrast, the ads raised the conversion rate by 59%. The two are different
-media, products and designs. Together they say that the return to advertising varies widely from one setting to
-another, which is the case for measuring it in each.
+media, products and designs, and different quantities: a relative conversion lift is not a return on spend, and this
+repository has no spend or margin data to compute one. Together they say that the effect of advertising varies widely
+from one setting to another, which is the case for measuring it in each.
 
 ## 5. Attribution and bidding
 
@@ -89,7 +93,8 @@ rule ranks 12-month sales better than the model.
 
 [McCarthy and Fader (2018)](https://doi.org/10.1177/0022243718802843) value publicly traded retailers from their customer data. When customer counts feed a
 valuation in this way, the definition of a new customer is not a reporting detail: in study [04](04_customer_metrics_retention) a three-month
-look-back labels 1,036 accounts new, of which 640 had bought in the prior 12 months.
+look-back labels 1,036 accounts that bought in March–May 2011 new, of which 640 had bought in December 2009–November
+2010.
 
 ## 7. The same lesson in finance
 
@@ -98,7 +103,7 @@ correction. [Lou (2014)](https://doi.org/10.1093/rfs/hhu019) finds, in annual da
 higher stock returns in the same year and lower returns afterward, and that advertising rises before insider sales.
 [Focke, Ruenzi, and Ungeheuer (2020)](https://doi.org/10.1093/rfs/hhz142) use daily advertising data and find that advertising raises investor attention but
 has little effect on trading and no significant effect on short-term returns; they attribute the earlier positive
-relation between advertising and returns to reverse causality. [Liaukonyte and Zaldokas (2022)](https://doi.org/10.1287/mnsc.2021.4003) identify the effect
+relation between advertising and returns to reverse causality. [Liaukonytė and Žaldokas (2022)](https://doi.org/10.1287/mnsc.2021.4003) identify the effect
 from time zones, which expose viewers to the same national advertising at different times, and find that a television
 advertisement raises searches for the advertiser's financial filings by 3% within 15 minutes.
 
@@ -109,8 +114,8 @@ effect is known only once the design removes selection.
 
 The privacy study [01d](01_with_an_experiment/01d_private_segment_effects) uses the Laplace mechanism of [Dwork et al. (2006)](https://doi.org/10.1007/11681878_14). What privacy
 costs advertisers has been measured at scale by [Wernerfelt et al. (2025)](https://doi.org/10.1287/mksc.2023.0274), in an experiment
-with more than 70,000 advertisers: losing data from outside the platform raised the median cost per incremental
-customer by 31%. Study [01d](01_with_an_experiment/01d_private_segment_effects) addresses a narrower question, how much accuracy a readout loses when its counts are
+with more than 70,000 advertisers: removing data from outside the platform raised the median cost per incremental
+customer by 31%, from $38.16 to $49.93. Study [01d](01_with_an_experiment/01d_private_segment_effects) addresses a narrower question, how much accuracy a readout loses when its counts are
 noised, and finds that a model which knows the noise scale recovers much of it.
 
 [Wickramasuriya, Athanasopoulos, and Hyndman (2019)](https://doi.org/10.1080/01621459.2018.1448825) derive the reconciliation of hierarchical forecasts that minimizes
@@ -120,7 +125,7 @@ reconciliation was the safe default.
 
 ## 9. Where the field is going
 
-[Gordon, Moakler, and Zettelmeyer (2026)](https://www.nber.org/papers/w35044) use 2,226 experiments at Meta to predict the incremental effect of
+[Gordon, Moakler, and Zettelmeyer (2026)](https://www.nber.org/papers/w35044) use 2,226 experiment–conversion-event pairs from 839 experiments at Meta to predict the incremental effect of
 campaigns that have no experiment, from campaign-level measures that include last-click conversion counts. Their
 model explains 88% of the out-of-sample variation in incremental conversions per dollar, against 19% for last-click
 attribution alone. This is the constructive answer to the gap this repository starts from: attribution counts are
@@ -130,7 +135,7 @@ version of that calibration.
 ## References
 
 - Blake, Thomas, Chris Nosko, and Steven Tadelis. 2015. "Consumer Heterogeneity and Paid Search Effectiveness: A Large-Scale Field Experiment." *Econometrica* 83 (1): 155–74. https://doi.org/10.3982/ECTA12423.
-- Chan, David, and Mike Perry. 2017. "Challenges and Opportunities in Media Mix Modeling." Technical report. Mountain View, CA: Google. https://research.google/pubs/challenges-and-opportunities-in-media-mix-modeling/.
+- Chan, David, and Mike Perry. 2017. "Challenges and Opportunities in Media Mix Modeling." Technical report. Google. https://research.google/pubs/challenges-and-opportunities-in-media-mix-modeling/.
 - Deng, Alex, Ya Xu, Ron Kohavi, and Toby Walker. 2013. "Improving the Sensitivity of Online Controlled Experiments by Utilizing Pre-experiment Data." In *Proceedings of the Sixth ACM International Conference on Web Search and Data Mining*, 123–32. New York: ACM. https://doi.org/10.1145/2433396.2433413.
 - Diemert, Eustache, Artem Betlei, Christophe Renaudin, and Massih-Reza Amini. 2018. "A Large Scale Benchmark for Uplift Modeling." Paper presented at the AdKDD and TargetAd Workshop, KDD 2018, London, August 20. https://ailab.criteo.com/criteo-uplift-prediction-dataset/.
 - Diemert, Eustache, Julien Meynet, Pierre Galland, and Damien Lefortier. 2017. "Attribution Modeling Increases Efficiency of Bidding in Display Advertising." In *Proceedings of the ADKDD’17*, 1–6. New York: ACM. https://doi.org/10.1145/3124749.3124752.

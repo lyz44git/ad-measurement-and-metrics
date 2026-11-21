@@ -20,18 +20,18 @@ Test set, scored once. Qini ×10⁴ per user, 95% Poisson-bootstrap CI.
 |---|---|---|---|---|---|
 | Response model P(visit\|X) | 31.0 | [29.4, 32.7] | — | — | 5.30 pp |
 | T-learner (selected on validation) | 29.8 | [28.1, 31.8] | −1.2 | [−3.0, +0.6] | 6.00 pp |
-| Causal forest (EconML, 300K subsample) | 29.9 | [28.1, 31.6] | −1.2 | [−3.1, +0.6] | 6.22 pp |
-| X-learner | 21.0 | [19.1, 23.2] | −10.0 | [−11.7, −8.2] | 6.30 pp |
-| DR-learner | 13.4 | [11.4, 15.8] | −17.7 | [−19.1, −15.8] | 6.01 pp |
-| Random | 0.6 | [−0.7, 1.9] | | | 1.13 pp |
+| Causal forest (EconML, 300K subsample) | 29.9 | [28.1, 31.6] | −1.1 | [−3.1, +0.6] | 6.22 pp |
+| X-learner | 21.0 | [19.0, 23.2] | −10.0 | [−11.6, −8.2] | 6.30 pp |
+| DR-learner | 13.4 | [11.4, 15.8] | −17.6 | [−19.1, −15.8] | 6.01 pp |
+| Random | 0.6 | [−0.7, 1.8] | | | 1.13 pp |
 - **Heterogeneity is large and detected by every learner.** The top decile's realized uplift is 6.0 pp against 1.05 pp
   overall; the top 20% holds 75% of all incremental visits.
 - **Pre-specified decision: uplift targeting does not beat response targeting** on Qini (difference CI includes 0).
   In this experiment users likely to visit anyway are also the users the ad moves most.
 - X- and DR-learners rank well at the top but worse over the whole curve; with 15% control and a slightly
   predictable assignment, their imputed and inverse-weighted targets are noisier.
-- Calibration of the selected learner (`c_calibration_selected.csv`): deciles 1–9 track realized uplift (decile 1
-  predicted 6.6 pp, realized 6.0 pp). Decile 10 is wrong in sign: predicted −0.8 pp, realized +0.7 pp (SE 0.12).
+- Calibration of the selected learner (`c_calibration_selected.csv`): deciles 1–9 track realized uplift, although decile 1
+  over-predicts (6.62 pp predicted, 6.00 pp realized). Decile 10 is wrong in sign: predicted −0.8 pp, realized +0.7 pp (SE 0.12).
   The model's "ads hurt" segment is not real; no user group should be excluded on its basis.
 
 ## D. Packaging

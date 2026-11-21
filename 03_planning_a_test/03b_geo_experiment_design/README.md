@@ -4,9 +4,9 @@
 
 > **Takeaway.** In placebo tests on historical metro listing counts, regression adjustment on pre-period volume
 > lowered the smallest detectable effect of a two-month, 100-metro test from 9.5% (year-over-year growth) to 6.7%;
-> matched pairs added nothing once the estimate was adjusted. When the target is total volume, randomization inference
-> kept the false-positive rate between 4.2% and 5.8%, where the t-test reached 9.1%, at the cost of a larger detectable
-> effect (8.8%). These results hold for the metros, windows and designs tested here.
+> matched pairs added nothing once the estimate was adjusted. For a volume-weighted effect on log listings,
+> randomization inference kept the false-positive rate between 4.2% and 5.8%, where the t-test reached 9.1%, at the
+> cost of a larger detectable effect (8.8%). These results hold for the metros, windows and designs tested here.
 
 ## Question
 
@@ -59,7 +59,8 @@ Minimum detectable effect with 80% power, 2-month test:
 - **Matched pairs add nothing once the estimate is adjusted**, and cost degrees of freedom with few metros.
 - **Longer tests help little:** 1, 2 and 3 months give 7.2%, 6.7% and 6.4% at 100 metros, because metro-level shocks
   persist from month to month.
-- **The volume-weighted estimate needs a different test.** Weighting metros by volume (the lift in total volume) makes
+- **The volume-weighted estimate needs a different test.** Weighting metros by volume (a volume-weighted effect on log listings, which equals the lift in total volume only
+  when the effect is the same in every metro) makes
   the t-test reject a true null in 5.7% to 9.1% of 2-month tests, worst with few metros, because a few large metros
   dominate. Randomization inference keeps the rate between 4.2% and 5.8%, at the cost of a larger MDE (8.8% at 100
   metros).

@@ -11,12 +11,13 @@ When a user is shown an ad and later converts, how much of that conversion is du
 
 In the experiment studied here, a substantial part. Criteo assigned fourteen million users at random to a group that
 could be shown ads or to a group that could not. Users in the first group visited 27% more often and converted 59%
-more often, and the ads caused 13,687 conversions. (A conversion is the action the advertiser wanted, such as a
-purchase.)
+more often, and the ads caused 13,687 conversions, or about 11,902 after regression adjustment. Both are estimates
+from the random assignment on Criteo's public release, which pools several tests with non-uniform subsampling. (A
+conversion is the action the advertiser wanted, such as a purchase.)
 
 Without the experiment, this number could not have been established. The simplest attribution rule credits the ads
-with every conversion by a user who was shown one. It counts 23,031 conversions, 68% more than the ads caused; four in
-ten of the conversions it counts would have occurred without the ads. A budget based on that count would rest on an
+with every conversion by a user who was shown one. It counts 23,031 conversions, 68% more than the ads caused; about
+four in ten of the conversions it counts exceed the estimated net lift. A budget based on that count would rest on an
 overstated figure.
 
 This repository examines how to measure the effect of advertising correctly. It addresses four questions in turn:
@@ -30,9 +31,9 @@ attribution rule overstated its effect. They do not assess the reporting of any 
 overstatement is specific to this rule and to these data, a subsample of tests run on one display-advertising
 network. What generalizes is the method: validating a metric against a randomized experiment.
 
-<a href="https://lyz44git.github.io/ad-measurement-and-metrics/index.html"><img src="figures/figure1.png" alt="Three panels: visit and conversion rates in the control and ad groups; outcomes credited by a simple count against outcomes caused by the ads, for conversions and visits; of 100 credited conversions, the number caused." width="100%"></a>
+<a href="https://lyz44git.github.io/ad-measurement-and-metrics/index.html"><img src="figures/figure1.png" alt="Three panels: visit and conversion rates in the control and ad groups; outcomes credited by a simple count against outcomes caused by the ads, for conversions and visits; of 100 credited conversions, the number within the estimated net lift." width="100%"></a>
 
-**Figure 1. The effect of advertising in the experiment, and the outcomes credited by a simple count.** *Notes:* Panel A shows the visit rate and the conversion rate in the control group and in the ad group, for 14.0 million randomized users, with the relative difference. Panel B compares, within the ad group, the outcomes of users who were shown an ad ("credited", the count that an exposure-based attribution rule assigns to the ads) with the outcomes the ads caused according to the experiment (the difference in rates between groups times the number of users in the ad group), for conversions and for visits; the bar on the caused estimate is its 95% confidence interval. Panel C shows, of every 100 conversions credited, how many the ads caused. The released data are a non-uniform subsample of several tests, so rates are not population rates. Studies 01a, 01c and 02a.
+**Figure 1. The effect of advertising in the experiment, and the outcomes credited by a simple count.** *Notes:* Panel A shows the visit rate and the conversion rate in the control group and in the ad group, for 14.0 million randomized users, with the relative difference. Panel B compares, within the ad group, the outcomes of users who were shown an ad ("credited", the count that an exposure-based attribution rule assigns to the ads) with the outcomes the ads caused according to the experiment (the difference in rates between groups times the number of users in the ad group), for conversions and for visits; the bar on the caused estimate is its 95% confidence interval. Panel C shows that about 41 of every 100 credited conversions exceed the estimated net lift (the unadjusted estimate). The released data are a non-uniform subsample of several tests, so rates are not population rates. Studies 01a, 01c and 02a.
 
 ## 1. The ads were effective: visits rose 27% and conversions 59%.
 
@@ -51,8 +52,9 @@ When a 2% sample is divided into 100 segments, the segment estimates become nois
 a multilevel model reduced their error by 27%, in 10 of 10 samples ([01b](01_with_an_experiment/01b_bayesian_segment_effects)).
 
 The same approach holds when noise is added to the counts to protect privacy. At a privacy budget of epsilon = 1, the
-protected estimates are as accurate (an error of 1.06 points) as unprotected estimates made one segment at a time
-(1.08) ([01d](01_with_an_experiment/01d_private_segment_effects)).
+protected multilevel estimates have a mean error (1.06 points) no higher than that of unprotected estimates made one
+segment at a time (1.08); for the same multilevel model, the noise raises the mean error from 0.95 to 1.06 points.
+The study simulates accuracy; it is not a deployed privacy guarantee ([01d](01_with_an_experiment/01d_private_segment_effects)).
 
 The readout can be audited line by line. A small set of SQL queries, with the numerator and denominator of each
 metric stated beforehand, reproduces the rates and effects above and the two conversion counts in the introduction;
@@ -72,7 +74,9 @@ visits than they caused ([02a](02_without_an_experiment/02a_attribution_metric_v
 
 A direct comparison of users who were shown an ad with users in the same group who were not gives an apparent effect
 on the visit rate of 38.0 points. Adjusting for user characteristics lowers it to 24.6-25.5, between the two
-experimental estimates (21.5 and 28.7) ([02a](02_without_an_experiment/02a_attribution_metric_validation)).
+experimental estimates (21.5 and 28.7). The adjusted figures are associations within the ad group and the experimental
+ones are effects on users exposed because of assignment, so the range between them is descriptive, not a bound
+([02a](02_without_an_experiment/02a_attribution_metric_validation)).
 
 When a conversion follows several ad contacts, the rule that divides the credit matters greatly for the credit
 itself: assigning all of it to the last contact leaves 82% of the contacts with none ([02b](02_without_an_experiment/02b_multi_touch_attribution)). It matters little
@@ -81,15 +85,16 @@ last-touch credit and one that values them by time-decay credit spent 90% of the
 half the logged budget, and bidding with the other rule's model lost at most 2.2% of the credit, below the 5%
 threshold set in advance ([02d](02_without_an_experiment/02d_attribution_and_bidding)).
 
-A marketing mix model can measure a channel only where spending on that channel varies sufficiently on its own. A
-signal-to-noise index, computed before any model is fitted, identifies those cases. In simulations with known returns
-on real spending, the median error was 19% for brand-channel pairs with an index of 2 or more and 50% for the rest.
-Only 19% of pairs reach an index of 2 with weekly data, against 55% with daily data. Fitting all brands in a single
-model did not improve the estimates ([02c](02_without_an_experiment/02c_marketing_mix_modeling)).
+A marketing mix model can measure a channel only where spending on that channel varies sufficiently on its own. In
+simulations with known returns on real spending, a signal-to-noise index computed from the planted contribution,
+before the marketing mix model is fitted, identifies those cases: the median error was 19% for brand-channel pairs with
+an index of 2 or more and 50% for the rest. Only 19% of pairs reach an index of 2 in the weekly simulation, against 55%
+in the daily one; the two also differ in planted returns, noise, sample and carry-over, so the gap is not due to
+frequency alone. Fitting all brands in a single model did not improve the estimates ([02c](02_without_an_experiment/02c_marketing_mix_modeling)).
 
 <a href="https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02c"><img src="figures/figure4.png" alt="Two panels: error of estimated return against a signal-to-noise index; share of brand-channels with an index of 2 or more, weekly and daily data." width="100%"></a>
 
-**Figure 4. When a marketing mix model can measure a channel.** *Notes:* Panel A plots the absolute relative error of a channel's estimated return on ad spend (ROAS) against a signal-to-noise index computed before the model is fitted, for 54 brand-channel pairs in a held-out simulation with known returns on real daily spending; the dashed line marks the threshold of 2, fixed before the held-out test, and the horizontal lines the median error on each side. Panel B shows the share of brand-channel pairs with an index of 2 or more, with weekly and with daily data. Study 02c.
+**Figure 4. When a marketing mix model can measure a channel.** *Notes:* Panel A plots the absolute relative error of a channel's estimated return on ad spend (ROAS) against a signal-to-noise index computed from the planted contribution before the model is fitted, for 54 brand-channel pairs in a held-out simulation with known returns on real daily spending; the dashed line marks the threshold of 2, fixed before the held-out test, and the horizontal lines the median error on each side. Panel B shows the share of brand-channel pairs with an index of 2 or more, in the weekly and the daily simulation. Study 02c.
 
 <sub><b>Methods.</b> Attribution counts set against the experiment of section 1; regression and double machine learning for the adjusted estimates. Credit rules on 6.1M display-ad paths. A replay of two bidders on 4.6M logged impressions at their logged prices. Marketing mix simulations with known returns on the real spend of 31 to 34 e-commerce brands, with the index tested on simulations it had not seen.</sub>
 
@@ -110,8 +115,8 @@ When only whole markets can be randomized, the test is less sensitive. In placeb
 against 9.5% with a year-over-year comparison ([03b](03_planning_a_test/03b_geo_experiment_design)).
 
 A test plan also requires a baseline at every level at which the result will be reported. Forecasts of a
-housing-market series made separately for the nation, the states and the metros differed by 3.5% to 5.2% until they
-were reconciled ([03c](03_planning_a_test/03c_hierarchical_forecasting)).
+housing-market series made separately for each level differed from the sum of the forecasts one level below by 3.5%
+to 5.2% at the three parent levels (US, divisions, states) until they were reconciled ([03c](03_planning_a_test/03c_hierarchical_forecasting)).
 
 <sub><b>Methods.</b> For users, 2,000 resampled studies per sample size with A/A checks, and the two-proportion sample-size formula. For markets, 5,000 placebo tests per design. For forecasts, 24 rolling forecast origins on a hierarchy of 873 series.</sub>
 
@@ -119,11 +124,11 @@ were reconciled ([03c](03_planning_a_test/03c_hierarchical_forecasting)).
 
 <a href="https://lyz44git.github.io/ad-measurement-and-metrics/04.html"><img src="figures/figure6.png" alt="Three panels: accounts labeled new split by earlier purchase; accuracy of ranking repeat buyers; rank correlation of predicted with actual sales on two holdouts." width="100%"></a>
 
-**Figure 6. Customer counts and customer models.** *Notes:* Panel A shows the 1,036 accounts that a three-month look-back labels as new, split by whether they had made a purchase in the prior 12 months. Panel B shows the accuracy (AUC) of ranking which high-value accounts buy again within six months, by time since the last purchase and by a purchase model. Panel C shows the rank correlation of predicted with actual sales for the purchase model and for a past-sales rule, on a 6-month and a 12-month holdout of different accounts. Error bars are 95% confidence intervals. Study 04.
+**Figure 6. Customer counts and customer models.** *Notes:* Panel A shows the 1,036 accounts that a three-month look-back labels as new (bought in March–May 2011, not in December 2010–February 2011), split by whether they had made a purchase in December 2009–November 2010. Panel B shows the accuracy (AUC) of ranking which high-value accounts buy again within six months, by time since the last purchase and by a purchase model. Panel C shows the rank correlation of predicted with actual sales for the purchase model and for a past-sales rule, on a 6-month holdout (cutoff 2011-06-01; accounts with a purchase in the prior six months; rule: sales in those six months) and a 12-month holdout (cutoff 2010-12-01; accounts with any earlier purchase; rule: all earlier sales). The two samples overlap in accounts and differ in cutoff, activity screen and rule, so the difference between them is not due to the horizon alone. Error bars are 95% confidence intervals. Study 04.
 
 Customer counts share a weakness with conversion counts: they include people who were already customers. With a
-three-month look-back, 1,036 accounts of a UK online retailer are classified as new customers, of which 640 had made
-a purchase in the prior 12 months ([04](04_customer_metrics_retention)).
+three-month look-back, 1,036 accounts of a UK online retailer that bought in March–May 2011 are classified as new
+customers, of which 640 had made a purchase in December 2009–November 2010 ([04](04_customer_metrics_retention)).
 
 Among high-value accounts, a purchase model ranked which accounts would buy again within six months better than time
 since the last purchase alone (AUC 0.79 against 0.75). For ranking sales over the following 12 months, a rule based on
@@ -145,12 +150,13 @@ Each of the following fell short of a threshold that was fixed before the result
 
 ## 6. Published research reports the same pattern.
 
-Peer-reviewed research also finds that the effect of advertising is real and smaller than a direct comparison
+Published research also finds that the effect of advertising is real and smaller than a direct comparison
 suggests. The full comparison, result by result and with references, is in [RELATED_RESEARCH.md](RELATED_RESEARCH.md).
 
 - **Observational estimates.** On 15 and then 663 experiments at Facebook, adjusting for user characteristics often
   failed to recover the experimental effect ([Gordon et al. 2019](https://doi.org/10.1287/mksc.2018.1135); [Gordon, Moakler, and Zettelmeyer 2023](https://doi.org/10.1287/mksc.2022.1413)). The adjusted
-  estimate here did land between the experimental ones; with one experiment that is not a counterexample
+  estimate here falls between the experimental ones, a descriptive comparison of different targets; with one
+  experiment that is not a counterexample
   ([02a](02_without_an_experiment/02a_attribution_metric_validation)).
 - **Test size.** Informative advertising experiments can need more than 10 million person-weeks ([Lewis and Rao 2015](https://doi.org/10.1093/qje/qjv023)),
   the same arithmetic that makes a conversion test here 20 times larger than a visit test ([01c](01_with_an_experiment/01c_sql_metric_readout)).
@@ -158,13 +164,14 @@ suggests. The full comparison, result by result and with references, is in [RELA
   In this experiment they were the appropriate ones, the case in which predicting the outcome is sufficient ([Fernández-Loría and Provost
   2022](https://jmlr.org/papers/v23/19-480.html)) ([01a](01_with_an_experiment/01a_ad_incrementality)).
 - **Returns differ by setting.** Television advertising for 288 brands had a negative return at the margin for more
-  than 80% of them ([Shapiro, Hitsch, and Tuchman 2021](https://doi.org/10.3982/ECTA17674)); the ads in this experiment raised conversions by 59%. This
-  variation is the reason to measure each case.
+  than 80% of them ([Shapiro, Hitsch, and Tuchman 2021](https://doi.org/10.3982/ECTA17674)); the ads in this experiment raised conversions by 59%. A
+  relative conversion lift and a return on spend are different quantities, but the variation is the reason to measure
+  each case.
 - **The same correction in finance.** In annual data advertising appeared to raise stock returns ([Lou
   2014](https://doi.org/10.1093/rfs/hhu019)); with daily data the relation was reverse causality ([Focke, Ruenzi, and Ungeheuer 2020](https://doi.org/10.1093/rfs/hhz142)), while a cleanly
-  identified effect on investor attention remains ([Liaukonyte and Zaldokas 2022](https://doi.org/10.1287/mnsc.2021.4003)).
-- **Where the field is going.** Calibrated on 2,226 experiments, campaign-level measures that include last-click
-  counts explain 88% of the variation in incremental conversions per dollar, against 19% for last-click attribution
+  identified effect on investor attention remains ([Liaukonytė and Žaldokas 2022](https://doi.org/10.1287/mnsc.2021.4003)).
+- **Where the field is going.** Calibrated on 2,226 experiment–conversion-event pairs from 839 experiments,
+  campaign-level measures that include last-click counts explain 88% of the variation in incremental conversions per dollar, against 19% for last-click attribution
   alone ([Gordon, Moakler, and Zettelmeyer 2026](https://www.nber.org/papers/w35044)). Attribution becomes informative once it is calibrated
   against experiments, which this repository does on a small scale.
 
@@ -223,11 +230,11 @@ Research files, study 04 the UCI Online Retail II data, and study 02c a public m
 
 | Data | Used in | Terms |
 |---|---|---|
-| Criteo Uplift Prediction Dataset v2.1 ([Diemert et al. 2018](https://ailab.criteo.com/criteo-uplift-prediction-dataset/), AdKDD) | 01a, 01b, 01c, 01d, 02a, 03a | Research, non-commercial use. The data pool several tests with non-uniform subsampling, so absolute lifts are not population effects. |
+| Criteo Uplift Prediction Dataset v2.1 ([Diemert et al. 2018](https://ailab.criteo.com/criteo-uplift-prediction-dataset/), AdKDD) | 01a, 01b, 01c, 01d, 02a, 03a | CC BY-NC-SA 4.0 (research, non-commercial use). The data pool several tests with non-uniform subsampling, so absolute lifts are not population effects. |
 | Zillow Research, metro newly pending listings (03b), for-sale inventory and new listings (03c) | 03b, 03c | Data Provided by Zillow Group. Only derived simulation results and aggregate error tables are stored here. |
 | UCI Machine Learning Repository, Online Retail II (id 502) | 04 | CC BY 4.0. |
 | Criteo Attribution Modeling for Bidding Dataset ([Diemert et al. 2017](https://doi.org/10.1145/3124749.3124752), AdKDD) | 02b, 02d | CC BY-NC-SA 4.0. The derived results in the `out/` folders of studies 02b and 02d are shared under the same license. |
-| Conjura, Multi-Region Marketing Mix Modelling (MMM) Dataset for Several eCommerce Brands (Figshare 25314841) | 02c | CC BY 4.0. |
+| Conjura, Multi-Region Marketing Mix Modelling (MMM) Dataset for Several eCommerce Brands, deposited by Anthony Anderson (Figshare 25314841) | 02c | CC BY 4.0. |
 
 **Use.** This is a non-commercial research project. The data and all derived outputs in this repository are used
 for research only.

@@ -13,7 +13,7 @@ power for every delta comes from the same null draws.
 Estimators
 - Complete randomization (CR): difference in means; year-over-year difference (outcome minus the same months one year
   earlier); ANCOVA (regression on same-months-last-year and last-3-months volume, CUPED-style; HC2 errors);
-  volume-weighted ANCOVA (weights = prior 12-month volume; estimand = lift in total volume, not the average metro).
+  volume-weighted ANCOVA (weights = prior 12-month volume; estimand = a volume-weighted effect on log listings, equal to the lift in total volume only when the effect is the same in every metro).
 - Matched pairs (MP): mean within-pair difference; within-pair year-over-year difference; pair ANCOVA (pair differences
   regressed on covariate differences, intercept = effect; HC2).
 t critical values use the residual degrees of freedom.

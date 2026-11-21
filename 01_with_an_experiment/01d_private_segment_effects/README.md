@@ -3,9 +3,9 @@
 **[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/01.html#s01d)**
 
 > **Takeaway.** When only noisy segment counts may be released, a multilevel model that knows the noise scale keeps
-> segment effects usable. With Laplace noise at epsilon = 1 its error (1.06 points) is no higher than that of
-> per-segment estimates on the unprotected counts (1.08), and on the same noisy counts it beat per-segment
-> estimates in at least 9 of 10 samples at every epsilon. A second test in the same plan did not meet its rule:
+> segment effects usable. With Laplace noise at epsilon = 1 its mean error (1.06 points) is no higher than that of
+> per-segment estimates on the unprotected counts (1.08), though above its own error without noise (0.95), and on
+> the same noisy counts it beat per-segment estimates in at least 9 of 10 samples at every epsilon. A second test in the same plan did not meet its rule:
 > allocating spend to segments by estimated lift beat allocating by response rate at 10% and 20% budgets, but not at
 > 30%.
 
@@ -33,8 +33,10 @@ and Part D is part 1 of [study 03a](../../03_planning_a_test/03a_lift_study_sizi
 **Part A, privacy.**
 
 1. **Release.** For each sample, the visit count and the user count of every segment-by-arm cell get independent
-   Laplace noise of scale 2 / epsilon (one user changes two counts by at most 1 each), which makes the release
-   epsilon-differentially private. Epsilon is 0.1, 0.5, 1 or 5; three noise draws per sample and epsilon.
+   Laplace noise of scale 2 / epsilon (one user changes two counts by at most 1 each). With fixed segments and
+   private randomness this mechanism is epsilon-differentially private; here the segments are built from the data
+   and the noise is seeded for reproducibility, so the study is a utility simulation, not a deployed privacy
+   guarantee. Epsilon is 0.1, 0.5, 1 or 5; three noise draws per sample and epsilon.
 2. **Estimators,** both from the noisy counts only: the difference of noisy rates in each segment (no pooling), and a
    multilevel normal model whose sampling variance adds the variance of the noise (NumPyro, NUTS, 4 chains of 500
    warm-up and 500 draws).
@@ -73,8 +75,9 @@ Sources: [`out/a_private_summary.json`](out/a_private_summary.json), [`out/c_all
 
 - **The pre-specified rule of Part A was met.** The gain from the model grows as the privacy budget shrinks: at
   epsilon = 0.1 no pooling is off by 6.95 points and the multilevel model by 2.03.
-- **Epsilon = 1 costs nothing against the usual readout:** the private multilevel estimate (1.06) is as accurate as
-  per-segment estimates without any noise (1.08).
+- **At epsilon = 1 the mean error is no worse than that of the usual readout:** over the 10 samples, the private
+  multilevel estimate (1.06) against per-segment estimates on the unprotected counts (1.08). For the same multilevel
+  estimator, the noise raises the mean error from 0.95 to 1.06 points.
 - **The pre-specified rule of Part C was not met.** Lift ranking captured more than response ranking in 10 of 10
   samples at the 10% and 20% budgets, and in 4 of 10 at 30%, where the two rankings pick nearly the same segments.
 - 10 of 130 fits had a largest R-hat between 1.01 and 1.019; as the plan says they are listed and were not

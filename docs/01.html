@@ -88,7 +88,7 @@
 <section class="part" id="s01d"><div class="wrap">
   <div class="kicker study-k"><span class="code">01d</span></div>
   <h2 class="serif">If segment counts are released with differential-privacy noise, how much accuracy is left?</h2>
-  <p class="lead">With Laplace noise at epsilon = 1, a multilevel model that knows the noise scale is as accurate (1.06 points) as per-segment estimates on the unprotected counts (1.08). A second test in the same plan did not meet its rule: ranking segments by estimated lift beat ranking by response rate at 10% and 20% budgets, but not at 30%.</p>
+  <p class="lead">With Laplace noise at epsilon = 1, a multilevel model that knows the noise scale has a mean error (1.06 points) no higher than per-segment estimates on the unprotected counts (1.08), against 0.95 for the same model without noise. A second test in the same plan did not meet its rule: ranking segments by estimated lift beat ranking by response rate at 10% and 20% budgets, but not at 30%.</p>
   <a class="gh" href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/01_with_an_experiment/01d_private_segment_effects">Full study on GitHub →</a>
   <div class="card">
     <h3>Error of segment effects by privacy budget</h3>

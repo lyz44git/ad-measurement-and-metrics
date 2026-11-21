@@ -3,8 +3,8 @@
 **[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/04.html#s04)**
 
 > **Takeaway.** The "new customer" count depends on its definition: of the 1,036 accounts this retailer would label
-> new under a 3-month look-back, 640 (62%) had bought in the prior 12 months, so acquisition metrics here use a
-> 12-month look-back. Among high-value accounts, a purchase-model score ranks who buys again within six months better
+> new under a 3-month look-back (bought in March–May 2011, not in December 2010–February 2011), 640 (62%) had bought
+> in December 2009–November 2010, so acquisition metrics here use a 12-month look-back. Among high-value accounts, a purchase-model score ranks who buys again within six months better
 > than recency alone (AUC 0.79 against 0.75). For ranking sales over the next 12 months, a simple past-sales rule did
 > better than the purchase model in this one holdout.
 
@@ -26,8 +26,9 @@ Download `online_retail_II.xlsx` from the UCI repository into `data_raw/` (git-i
 
 ## Method
 
-1. **Cleaning and audit** (`10_ltv_load.py`): duplicates, missing IDs, credit notes and non-merchandise codes counted
-   and removed, with every count written to the audit file.
+1. **Cleaning and audit** (`10_ltv_load.py`): duplicates, missing IDs and non-merchandise codes counted and removed;
+   credit notes counted and kept for return measures but excluded from sales measures; every count written to the
+   audit file.
 2. **Metric definitions** (`12_ltv_segments.py`, `14_ltv_extension.py`): the new-customer definition is tested for
    contamination by returning buyers under different look-back windows; cohorts and segments are then defined once
    and rebuilt in SQL to confirm that both implementations give the same tables.
@@ -48,8 +49,9 @@ Sources: [`out/12_ltv_segments.json`](out/12_ltv_segments.json),
 
 ### Metric definitions
 
-**New-customer definition.** With a 3-month look-back, 1,036 accounts would be labeled new, of which 640 (62%) had
-bought in the prior 12 months. Cohorts here use a 12-month look-back:
+**New-customer definition.** With a 3-month look-back, 1,036 accounts would be labeled new (they bought in March–May
+2011 and not in December 2010–February 2011), of which 640 (62%) had bought in the fixed window December
+2009–November 2010. Cohorts here use a 12-month look-back:
 
 ```sql
 -- an account is new in a month if it bought in that month and on no day of the previous 12 months

@@ -3,11 +3,12 @@
 **[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02c)**
 
 > **Takeaway.** A marketing mix model recovers a channel's return only where that channel's spend moves enough on its
-> own, and this can be checked before fitting. In a pre-specified test on held-out simulations with real spend,
-> the median absolute relative error of a channel's estimated return was 19% for brand-channels with a
-> signal-to-noise index of 2 or more (rank correlation 0.80 with the truth) and 50% for the rest. Only 19% of brand-channels reach that level on weekly data, against 55% on daily
-> data, and pooling the brands in one model did not help. Model ROAS should be checked this way first and calibrated
-> with experiments (studies 01a and 03b) before it guides a budget.
+> own, and in simulations this can be checked before fitting. In a pre-specified test on held-out simulations with
+> real spend, the median absolute relative error of a channel's estimated return was 19% for brand-channels with a
+> signal-to-noise index of 2 or more (rank correlation 0.80 with the truth) and 50% for the rest. Only 19% of
+> brand-channels reach that level in the weekly simulation, against 55% in the daily one (the two also differ in
+> planted returns, noise and carry-over), and pooling the brands in one model did not help. Model ROAS should be
+> checked this way first and calibrated with experiments (studies 01a and 03b) before it guides a budget.
 
 ## Questions
 
@@ -18,13 +19,13 @@
 
 ## Data
 
-Conjura, "Multi-Region Marketing Mix Modelling (MMM) Dataset for Several eCommerce Brands" (Figshare 25314841,
-CC BY 4.0): daily spend by channel and purchases for 93 anonymized e-commerce brands. Download `conjura_mmm_data.csv`
-into `data_raw/` (git-ignored).
+Conjura, "Multi-Region Marketing Mix Modelling (MMM) Dataset for Several eCommerce Brands", deposited by Anthony
+Anderson (Figshare 25314841, CC BY 4.0): daily spend by channel and purchases for 93 anonymized e-commerce brands.
+Download `conjura_mmm_data.csv` into `data_raw/` (git-ignored).
 
 Revenue is purchases at original price minus discounts. Google spend is the sum of the five Google columns and Meta
-spend the sum of the three Meta columns; TikTok (3% of rows) is left out. The data have no price, promotion calendar,
-offline media or competitor information.
+spend the sum of the three Meta columns; TikTok, with spend recorded in about 3% of the rows of the source file, is
+left out. The data have no price, promotion calendar, offline media or competitor information.
 
 ## Method
 
@@ -60,10 +61,13 @@ and channel:
     index = sqrt(n) x SD(part of the channel's revenue contribution not explained by trend, season, day of week
             and the other channel) / SD(revenue around trend and season)
 
-It is the t-statistic the channel's effect would have if its carry-over and saturation were known, and it needs no
-model fit. The index and the threshold of 2 were suggested by the weekly simulation with brand-specific shapes and
-then tested on three simulations that had not been examined: daily data with brand-specific shapes (T1, primary),
-daily data with common shapes (T2) and weekly data with common shapes (T3). Predictions: the index is negatively
+It is the t-statistic the channel's effect would have if its carry-over and saturation were known. It needs no fit of
+the marketing mix model, but it uses the channel contribution planted in the simulation and auxiliary regressions on
+trend, season and the other channel, so it is a simulation diagnostic; on real spend, where the true contribution is
+unknown, it rests on an assumed response shape (see Scope). The index and the threshold of 2 were suggested by the
+weekly simulation with brand-specific shapes and then tested on three simulations that had not been examined: daily
+data with brand-specific shapes (T1, primary), daily data with common shapes (T2) and weekly data with common shapes
+(T3). Predictions: the index is negatively
 rank-correlated with the error of the per-brand estimate (95% interval below 0), and brand-channels with an index of 2
 or more have a median error below 25% and below that of the rest.
 
@@ -90,7 +94,9 @@ Sources: [`out/mmm_summary.json`](out/mmm_summary.json) (weekly), [`out/mmm_summ
 
 - **The pre-specified forecasting rule was not met** in either run: the interval of the mean wMAPE difference
   includes 0.
-- Weekly brand-level ROAS is not recovered (0.01). Daily data make it recoverable in rank (0.75), with wide intervals.
+- Weekly brand-level ROAS is not recovered (0.01). In the daily simulation it is recovered in rank (0.75), with wide
+  intervals. The weekly and daily simulations differ in planted returns, noise, sample and carry-over as well as in
+  frequency, so the difference is not the effect of daily data alone.
   Model ROAS is well below revenue per unit of spend, as expected when part of revenue would occur without media.
 - Moving 10% of spend toward the channel with the higher marginal return has a model-implied median gain of about 1%
   of revenue; its 90% interval is above 0 in 16 of 27 brands in the daily run. This is not validated.
@@ -140,8 +146,11 @@ Source: [`out/detectability.json`](out/detectability.json); the index of every b
 - **The pre-specified rule was met.** In T1 and T2 both predictions held. In T3 the first held and the second missed
   its limit by a hair (median error 25.1% against 25%).
 - **Most weekly brand-channels have too little signal.** Counting every brand-channel of the simulation with brand-specific
-  shapes, 19% have an index of 2 or more on weekly data (13 of 68) and 55% on daily data (34 of 62). In these simulations, low signal explains why weekly ROAS is not
-  recovered and why pooling does not help; on real data the index rests on an assumed response shape (see Scope).
+  shapes, 19% have an index of 2 or more on weekly data (13 of 68) and 55% on daily data (34 of 62). The weekly and
+  daily simulations also differ in planted returns (equal for 2 of the 62 brand-channels present in both), noise,
+  sample and carry-over, so this gap is not the effect of frequency alone. In these simulations, low signal explains
+  why weekly ROAS is not recovered and why pooling does not help; on real data the index rests on an assumed response
+  shape (see Scope).
 - **On real spend,** the smallest ROAS detectable with 80% power, for an assumed carry-over and saturation shape, has
   a median of 7.5 on weekly data (quartiles 3.7 to 12.8) and 2.7 on daily data (1.2 to 5.0). An ROAS of 2 could be
   detected for 6% of brand-channels on weekly data and 42% on daily data. For comparison, model ROAS on real data is
