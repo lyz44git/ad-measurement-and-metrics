@@ -1,0 +1,50 @@
+{
+ "spark_version": "4.3.0",
+ "java": "21.0.9",
+ "cores": 16,
+ "parquet_parts": 32,
+ "seconds_csv_to_parquet": 60.3,
+ "rule": "integers equal; other numbers within a relative difference of 1e-12",
+ "queries": {
+  "checks": {
+   "rows": 1,
+   "rows_other": 1,
+   "cells": 6,
+   "max_relative_difference": 0.0,
+   "disagreements": [],
+   "seconds_spark": 1.23,
+   "seconds_duckdb": 0.07
+  },
+  "duplicates": {
+   "rows": 1,
+   "rows_other": 1,
+   "cells": 1,
+   "max_relative_difference": 0.0,
+   "disagreements": [],
+   "seconds_spark": 2.35,
+   "seconds_duckdb": 0.2
+  },
+  "readout_by_arm": {
+   "rows": 2,
+   "rows_other": 2,
+   "cells": 20,
+   "max_relative_difference": 0.0,
+   "disagreements": [],
+   "seconds_spark": 0.42,
+   "seconds_duckdb": 0.02
+  },
+  "readout_effects": {
+   "rows": 2,
+   "rows_other": 2,
+   "cells": 28,
+   "max_relative_difference": 0.0,
+   "disagreements": [],
+   "seconds_spark": 0.88,
+   "seconds_duckdb": 0.02
+  }
+ },
+ "matches_committed_readout_by_arm": true,
+ "cells": 55,
+ "agree": true,
+ "rows_in_table": 13979592
+}

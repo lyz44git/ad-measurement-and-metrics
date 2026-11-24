@@ -1,0 +1,6 @@
+Tue Nov 24 00:00:43 CST 2026
+[    97s] setup rebuilt (policies identical: True); assignment AUC 0.5094
+[  1184s] truth: {"all": 7.406, "random_20": 1.413, "response_20": 6.701, "uplift_20": 6.42}
+[  1367s] moderate: 200 logs done
+[  1535s] strong: 200 logs done
+[  1535s] decision {"1_known_propensity_ips": true, "2_dr_estimated_propensity": true}

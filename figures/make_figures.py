@@ -1,6 +1,6 @@
-"""Figures 1 to 6 of the README, drawn from the result files with the panels in figures/figstyle.py.
+"""Figures 1 to 6, 3b and 5b of the README, drawn from the result files with the panels in figures/figstyle.py.
 
-Usage: python figures/make_figures.py   (writes figures/figure1.png to figure6.png)
+Usage: python figures/make_figures.py   (writes figures/figure1.png to figure6.png, figure3b.png and figure5b.png)
 """
 import sys
 from pathlib import Path
@@ -71,7 +71,24 @@ def figure6():
     save(fig, "figures/figure6.png")
 
 
+def figure3b():
+    """Section 2, added studies: the value of a policy that never ran, and conversions that have not arrived yet."""
+    fig, ax = plt.subplots(1, 2, figsize=(7.4, 3.3), dpi=300, gridspec_kw=dict(width_ratios=[1.25, 1]))
+    p_ope_error(ax[0], "A", title="Value of a policy from a biased log")
+    p_delay_calibration(ax[1], "B", "Conversions not yet arrived", keys=("naive_network", "delay_network", "oracle_lightgbm"))
+    fig.subplots_adjust(left=0.2, right=0.975, top=0.83, bottom=0.17, wspace=0.42)
+    save(fig, "figures/figure3b.png")
+
+
+def figure5b():
+    """Section 3, added study: can a smaller test read the conversion effect from visits?"""
+    fig, ax = plt.subplots(1, 2, figsize=(7.4, 3.0), dpi=300, gridspec_kw=dict(width_ratios=[1.1, 1]))
+    p_surrogate(ax[0], "A", "Conversion effect from visits"); p_surrogate_size(ax[1], "B", "Error by test size")
+    fig.subplots_adjust(left=0.24, right=0.97, top=0.84, bottom=0.18, wspace=0.42)
+    save(fig, "figures/figure5b.png")
+
+
 if __name__ == "__main__":
     style()
-    for f in (figure1, figure2, figure3, figure4, figure5, figure6):
+    for f in (figure1, figure2, figure3, figure3b, figure4, figure5, figure5b, figure6):
         f()

@@ -194,9 +194,63 @@ def study04():
     return {"segments": segs, "auc": auc, "rank": rank, "calibration": cal}
 
 
+def added_studies():
+    """Studies 03d (surrogate outcome), 02f (delayed conversions) and 02e (off-policy evaluation)."""
+    sa = load("03_planning_a_test/03d_surrogate_outcome/out/surrogate.json"); fa = load("03_planning_a_test/03d_surrogate_outcome/out/followup.json")
+    e = sa["experiment"]["estimates"]
+    names = {"direct": ("direct", "Direct"), "visit_x_fixed_rate": ("fixed", "Visit effect × fixed rate"),
+             "surrogate_index": ("surrogate", "Surrogate index"), "surrogate_index_both_arms": ("both", "Surrogate index, both arms")}
+    unadj = [{"key": names[k][0], "label": names[k][1], "v": r(100 * e[k]["estimate"], 4), "lo": r(100 * e[k]["ci95"][0], 4),
+              "hi": r(100 * e[k]["ci95"][1], 4), "share": r(e[k].get("share_of_direct", 1.0), 3)} for k in names]
+    A = fa["aipw_estimated_assignment"]
+    adj = [{"key": "direct", "label": "Direct", "v": r(100 * A["direct"], 4), "lo": r(100 * (A["direct"] - 1.96 * A["direct_se"]), 4),
+            "hi": r(100 * (A["direct"] + 1.96 * A["direct_se"]), 4), "share": 1.0},
+           {"key": "surrogate", "label": "Surrogate index", "v": r(100 * A["surrogate_index"], 4), "lo": r(100 * (A["surrogate_index"] - 1.96 * A["surrogate_se"]), 4),
+            "hi": r(100 * (A["surrogate_index"] + 1.96 * A["surrogate_se"]), 4), "share": r(A["share_of_direct"], 3)}]
+    t = sa["test_size"]
+    size = {"n": t["grid_n"], "direct": [r(100 * v, 5) for v in t["rmse_direct"]], "surr": [r(100 * v, 5) for v in t["rmse_surrogate"]],
+            "cross": round(t["crossover_n_per_arm"]), "pts": [{"n": int(k), "direct": r(100 * v["direct"], 5), "surr": r(100 * v["surrogate_index"], 5)} for k, v in t["resampling"].items()]}
+    db = load("02_without_an_experiment/02f_delayed_conversions/out/delay.json"); f1 = load("02_without_an_experiment/02f_delayed_conversions/out/followup.json")
+    f2 = load("02_without_an_experiment/02f_delayed_conversions/out/followup2.json")
+    labels = [("naive_lightgbm", "LightGBM, labels seen"), ("naive_network", "Network, labels seen"), ("delay_network", "Delayed feedback, exponential"),
+              ("weibull_network", "Delayed feedback, Weibull"), ("delay_sequence_network", "Exponential + GRU over history"), ("oracle_lightgbm", "LightGBM, 30-day labels")]
+    cut = {}
+    for T, c in db["cutoffs"].items():
+        rows_ = []
+        for k, lab in labels:
+            m = f2["cutoffs"][T]["models_p_times_F30"]["weibull"] if k == "weibull_network" else c["models"][k]
+            cr = m["calibration_ratio"]
+            rows_.append({"key": k, "label": lab, "v": r(cr["estimate"], 4), "lo": r(cr["ci95"][0], 4), "hi": r(cr["ci95"][1], 4)})
+        cut[T] = {"beyond": r(f1["share_of_30_day_conversions_with_delay_longer_than"][T], 4), "rows": rows_}
+    oc = load("02_without_an_experiment/02e_off_policy_evaluation/out/ope_v2.json")
+    acc = load("02_without_an_experiment/02e_off_policy_evaluation/out/ope_v2_accuracy.json")["settings"]
+    pol = {"all": "All users", "response_20": "Response 20%", "uplift_20": "Uplift 20%", "random_20": "Random 20%"}
+    est_names = [("naive", "Unweighted comparison"), ("dm", "Direct method"), ("ips_known", "IPS, logged propensity"), ("ips_estimated", "IPS, estimated propensity"),
+                 ("snips", "SNIPS, estimated propensity"), ("dr_known", "DR, logged propensity"), ("dr", "DR, estimated propensity")]
+    logs = rows("02_without_an_experiment/02e_off_policy_evaluation/out/ope_v2_logs.csv")
+    import numpy as np
+    est = {}
+    for st in ("moderate", "strong"):
+        est[st] = {}
+        for pk in pol:
+            lst = []
+            for k, lab in est_names:
+                x = np.array([1000 * float(q["estimate"]) for q in logs if q["setting"] == st and q["policy"] == pk and q["estimator"] == k])
+                cov = oc["settings"][st]["summary"][pk][k].get("coverage95")
+                lst.append({"key": k, "label": lab, "mean": r(float(x.mean()), 3), "p02": r(float(np.quantile(x, 0.025)), 3),
+                            "p98": r(float(np.quantile(x, 0.975)), 3), "cov": None if cov is None else r(cov, 3),
+                            "mae": r(acc[st][pk][k]["mean_absolute_error"], 3)})
+            est[st][pk] = lst
+    truth = {pk: {"v": r(oc["truth_log_part"][pk]["aipw_r"], 3), "se": r(oc["truth_log_part"][pk]["aipw_r_se"], 3),
+             "u": r(oc["truth_log_part"][pk]["unadjusted"], 3)} for pk in pol}
+    rows_n = {st: round(oc["settings"][st]["log_rows_mean"]) for st in ("moderate", "strong")}
+    return {"s03d": {"rows": {"unadjusted": unadj, "adjusted": adj}, "size": size}, "s02f": {"cut": cut},
+            "s02e": {"policies": pol, "truth": truth, "est": est, "rows": rows_n}}
+
+
 if __name__ == "__main__":
     data = {"experiment": experiment(), "segments": segments(), "credit": credit(), "mmm": mmm(), "sizing": sizing(), "customers": customers(),
-            "s01": study01(), "s02": study02(), "s03": study03(), "s04": study04()}
+            "s01": study01(), "s02": study02(), "s03": study03(), "s04": study04(), **added_studies()}
     out = Path(__file__).parent / "data.js"
     out.write_text("// Generated by docs/build_data.py from the result files of the repository. Do not edit by hand.\nwindow.DATA = "
                    + json.dumps(data, separators=(",", ":")) + ";\n")

@@ -286,8 +286,31 @@ def fig04_calibration():
     save(fig, f"{S04}/out/fig/fig4_ltv_calibration.png")
 
 
+# ------------------------------------------------------------------ 02e, 02f, 03d
+def fig02e():
+    fig, ax = plt.subplots(1, 3, figsize=(8.6, 4.1), dpi=300, gridspec_kw=dict(width_ratios=[1.15, 0.95, 0.95]))
+    p_ope_error(ax[0], "A"); p_ope_coverage(ax[1], "B"); p_ope_adjustment(ax[2], "C")
+    fig.subplots_adjust(left=0.15, right=0.985, top=0.82, bottom=0.18, wspace=0.85)
+    save(fig, f"{S02E}/out/fig_ope.png")
+
+
+def fig02f():
+    fig, ax = plt.subplots(1, 3, figsize=(8.4, 3.3), dpi=300, gridspec_kw=dict(width_ratios=[1.1, 0.95, 0.95]))
+    p_delay_calibration(ax[0], "A", "Predicted / actual conversions"); p_delay_logloss(ax[1], "B", "Log loss above complete labels")
+    p_delay_tail(ax[2], "C", "Two tails, 30-day label")
+    fig.subplots_adjust(left=0.07, right=0.985, top=0.84, bottom=0.17, wspace=0.42)
+    save(fig, f"{S02F}/out/fig_delay.png")
+
+
+def fig03d():
+    fig, ax = plt.subplots(1, 2, figsize=(7.4, 3.0), dpi=300, gridspec_kw=dict(width_ratios=[1.1, 1]))
+    p_surrogate(ax[0], "A"); p_surrogate_size(ax[1], "B")
+    fig.subplots_adjust(left=0.24, right=0.97, top=0.84, bottom=0.18, wspace=0.42)
+    save(fig, f"{S03D}/out/fig_surrogate.png")
+
+
 if __name__ == "__main__":
     style()
     for f in (fig01a, fig01b, fig01d, fig02a, fig02b, fig02c_recovery, fig02c_detect, fig03a_power, fig03a_mde, fig03b, fig03c,
-              fig04_segments, fig04_cohorts, fig04_calibration):
+              fig04_segments, fig04_cohorts, fig04_calibration, fig02e, fig02f, fig03d):
         f()

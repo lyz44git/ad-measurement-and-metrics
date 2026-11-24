@@ -1,0 +1,51 @@
+{
+ "main_run_surrogate_index": 0.0004890027860311097,
+ "rebuilt_surrogate_index_unadjusted": 0.0004890027860311097,
+ "assignment_model": {
+  "quantiles": [
+   0.8384773231618804,
+   0.8449471064373691,
+   0.8485352003984782,
+   0.8542167078600297,
+   0.8990850391982996
+  ],
+  "auc_experiment_half": 0.5093276163854284
+ },
+ "aipw_estimated_assignment": {
+  "direct": 0.0009912428004131106,
+  "direct_se": 4.888433969028644e-05,
+  "surrogate_index": 0.00033009237159609193,
+  "surrogate_se": 1.650519962003596e-05,
+  "share_of_direct": 0.33300859432070784,
+  "share_ci95": [
+   0.2941371735265995,
+   0.37188001511481616
+  ],
+  "visit_effect": 0.007341632394552695,
+  "visit_effect_se": 0.00018259357084381877
+ },
+ "aipw_constant_share": {
+  "direct": 0.0010184526545153822,
+  "direct_se": 4.60270843580216e-05,
+  "surrogate_index": 0.00031967776023031016,
+  "surrogate_se": 1.5658728374394905e-05,
+  "share_of_direct": 0.3138857352013332,
+  "share_ci95": [
+   0.27909696130175005,
+   0.3486745091009164
+  ],
+  "visit_effect": 0.007315475021802178,
+  "visit_effect_se": 0.00017222549233289122
+ },
+ "unadjusted": {
+  "direct": 0.0011597365690421554,
+  "surrogate_index": 0.0004890027860311097,
+  "share_of_direct": 0.4216498807440251,
+  "visit_effect": 0.010252524458125738
+ },
+ "reading": {
+  "conclusion_holds": true,
+  "rule": "adjusted ratio of surrogate to direct effect below 0.80 with its 95% interval below 0.80"
+ },
+ "seconds": 628
+}

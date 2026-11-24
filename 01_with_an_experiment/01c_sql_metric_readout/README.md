@@ -109,6 +109,11 @@ Source: [`out/readout.json`](out/readout.json); tables in `out/*.csv`. The run t
   is about 20 times lower. A one-point absolute lift in the visit rate needs 6,485 users per arm by this formula,
   against about 6,500 by simulation in [study 03a](../../03_planning_a_test/03a_lift_study_sizing).
 
+## The same queries on Spark
+
+The four SQL files were also run unchanged on Spark 4.3, against the file written as a 32-part Parquet table. All 55
+cells equal DuckDB's ([`spark/`](spark)).
+
 ## Reproduce
 
 ```bash

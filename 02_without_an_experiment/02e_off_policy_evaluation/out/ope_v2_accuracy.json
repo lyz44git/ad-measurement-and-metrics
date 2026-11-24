@@ -1,0 +1,407 @@
+{
+ "benchmark": "AIPW with the estimated assignment probability on the log part (truth_log_part.aipw_r in ope_v2.json)",
+ "settings": {
+  "moderate": {
+   "all": {
+    "dm": {
+     "mean_error": 0.5019308226981061,
+     "mean_absolute_error": 0.5033034871397791,
+     "median_absolute_error": 0.48388118827809634,
+     "logs": 200
+    },
+    "dr": {
+     "mean_error": -0.042648368374324244,
+     "mean_absolute_error": 0.2260373422383926,
+     "median_absolute_error": 0.1863146089232611,
+     "logs": 200
+    },
+    "dr_known": {
+     "mean_error": -0.0013176580993241515,
+     "mean_absolute_error": 0.17379328913909767,
+     "median_absolute_error": 0.14151146885838056,
+     "logs": 200
+    },
+    "ips_estimated": {
+     "mean_error": -0.7491274116854425,
+     "mean_absolute_error": 0.7494189452201023,
+     "median_absolute_error": 0.7677221221768422,
+     "logs": 200
+    },
+    "ips_known": {
+     "mean_error": -0.00368775051120889,
+     "mean_absolute_error": 0.2197499677842083,
+     "median_absolute_error": 0.19248504530984947,
+     "logs": 200
+    },
+    "naive": {
+     "mean_error": 9.01460849319021,
+     "mean_absolute_error": 9.01460849319021,
+     "median_absolute_error": 9.02947414739161,
+     "logs": 200
+    },
+    "snips": {
+     "mean_error": -0.6513270101235678,
+     "mean_absolute_error": 0.6522713194940377,
+     "median_absolute_error": 0.6663815962525578,
+     "logs": 200
+    }
+   },
+   "random_20": {
+    "dm": {
+     "mean_error": 0.5636273008645831,
+     "mean_absolute_error": 0.5650775601349283,
+     "median_absolute_error": 0.5241220119461897,
+     "logs": 200
+    },
+    "dr": {
+     "mean_error": 7.301261457299705e-05,
+     "mean_absolute_error": 0.49726227461900463,
+     "median_absolute_error": 0.4457272218456757,
+     "logs": 200
+    },
+    "dr_known": {
+     "mean_error": 0.04157957125880163,
+     "mean_absolute_error": 0.4208064872716042,
+     "median_absolute_error": 0.37009523890592844,
+     "logs": 200
+    },
+    "ips_estimated": {
+     "mean_error": -0.734703931106442,
+     "mean_absolute_error": 0.8560144219136014,
+     "median_absolute_error": 0.7609941378507518,
+     "logs": 200
+    },
+    "ips_known": {
+     "mean_error": 0.028950498305357952,
+     "mean_absolute_error": 0.5321408283035055,
+     "median_absolute_error": 0.44861177965790794,
+     "logs": 200
+    },
+    "naive": {
+     "mean_error": 9.021421704503162,
+     "mean_absolute_error": 9.021421704503163,
+     "median_absolute_error": 9.048438985526076,
+     "logs": 200
+    },
+    "snips": {
+     "mean_error": -0.6340167326874493,
+     "mean_absolute_error": 0.7593585563548074,
+     "median_absolute_error": 0.6305988556379772,
+     "logs": 200
+    }
+   },
+   "response_20": {
+    "dm": {
+     "mean_error": 0.48235185200720493,
+     "mean_absolute_error": 0.4852317039473705,
+     "median_absolute_error": 0.46560438388024294,
+     "logs": 200
+    },
+    "dr": {
+     "mean_error": -0.05387857795949769,
+     "mean_absolute_error": 0.25031186484767826,
+     "median_absolute_error": 0.19609388408464512,
+     "logs": 200
+    },
+    "dr_known": {
+     "mean_error": -0.007108667327598455,
+     "mean_absolute_error": 0.1903789281553158,
+     "median_absolute_error": 0.16525771587845942,
+     "logs": 200
+    },
+    "ips_estimated": {
+     "mean_error": -0.8311776522104248,
+     "mean_absolute_error": 0.8311776522104247,
+     "median_absolute_error": 0.8476529761464299,
+     "logs": 200
+    },
+    "ips_known": {
+     "mean_error": -0.008580644116145092,
+     "mean_absolute_error": 0.24202339010284157,
+     "median_absolute_error": 0.2102507214488785,
+     "logs": 200
+    },
+    "naive": {
+     "mean_error": 6.818495779322915,
+     "mean_absolute_error": 6.818495779322915,
+     "median_absolute_error": 6.828918630568843,
+     "logs": 200
+    },
+    "snips": {
+     "mean_error": -0.6915495748750043,
+     "mean_absolute_error": 0.6923448263874947,
+     "median_absolute_error": 0.7066810201824258,
+     "logs": 200
+    }
+   },
+   "uplift_20": {
+    "dm": {
+     "mean_error": 0.36922012607962257,
+     "mean_absolute_error": 0.373402939280664,
+     "median_absolute_error": 0.35225310048455716,
+     "logs": 200
+    },
+    "dr": {
+     "mean_error": -0.056446070172560744,
+     "mean_absolute_error": 0.2246414842730172,
+     "median_absolute_error": 0.18033554775653626,
+     "logs": 200
+    },
+    "dr_known": {
+     "mean_error": -0.022680924422568777,
+     "mean_absolute_error": 0.1789653539201309,
+     "median_absolute_error": 0.15314088489631172,
+     "logs": 200
+    },
+    "ips_estimated": {
+     "mean_error": -0.6670348461500009,
+     "mean_absolute_error": 0.6701386047525081,
+     "median_absolute_error": 0.6606449460377917,
+     "logs": 200
+    },
+    "ips_known": {
+     "mean_error": -0.021447498209807108,
+     "mean_absolute_error": 0.2216500425794086,
+     "median_absolute_error": 0.1950789492381468,
+     "logs": 200
+    },
+    "naive": {
+     "mean_error": 5.342396171621179,
+     "mean_absolute_error": 5.342396171621181,
+     "median_absolute_error": 5.359141184908779,
+     "logs": 200
+    },
+    "snips": {
+     "mean_error": -0.5531773863197846,
+     "mean_absolute_error": 0.5582549671120542,
+     "median_absolute_error": 0.5431811819123465,
+     "logs": 200
+    }
+   }
+  },
+  "strong": {
+   "all": {
+    "dm": {
+     "mean_error": 1.133534996896768,
+     "mean_absolute_error": 1.133534996896768,
+     "median_absolute_error": 1.1312838596411174,
+     "logs": 200
+    },
+    "dr": {
+     "mean_error": -0.3144775218173606,
+     "mean_absolute_error": 0.5447146673202784,
+     "median_absolute_error": 0.42658318114964666,
+     "logs": 200
+    },
+    "dr_known": {
+     "mean_error": 0.018779093811546563,
+     "mean_absolute_error": 0.3563293292819672,
+     "median_absolute_error": 0.2900038775544674,
+     "logs": 200
+    },
+    "ips_estimated": {
+     "mean_error": -1.4799279722068122,
+     "mean_absolute_error": 1.4820353165794642,
+     "median_absolute_error": 1.465720466973735,
+     "logs": 200
+    },
+    "ips_known": {
+     "mean_error": 0.02200326299319115,
+     "mean_absolute_error": 0.38134564586468966,
+     "median_absolute_error": 0.3092741013070379,
+     "logs": 200
+    },
+    "naive": {
+     "mean_error": 11.804575355711778,
+     "mean_absolute_error": 11.80457535571178,
+     "median_absolute_error": 11.794538247194717,
+     "logs": 200
+    },
+    "snips": {
+     "mean_error": -1.2345094859611765,
+     "mean_absolute_error": 1.2405969301254376,
+     "median_absolute_error": 1.2225334707217281,
+     "logs": 200
+    }
+   },
+   "random_20": {
+    "dm": {
+     "mean_error": 1.226655787887555,
+     "mean_absolute_error": 1.226655787887555,
+     "median_absolute_error": 1.2412975691155488,
+     "logs": 200
+    },
+    "dr": {
+     "mean_error": -0.5307973356155473,
+     "mean_absolute_error": 1.1958498441497674,
+     "median_absolute_error": 0.9631799964550266,
+     "logs": 200
+    },
+    "dr_known": {
+     "mean_error": -0.1544355847240917,
+     "mean_absolute_error": 0.8173003864598897,
+     "median_absolute_error": 0.6590944927699317,
+     "logs": 200
+    },
+    "ips_estimated": {
+     "mean_error": -1.7572221139501945,
+     "mean_absolute_error": 1.9676026222463046,
+     "median_absolute_error": 1.744574100354937,
+     "logs": 200
+    },
+    "ips_known": {
+     "mean_error": -0.15859822439321783,
+     "mean_absolute_error": 0.9505746202668877,
+     "median_absolute_error": 0.7258663700956406,
+     "logs": 200
+    },
+    "naive": {
+     "mean_error": 10.56804658035349,
+     "mean_absolute_error": 10.56804658035349,
+     "median_absolute_error": 10.580125905883897,
+     "logs": 200
+    },
+    "snips": {
+     "mean_error": -1.467942591785541,
+     "mean_absolute_error": 1.6918460454962059,
+     "median_absolute_error": 1.4999844604738124,
+     "logs": 200
+    }
+   },
+   "response_20": {
+    "dm": {
+     "mean_error": 1.1346226264070083,
+     "mean_absolute_error": 1.1357582301640352,
+     "median_absolute_error": 1.1275397951516861,
+     "logs": 200
+    },
+    "dr": {
+     "mean_error": -0.3430797451542929,
+     "mean_absolute_error": 0.6051033727527394,
+     "median_absolute_error": 0.46788459773316643,
+     "logs": 200
+    },
+    "dr_known": {
+     "mean_error": 0.020293952027520545,
+     "mean_absolute_error": 0.40210196639363344,
+     "median_absolute_error": 0.31177220023858465,
+     "logs": 200
+    },
+    "ips_estimated": {
+     "mean_error": -1.6236616898589349,
+     "mean_absolute_error": 1.6252587618846885,
+     "median_absolute_error": 1.6102664596482221,
+     "logs": 200
+    },
+    "ips_known": {
+     "mean_error": 0.02301245802060855,
+     "mean_absolute_error": 0.4285775656699194,
+     "median_absolute_error": 0.35911154698897646,
+     "logs": 200
+    },
+    "naive": {
+     "mean_error": 7.524382456294863,
+     "mean_absolute_error": 7.524382456294863,
+     "median_absolute_error": 7.517661665023506,
+     "logs": 200
+    },
+    "snips": {
+     "mean_error": -1.2647643014510965,
+     "mean_absolute_error": 1.278189732735147,
+     "median_absolute_error": 1.238076208806313,
+     "logs": 200
+    }
+   },
+   "uplift_20": {
+    "dm": {
+     "mean_error": 0.8815528858485598,
+     "mean_absolute_error": 0.882337017563878,
+     "median_absolute_error": 0.8894140593015571,
+     "logs": 200
+    },
+    "dr": {
+     "mean_error": -0.29161921274217123,
+     "mean_absolute_error": 0.5293500287932327,
+     "median_absolute_error": 0.4564588760151178,
+     "logs": 200
+    },
+    "dr_known": {
+     "mean_error": 0.004770080149018963,
+     "mean_absolute_error": 0.3431032908777763,
+     "median_absolute_error": 0.29501564840777345,
+     "logs": 200
+    },
+    "ips_estimated": {
+     "mean_error": -1.2363458213279461,
+     "mean_absolute_error": 1.241230140113762,
+     "median_absolute_error": 1.2108552211197068,
+     "logs": 200
+    },
+    "ips_known": {
+     "mean_error": 0.020690755199185035,
+     "mean_absolute_error": 0.36994026197968627,
+     "median_absolute_error": 0.3160416921872624,
+     "logs": 200
+    },
+    "naive": {
+     "mean_error": 5.90325760395321,
+     "mean_absolute_error": 5.90325760395321,
+     "median_absolute_error": 5.894405863839265,
+     "logs": 200
+    },
+    "snips": {
+     "mean_error": -0.946483903374292,
+     "mean_absolute_error": 0.9618084273818412,
+     "median_absolute_error": 0.9292038140886492,
+     "logs": 200
+    }
+   }
+  }
+ },
+ "decision_as_written": {
+  "1_known_propensity_ips": {
+   "met": false,
+   "by_policy": {
+    "all": false,
+    "random_20": false,
+    "response_20": false,
+    "uplift_20": false
+   },
+   "mean_absolute_error": {
+    "all": 0.2197499677842083,
+    "random_20": 0.5321408283035055,
+    "response_20": 0.24202339010284157,
+    "uplift_20": 0.2216500425794086
+   },
+   "coverage95": {
+    "all": 0.97,
+    "random_20": 0.95,
+    "response_20": 0.945,
+    "uplift_20": 0.95
+   },
+   "as_computed_by_run_ope_v2": true
+  },
+  "2_dr_estimated_propensity": {
+   "met": false,
+   "by_policy": {
+    "all": false,
+    "random_20": false,
+    "response_20": false,
+    "uplift_20": false
+   },
+   "mean_absolute_error": {
+    "all": 0.2260373422383926,
+    "random_20": 0.49726227461900463,
+    "response_20": 0.25031186484767826,
+    "uplift_20": 0.2246414842730172
+   },
+   "coverage95": {
+    "all": 0.945,
+    "random_20": 0.965,
+    "response_20": 0.95,
+    "uplift_20": 0.94
+   },
+   "as_computed_by_run_ope_v2": true
+  }
+ }
+}

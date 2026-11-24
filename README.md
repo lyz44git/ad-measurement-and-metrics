@@ -44,6 +44,10 @@ network. What generalizes is the method: validating a metric against a randomize
 Assignment to the ad group raised the visit rate from 3.82% to 4.85% and the conversion rate from 0.19% to 0.31%.
 Only 3.6% of that group was shown an ad ([01a](01_with_an_experiment/01a_ad_incrementality)).
 
+Adjusted for the 12 user features, the effects are smaller: 0.77 instead of 1.03 points for visits and 0.100 instead
+of 0.115 points for conversions ([01a](01_with_an_experiment/01a_ad_incrementality)). In this pooled release the
+chance of being assigned to ads varies slightly with the features; study [02e](02_without_an_experiment/02e_off_policy_evaluation) examines this.
+
 The effect is concentrated: the fifth of users ranked highest by a model accounts for 75% of the incremental visits.
 An uplift model, designed to identify the users whom an ad can persuade, ranked them no better than a simple model of
 which users visit in any case ([01a](01_with_an_experiment/01a_ad_incrementality)).
@@ -59,7 +63,8 @@ The study simulates accuracy; it is not a deployed privacy guarantee ([01d](01_w
 The readout can be audited line by line. A small set of SQL queries, with the numerator and denominator of each
 metric stated beforehand, reproduces the rates and effects above and the two conversion counts in the introduction;
 all 29 comparisons with the Python results agree. The data checks also record that the file has no user identifier
-and that 16% of its rows are identical to another row ([01c](01_with_an_experiment/01c_sql_metric_readout)).
+and that 16% of its rows are identical to another row ([01c](01_with_an_experiment/01c_sql_metric_readout)). The
+same four queries return identical values in all 55 output cells on Spark and DuckDB.
 
 <sub><b>Methods.</b> A randomized experiment on 13,979,592 users, read as the effect of assignment, with regression adjustment as a check. Uplift models compared with a response model on held-out users. A Bayesian multilevel model on ten 2% samples, scored against the other 98% of users. Laplace noise for differential privacy at four privacy budgets. DuckDB for the SQL.</sub>
 
@@ -78,12 +83,30 @@ experimental estimates (21.5 and 28.7). The adjusted figures are associations wi
 ones are effects on users exposed because of assignment, so the range between them is descriptive, not a bound
 ([02a](02_without_an_experiment/02a_attribution_metric_validation)).
 
+The experiment can also check an estimate for a decision not yet taken: the extra visits a new targeting rule would
+bring. On 200 logs built from the experiment so that an earlier rule favored likely visitors, weighting by the
+recorded probability of assignment gives, on average, a value within 3% of a feature-adjusted benchmark from the
+experiment for each of four rules; a doubly robust estimator that has to estimate the probability comes within 6%.
+One log of about 108,000 users is far less exact: its error averages 22% to 53% across the rules, above the 10% set
+in advance. An unweighted comparison gives 6 to 10 times the benchmark. These estimates value a targeting rule; they
+do not divide credit among the ads that precede a conversion ([02e](02_without_an_experiment/02e_off_policy_evaluation)).
+
 When a conversion follows several ad contacts, the rule that divides the credit matters greatly for the credit
 itself: assigning all of it to the last contact leaves 82% of the contacts with none ([02b](02_without_an_experiment/02b_multi_touch_attribution)). It matters little
 for which impressions a bidder buys. In a replay on logged impressions and prices, a bidder that values impressions by
 last-touch credit and one that values them by time-decay credit spent 90% of their budgets on the same impressions at
 half the logged budget, and bidding with the other rule's model lost at most 2.2% of the credit, below the 5%
 threshold set in advance ([02d](02_without_an_experiment/02d_attribution_and_bidding)).
+
+The bidding replay used complete labels. A model retrained each day has only the conversions that have arrived:
+across three cutoffs, two models trained on those predicted 27% to 44% too few. A model of the delay brought
+predicted over actual conversions to 0.95 and 1.04 with three and four weeks of data, and to 0.78 with two. At two
+weeks no impression has been followed for longer than two weeks, 21% of conversions take longer, and the forecast
+depends on how the model extrapolates ([02f](02_without_an_experiment/02f_delayed_conversions)).
+
+<a href="https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02e"><img src="figures/figure3b.png" alt="Two panels: error of off-policy estimators against the experiment's value of a targeting policy; predicted over actual conversions at three retraining cutoffs for a model trained on the labels seen, a delay model and a reference with complete labels." width="100%"></a>
+
+**Figure 3b. Two checks on estimates made from logs.** *Notes:* Panel A compares off-policy estimates of the extra visits under a targeting policy with a feature-adjusted benchmark from the experiment, on logs that favor likely visitors (moderate setting). Each dot is the mean error over 200 logs as a share of the benchmark, averaged over four policies; the bar spans the four policies, and the shaded band marks ±10%. The gray text gives the mean absolute error of a single log, which is the quantity the plan's accuracy rule names; the rule was not met. IPS is inverse probability weighting, SNIPS its self-normalized form and DR the doubly robust estimator; "logged" and "estimated" refer to the probability of assignment. The unweighted comparison is off the scale. Panel B shows predicted over actual conversions for impressions in the three days after a retraining cutoff, for a network trained on the conversions seen at the cutoff, the same network with a delayed-feedback likelihood, and LightGBM trained on complete 30-day labels (dashed), with 95% intervals; 1 is exact calibration in aggregate, and the shaded band is the pre-specified 0.90 to 1.10. Studies 02e and 02f.
 
 A marketing mix model can measure a channel only where spending on that channel varies sufficiently on its own. In
 simulations with known returns on real spending, a signal-to-noise index computed from the planted contribution,
@@ -96,7 +119,7 @@ frequency alone. Fitting all brands in a single model did not improve the estima
 
 **Figure 4. When a marketing mix model can measure a channel.** *Notes:* Panel A plots the absolute relative error of a channel's estimated return on ad spend (ROAS) against a signal-to-noise index computed from the planted contribution before the model is fitted, for 54 brand-channel pairs in a held-out simulation with known returns on real daily spending; the dashed line marks the threshold of 2, fixed before the held-out test, and the horizontal lines the median error on each side. Panel B shows the share of brand-channel pairs with an index of 2 or more, in the weekly and the daily simulation. Study 02c.
 
-<sub><b>Methods.</b> Attribution counts set against the experiment of section 1; regression and double machine learning for the adjusted estimates. Credit rules on 6.1M display-ad paths. A replay of two bidders on 4.6M logged impressions at their logged prices. Marketing mix simulations with known returns on the real spend of 31 to 34 e-commerce brands, with the index tested on simulations it had not seen.</sub>
+<sub><b>Methods.</b> Attribution counts set against the experiment of section 1; regression and double machine learning for the adjusted estimates. Credit rules on 6.1M display-ad paths. A replay of two bidders on 4.6M logged impressions at their logged prices. Marketing mix simulations with known returns on the real spend of 31 to 34 e-commerce brands, with the index tested on simulations it had not seen. Inverse propensity, self-normalized and doubly robust estimators on 400 logs built from the experiment by rejection sampling. A delayed-feedback network in PyTorch on 16.5M impressions, retrained at days 14, 21 and 28.</sub>
 
 ## 3. Measuring the effect again requires a test, and a large one for conversions.
 
@@ -110,6 +133,17 @@ characteristics recorded before the test reduces this to about 4,400 ([03a](03_p
 Conversions are about 20 times rarer than visits, and the required sample grows by the same factor: detecting a 10%
 lift requires 849,000 users per group for conversions, against 41,000 for visits ([01c](01_with_an_experiment/01c_sql_metric_readout)).
 
+Visits cannot stand in for conversions in a smaller test. An estimate that converts the extra visits at the rate
+predicted for visitors of their kind is 0.049 points, 42% of the 0.116 measured directly, and a third after
+adjustment for the user features; the margin of ±20% set in advance was not met. Among visitors, 6.36% converted in
+the ad group against 5.03% in the control group. Because assignment can also change who visits, this describes the
+gap and does not identify how the ads worked. The errors of the two estimates are equal at about 8,900 users per
+group, where each is about 65% of the effect ([03d](03_planning_a_test/03d_surrogate_outcome)).
+
+<a href="https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03d"><img src="figures/figure5b.png" alt="Two panels: the effect on the conversion rate estimated directly and from visits; error of the direct and the visit-based estimate by test size." width="100%"></a>
+
+**Figure 5b. How much of the conversion effect a visit-based estimate contains.** *Notes:* Panel A shows unadjusted estimates of the effect of assignment on the conversion rate, on the half of the experiment not used to fit the models: the direct difference between groups (the shaded band repeats its 95% confidence interval), visits times a fixed conversion rate, and a surrogate index from a model of which visitors convert, fitted on control-group visitors of the other half or on visitors of both groups; with 95% confidence intervals and each estimate's share of the direct one. The pre-specified test compared the 90% interval of the relative difference, −61% to −54%, with a margin of ±20%. Panel B shows the root mean squared error of the direct estimate and of the surrogate index against the direct estimate on that half, for equal groups. The curves use the estimated bias and variances, each dot summarizes 500 resampled tests at one of four sizes, and the dashed line marks where the curves cross. Study 03d.
+
 When only whole markets can be randomized, the test is less sensitive. In placebo tests on housing-market series for
 151 U.S. metros, a two-month test in 100 metros detects a 6.7% change with regression adjustment on pre-period volume,
 against 9.5% with a year-over-year comparison ([03b](03_planning_a_test/03b_geo_experiment_design)).
@@ -118,7 +152,7 @@ A test plan also requires a baseline at every level at which the result will be 
 housing-market series made separately for each level differed from the sum of the forecasts one level below by 3.5%
 to 5.2% at the three parent levels (US, divisions, states) until they were reconciled ([03c](03_planning_a_test/03c_hierarchical_forecasting)).
 
-<sub><b>Methods.</b> For users, 2,000 resampled studies per sample size with A/A checks, and the two-proportion sample-size formula. For markets, 5,000 placebo tests per design. For forecasts, 24 rolling forecast origins on a hierarchy of 873 series.</sub>
+<sub><b>Methods.</b> For users, 2,000 resampled studies per sample size with A/A checks, and the two-proportion sample-size formula. For markets, 5,000 placebo tests per design. For forecasts, 24 rolling forecast origins on a hierarchy of 873 series. For the visit-based estimate, a surrogate index from a model of which visitors convert, with 500 resampled tests per size.</sub>
 
 ## 4. Customer counts require the same scrutiny.
 
@@ -136,7 +170,7 @@ past sales performed better than the model ([04](04_customer_metrics_retention))
 
 <sub><b>Methods.</b> Two years of transactions (794,163 lines, 5,875 accounts; no ads in these data). The metric tables rebuilt in SQL match the Python results in all 92 cells.</sub>
 
-## 5. Six pre-specified tests were not passed.
+## 5. Thirteen pre-specified tests were not passed.
 
 Each of the following fell short of a threshold that was fixed before the result was seen.
 
@@ -147,6 +181,21 @@ Each of the following fell short of a threshold that was fixed before the result
 - Ranking segments by estimated lift did not reliably outperform ranking by response rate at a 30% budget, although it
   did at 10% and 20% ([01d](01_with_an_experiment/01d_private_segment_effects)).
 - The purchase model did not outperform a past-sales rule in ranking 12-month sales ([04](04_customer_metrics_retention)).
+- The effect on visits did not recover the effect on conversions within ±20%
+  ([03d](03_planning_a_test/03d_surrogate_outcome)).
+- A delayed-feedback model did not reach the calibration band at all three retraining cutoffs; it missed at day 14
+  ([02f](02_without_an_experiment/02f_delayed_conversions)).
+- A GRU over the user's recent impressions did not improve the delayed-feedback model
+  ([02f](02_without_an_experiment/02f_delayed_conversions)).
+- A Weibull delay did not improve the day-14 calibration of the delayed-feedback model when scored as planned, on
+  the probability of converting at any time ([02f](02_without_an_experiment/02f_delayed_conversions)).
+- In a first design that assumed a constant assignment share, the mean of doubly robust estimates from biased logs
+  did not come within 10% of the experiment's unadjusted policy values ([02e](02_without_an_experiment/02e_off_policy_evaluation)).
+- In the second design, inverse probability weighting with the logged probability did not reach a mean absolute error
+  below 10% of the benchmark: one log is off by 22% to 53% on average, although the mean over logs is within 3% and
+  the interval coverage met its 90% ([02e](02_without_an_experiment/02e_off_policy_evaluation)).
+- In the same design, the doubly robust estimator with an estimated probability did not reach it either: 22% to 50%
+  for one log, with a mean within 6% and coverage above 90% ([02e](02_without_an_experiment/02e_off_policy_evaluation)).
 
 ## 6. Published research reports the same pattern.
 
@@ -170,6 +219,12 @@ suggests. The full comparison, result by result and with references, is in [RELA
 - **The same correction in finance.** In annual data advertising appeared to raise stock returns ([Lou
   2014](https://doi.org/10.1093/rfs/hhu019)); with daily data the relation was reverse causality ([Focke, Ruenzi, and Ungeheuer 2020](https://doi.org/10.1093/rfs/hhz142)), while a cleanly
   identified effect on investor attention remains ([Liaukonytė and Žaldokas 2022](https://doi.org/10.1287/mnsc.2021.4003)).
+- **Proxies and logged data.** A surrogate index recovers a long-run effect when the treatment acts only through
+  the proxies ([Athey et al. 2026](https://doi.org/10.3386/w26463)); here the visit-based index was 42% of the
+  directly measured effect on conversions ([03d](03_planning_a_test/03d_surrogate_outcome)). The doubly robust estimator is accurate when either the
+  outcome model or the model of the logging policy is good ([Dudík, Langford, and Li 2011](https://arxiv.org/abs/1103.4601));
+  in study [02e](02_without_an_experiment/02e_off_policy_evaluation) its mean stayed within 6% of the benchmark where inverse weighting with the same estimated
+  propensity lost most of the lift.
 - **Where the field is going.** Calibrated on 2,226 experiment–conversion-event pairs from 839 experiments,
   campaign-level measures that include last-click counts explain 88% of the variation in incremental conversions per dollar, against 19% for last-click attribution
   alone ([Gordon, Moakler, and Zettelmeyer 2026](https://www.nber.org/papers/w35044)). Attribution becomes informative once it is calibrated
@@ -192,10 +247,13 @@ results, limits and the commands to reproduce it.
 | [`02b_multi_touch_attribution`](02_without_an_experiment/02b_multi_touch_attribution) | When a user sees several ads before converting, how much does the credit rule change which touch gets credit? | Criteo attribution log |
 | [`02c_marketing_mix_modeling`](02_without_an_experiment/02c_marketing_mix_modeling) | Can a marketing mix model recover each channel's return from a brand's own spend and revenue, and can one tell in advance when it will? | Conjura e-commerce brands |
 | [`02d_attribution_and_bidding`](02_without_an_experiment/02d_attribution_and_bidding) | If a bidder values impressions by expected credit, does the attribution rule change what it buys? | Criteo attribution log |
+| [`02e_off_policy_evaluation`](02_without_an_experiment/02e_off_policy_evaluation) | What is a targeting policy worth before it has run? | Criteo experiment |
+| [`02f_delayed_conversions`](02_without_an_experiment/02f_delayed_conversions) | Can a conversion model trained before its labels arrive be corrected for the delay? | Criteo attribution log |
 | **3. Planning a test** ([folder](03_planning_a_test)) | | |
 | [`03a_lift_study_sizing`](03_planning_a_test/03a_lift_study_sizing) | How many users per arm does a lift study need, and how much does covariate adjustment save? | Criteo experiment |
 | [`03b_geo_experiment_design`](03_planning_a_test/03b_geo_experiment_design) | If a change can only be randomized by market, how large a test is needed, and does the usual t-test keep its 5% false-positive rate? | Zillow metro series |
 | [`03c_hierarchical_forecasting`](03_planning_a_test/03c_hierarchical_forecasting) | Can the baseline of a metric be forecast at national, state and metro levels so that the levels add up, without losing accuracy? | Zillow metro series |
+| [`03d_surrogate_outcome`](03_planning_a_test/03d_surrogate_outcome) | Can the effect on visits stand in for the effect on conversions? | Criteo experiment |
 | **4. Customer metrics** | | |
 | [`04_customer_metrics_retention`](04_customer_metrics_retention) | Does the "new customer" metric count returning buyers as new, and which high-value customers are least likely to return? | UCI Online Retail II |
 
@@ -206,6 +264,10 @@ results, limits and the commands to reproduce it.
 | Randomized experiment readout: effect of assignment, effect per exposed user | 01a, 01c |
 | Regression and covariate adjustment (ANCOVA, model prediction as covariate) | 01a, 03a, 03b |
 | Uplift models (T-, X- and DR-learner, causal forest) and targeting curves | 01a |
+| Surrogate index for a rare outcome; bias against variance by test size | 03d |
+| Off-policy evaluation (inverse propensity, self-normalized and doubly robust estimators) on logs built from an experiment | 02e |
+| Delayed-feedback conversion models and a GRU over user histories (PyTorch) | 02f |
+| Spark SQL: the readout queries rerun on Spark and checked cell by cell against DuckDB | 01c |
 | Bayesian multilevel models (NUTS) | 01b, 01d, 02c |
 | Differential privacy (Laplace mechanism on counts) | 01d |
 | SQL metric definitions, data checks and reconciliation (DuckDB) | 01c, 04 |
@@ -224,16 +286,16 @@ follow-ups. Results that did not support the more complex method are reported al
 
 ## Data sources and terms
 
-Data are not included in this repository. The randomized experiment used in studies 01a to 01d, 02a and 03a was designed,
-run and released by Criteo. Studies 02b and 02d use Criteo's attribution dataset, studies 03b and 03c public Zillow
+Data are not included in this repository. The randomized experiment used in studies 01a to 01d, 02a, 02e, 03a and 03d was
+designed, run and released by Criteo. Studies 02b, 02d and 02f use Criteo's attribution dataset, studies 03b and 03c public Zillow
 Research files, study 04 the UCI Online Retail II data, and study 02c a public marketing mix dataset released by Conjura.
 
 | Data | Used in | Terms |
 |---|---|---|
-| Criteo Uplift Prediction Dataset v2.1 ([Diemert et al. 2018](https://ailab.criteo.com/criteo-uplift-prediction-dataset/), AdKDD) | 01a, 01b, 01c, 01d, 02a, 03a | CC BY-NC-SA 4.0 (research, non-commercial use). The data pool several tests with non-uniform subsampling, so absolute lifts are not population effects. |
+| Criteo Uplift Prediction Dataset v2.1 ([Diemert et al. 2018](https://ailab.criteo.com/criteo-uplift-prediction-dataset/), AdKDD) | 01a, 01b, 01c, 01d, 02a, 02e, 03a, 03d | CC BY-NC-SA 4.0 (research, non-commercial use). The data pool several tests with non-uniform subsampling, so absolute lifts are not population effects. |
 | Zillow Research, metro newly pending listings (03b), for-sale inventory and new listings (03c) | 03b, 03c | Data Provided by Zillow Group. Only derived simulation results and aggregate error tables are stored here. |
 | UCI Machine Learning Repository, Online Retail II (id 502) | 04 | CC BY 4.0. |
-| Criteo Attribution Modeling for Bidding Dataset ([Diemert et al. 2017](https://doi.org/10.1145/3124749.3124752), AdKDD) | 02b, 02d | CC BY-NC-SA 4.0. The derived results in the `out/` folders of studies 02b and 02d are shared under the same license. |
+| Criteo Attribution Modeling for Bidding Dataset ([Diemert et al. 2017](https://doi.org/10.1145/3124749.3124752), AdKDD) | 02b, 02d, 02f | CC BY-NC-SA 4.0. The derived results in the `out/` folders of studies 02b, 02d and 02f are shared under the same license. |
 | Conjura, Multi-Region Marketing Mix Modelling (MMM) Dataset for Several eCommerce Brands, deposited by Anthony Anderson (Figshare 25314841) | 02c | CC BY 4.0. |
 
 **Use.** This is a non-commercial research project. The data and all derived outputs in this repository are used
@@ -253,13 +315,16 @@ One folder per question, with the studies inside it:
 ├── 02a_attribution_metric_validation/
 ├── 02b_multi_touch_attribution/
 ├── 02c_marketing_mix_modeling/
-└── 02d_attribution_and_bidding/
+├── 02d_attribution_and_bidding/
+├── 02e_off_policy_evaluation/
+└── 02f_delayed_conversions/
 03_planning_a_test/
 ├── 03a_lift_study_sizing/
 ├── 03b_geo_experiment_design/
-└── 03c_hierarchical_forecasting/
+├── 03c_hierarchical_forecasting/
+└── 03d_surrogate_outcome/
 04_customer_metrics_retention/     one study
-figures/                           Figures 1 to 6, and the scripts and shared style that draw every figure
+figures/                           Figures 1 to 6, 3b and 5b, and the scripts and shared style that draw every figure
 docs/                              interactive figures (GitHub Pages); build_data.py reads every number from the result files
 ```
 
@@ -286,6 +351,8 @@ pip install -r requirements.txt
 
 Tested with Python 3.13 on macOS. Studies 01a and 02a load the full Criteo file and need about 16 GB of memory.
 Studies 01b, 01d and 02c also need NumPyro and JAX: `pip install -r 02_without_an_experiment/02c_marketing_mix_modeling/requirements-mmm.txt`.
+Study 02f uses PyTorch (in `requirements.txt`; the Apple MPS backend is used when present). The Spark check of 01c needs
+PySpark and a Java runtime: `pip install -r 01_with_an_experiment/01c_sql_metric_readout/spark/requirements-spark.txt`.
 
 ## Tests
 
@@ -299,13 +366,16 @@ for a predictive covariate lowers the variance of a readout by the expected amou
 recover known parameters, that the published SQL agrees with an independent pandas implementation and that its data
 checks catch planted errors, that each attribution rule gives a conversion exactly one unit of credit, that no
 bid-time feature uses anything that happens at or after the impression, that the privacy noise has the stated scale,
-that reconciled forecasts add up across levels and use no data from after the forecast origin, and that the adstock
-and saturation transforms behave as specified. They run on every push (see the badge above).
+that reconciled forecasts add up across levels and use no data from after the forecast origin, that the adstock
+and saturation transforms behave as specified, that a surrogate index recovers an effect carried by the proxy and
+understates one that is not, that logs built from an experiment have the intended propensity and that inverse
+weighting and doubly robust estimates recover a known policy value on them, and that a delayed-feedback model removes
+the under-prediction that labels still to arrive cause. They run on every push (see the badge above).
 
 ## License
 
 Code is released under the MIT License (see `LICENSE`). The datasets keep their own terms, listed above; the derived
-results of studies 02b and 02d follow CC BY-NC-SA 4.0.
+results of studies 02b, 02d and 02f follow CC BY-NC-SA 4.0.
 
 ## Notes
 

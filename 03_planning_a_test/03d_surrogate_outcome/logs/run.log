@@ -1,0 +1,6 @@
+Mon Nov 23 22:28:49 CST 2026
+[     3s] loaded 13,979,592 rows
+[    17s] surrogate models fitted
+[   119s] bootstrap done
+[   133s] test-size check done
+[   217s] {"decision": {"rule": "90% interval of (surrogate index - direct) / direct inside [-0.20, 0.20]", "met": false}} crossover 8863.674917126107

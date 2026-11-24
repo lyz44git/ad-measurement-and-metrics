@@ -554,6 +554,7 @@ document.querySelectorAll("[data-count]").forEach(n => { const [v, d] = heroVals
 
 /* ================= study pages ================= */
 const S1 = D.s01, S2 = D.s02, S3 = D.s03, S4 = D.s04;
+const S3d = D.s03d, S2f = D.s02f, S2e = D.s02e; // studies added to parts 3 and 2
 function makeSeg(host, items, init, fn) {
   host.innerHTML = ""; host.classList.add("seg");
   items.forEach(([v, l]) => { const b = document.createElement("button"); b.type = "button"; b.dataset.v = v; b.textContent = l; host.appendChild(b); });
@@ -565,15 +566,17 @@ const pp = (v, d = 2) => (v > 0 ? "+" : "") + v.toFixed(d);
 function dotRows(host, opt) {
   const st = { rows: opt.rows, dom: opt.dom, ticks: opt.ticks || [], refs: opt.refs || [] };
   function draw() {
-    const w = W(host), L = Math.min(opt.label || 170, w * .44), R = w - (opt.right || 52), rh = opt.rh || 40, top = 8, h = top + st.rows.length * rh + 34, svg = svgIn(host, w, h);
+    const w = W(host), L = Math.min(opt.label || 170, w * .44), R = w - (opt.right || 52), rh = opt.rh || 40, top = opt.top || 8, h = top + st.rows.length * rh + 34, svg = svgIn(host, w, h);
     const x = lin(st.dom[0], st.dom[1], L, R), g = el("g", {}, svg);
     thinTicks(st.ticks.map(t => { el("line", { x1: x(t), x2: x(t), y1: top, y2: h - 30, class: t === 0 ? "axis" : "gridl" }, g); return txt(g, x(t), h - 12, opt.fmtT ? opt.fmtT(t) : t, { "text-anchor": "middle", class: "t-muted", "font-size": 11 }); }));
     if (opt.band) el("rect", { x: x(opt.band[0]), y: top, width: x(opt.band[1]) - x(opt.band[0]), height: h - 30 - top, class: "f-pale", opacity: .55 }, g);
+    // a label over the shaded band (the experiment's interval, or a pre-specified range)
+    if (opt.band && opt.bandLabel) txt(g, x((opt.band[0] + opt.band[1]) / 2), top - 6, opt.bandLabel[0], { "text-anchor": "middle", class: (opt.bandLabel[1] || "t-muted") + " halo", "font-size": 11 });
     st.refs.forEach(rf => { el("line", { x1: x(rf.v), x2: x(rf.v), y1: top - 2, y2: h - 30, class: rf.cls || "s-orange", "stroke-width": 1.5, "stroke-dasharray": "5 4" }, g);
       if (rf.label) txt(g, x(rf.v) + 5, top + 10, rf.label, { class: (rf.tcls || "t-orange") + " halo", "font-size": 11 }); });
     st.items = st.rows.map((r, i) => {
       const y = top + i * rh + rh / 2, gg = el("g", { class: "hot" }, svg);
-      txt(gg, 0, y + 4, r.label, { class: r.strong ? "t-strong" : "t-ink", "font-size": 12.5 });
+      txt(gg, 0, y + 4, (w < 520 && r.short) || r.label, { class: r.strong ? "t-strong" : "t-ink", "font-size": 12.5 });
       const ln = el("line", { x1: x(r.lo), x2: x(r.hi), y1: y, y2: y, class: r.scls || "s-navy", "stroke-width": 2.4, "stroke-linecap": "round" }, gg);
       const c = el("circle", { cx: x(r.v), cy: y, r: 6.5, class: (r.fcls || "f-navy") + " s-card", "stroke-width": 2 }, gg);
       const t = txt(gg, x(r.hi) + 8, y + 4, r.text, { class: "t-strong", "font-size": 12.5 });
@@ -583,6 +586,14 @@ function dotRows(host, opt) {
     st.x = x;
   }
   draw(); redrawers.push(draw);
+  // optional entrance: the intervals and dots slide in from the left of the axis when the chart scrolls into view
+  if (opt.intro && !reduce) {
+    const its = st.items, x0 = st.x(st.dom[0]);
+    const to = its.map(it => ({ x1: +it.ln.getAttribute("x1"), x2: +it.ln.getAttribute("x2"), cx: +it.c.getAttribute("cx"), tx: +it.t.getAttribute("x") }));
+    its.forEach(it => { it.ln.setAttribute("x1", x0); it.ln.setAttribute("x2", x0); it.c.setAttribute("cx", x0); it.t.setAttribute("x", x0 + 10); it.t.setAttribute("opacity", 0); });
+    whenVisible(host, () => its.forEach((it, i) => setTimeout(() => { if (st.items !== its) return;
+      animate([[it.ln, { x1: to[i].x1, x2: to[i].x2 }], [it.c, { cx: to[i].cx }], [it.t, { x: to[i].tx, opacity: 1 }]], 900); }, 200 + 110 * i)));
+  }
   return { update(rows, dom, ticks, refs, dur = 700) {
     const old = st.items && st.items.length === rows.length ? st.items.map(it => ({ x1: +it.ln.getAttribute("x1"), x2: +it.ln.getAttribute("x2"), cx: +it.c.getAttribute("cx"), tx: +it.t.getAttribute("x") })) : null;
     st.rows = rows; st.dom = dom; if (ticks) st.ticks = ticks; if (refs) st.refs = refs; draw();
@@ -1006,6 +1017,137 @@ if (has("c-04-cal")) (function () {
       txt(svg, x(v[v.length - 1][0]) - 8, y(v[v.length - 1][1]) + (c === "navy" ? 16 : -10), n, { "text-anchor": "end", class: (c === "navy" ? "t-navy" : "t-muted") + " halo", "font-size": 11.5 }); });
     txt(svg, (L + R) / 2, B + 34, w < 480 ? "Mean predicted sales, by decile" : "Mean predicted next-six-month sales, by decile of the prediction", { "text-anchor": "middle", class: "t-muted", "font-size": 11 }); }
   draw(); redrawers.push(draw);
+})();
+
+/* ---------- 03d ---------- */
+/* Studies 03d, 02f and 02e use the colors of the other charts: navy for the result the study stands behind, grey for the simple baseline,
+   blue for other methods, orange for the number that misleads or the line it is checked against. */
+const kv = (k, v, color, small = "") => `<div><div class="k">${k}</div><div class="v" style="color:var(--${color})">${v}${small ? ` <small>${small}</small>` : ""}</div></div>`;
+if (has("c-03d-est") && S3d) (function () {
+  const A = S3d, ro = has("ro-03d-est"), fill = { direct: "navy", fixed: "grey", surrogate: "orange", both: "blue" };
+  const short = { direct: "Direct", fixed: "Visits × fixed rate", surrogate: "Surrogate index", both: "Surrogate, both arms" };
+  const rows = k => A.rows[k].map(r => ({ label: r.label, short: short[r.key], v: r.v, lo: r.lo, hi: r.hi, strong: r.key === "direct" || r.key === "surrogate",
+    text: r.key === "direct" ? `${r.v.toFixed(3)} pp` : `${r.v.toFixed(3)} pp · ${Math.round(100 * r.share)}%`, fcls: "f-" + fill[r.key], scls: "s-" + fill[r.key],
+    tip: `${r.label}: ${r.v.toFixed(3)} pp (95% interval ${r.lo.toFixed(3)} to ${r.hi.toFixed(3)})` + (r.key === "direct" ? "" : `<br>${Math.round(100 * r.share)}% of the direct estimate`) }));
+  const band = k => { const d = A.rows[k][0]; return [d.lo, d.hi]; };
+  const note = k => { const d = A.rows[k][0], sr = A.rows[k].find(r => r.key === "surrogate");
+    ro.innerHTML = kv("Direct, from the experiment", d.v.toFixed(3), "navy", "pp") + kv("Surrogate index, from visits", sr.v.toFixed(3), "orange", "pp") + kv("Share of the direct estimate", Math.round(100 * sr.share) + "%", "orange"); };
+  let k = "unadjusted";
+  const o = { rows: rows(k), dom: [0, 0.16], ticks: [0, .04, .08, .12, .16], label: 200, rh: 42, top: 22, fmtT: v => v.toFixed(2), band: band(k), bandLabel: ["direct, 95% CI"], intro: true };
+  const chart = dotRows(has("c-03d-est"), o);
+  makeSeg(has("seg-03d-est"), [["unadjusted", "Unadjusted"], ["adjusted", "Adjusted for the features"]], k, v => { k = v; o.band = band(v); chart.update(rows(v), [0, 0.16]); note(v); }); note(k);
+})();
+if (has("c-03d-size") && S3d) (function () {
+  const host = has("c-03d-size"), Z = S3d.size; let played = false;
+  function draw(anim) {
+    const w = W(host), h = 260, L = 52, R = w - 14, T = 14, B = h - 44, svg = svgIn(host, w, h), x = lg(1e3, 1e7, L, R), y = lin(0, 0.24, B, T);
+    [0, .05, .1, .15, .2].forEach(v => { el("line", { x1: L, x2: R, y1: y(v), y2: y(v), class: "gridl" }, svg); txt(svg, L - 8, y(v) + 4, v.toFixed(2), { "text-anchor": "end", class: "t-muted", "font-size": 11 }); });
+    [[1e3, "1k"], [1e4, "10k"], [1e5, "100k"], [1e6, "1M"], [1e7, "10M"]].forEach(([v, l]) => txt(svg, x(v), B + 18, l, { "text-anchor": "middle", class: "t-muted", "font-size": 11 }));
+    txt(svg, (L + R) / 2, B + 36, "Users per arm", { "text-anchor": "middle", class: "t-muted", "font-size": 11 });
+    el("line", { x1: x(Z.cross), x2: x(Z.cross), y1: T, y2: B, class: "s-grey", "stroke-dasharray": "4 4" }, svg);
+    txt(svg, x(Z.cross) + 6, T + 12, `errors equal at about ${fmt(Math.round(Z.cross / 100) * 100)} per arm`, { class: "t-muted halo", "font-size": 11 });
+    const late = [];
+    [["direct", "navy", "Direct"], ["surr", "orange", "Surrogate index"]].forEach(([k, c, n]) => {
+      const p = el("path", { d: "M" + Z.n.map((v, i) => [x(v), y(Z[k][i])].join(",")).join("L"), fill: "none", class: "s-" + c, "stroke-width": 2.4 }, svg);
+      Z.pts.forEach(pt => { const cc = el("circle", { cx: x(pt.n), cy: y(pt[k]), r: 4.5, class: `f-${c} s-card`, "stroke-width": 1.5 }, svg); late.push(cc);
+        hoverTip(cc, `${n}, ${fmt(pt.n)} users per arm<br>error over 500 resampled tests: ${pt[k].toFixed(3)} pp`); });
+      const last = Z.n.length - 6; late.push(txt(svg, x(Z.n[last]), y(Z[k][last]) - 8, n, { "text-anchor": "end", class: `t-${c} halo`, "font-size": 11.5 }));
+      if (anim && !reduce) { const len = p.getTotalLength(); p.style.strokeDasharray = len; p.style.strokeDashoffset = len; p.dataset.len = len; }
+    });
+    if (anim && !reduce) { late.forEach(e => e.setAttribute("opacity", 0));
+      whenVisible(host, () => { played = true; svg.querySelectorAll("path[data-len]").forEach(p => tween(1100, t => p.style.strokeDashoffset = p.dataset.len * (1 - t)));
+        setTimeout(() => animate(late.map(e => [e, { opacity: 1 }]), 500), 900); }); }
+  }
+  draw(true); redrawers.push(() => draw(false));
+})();
+/* ---------- 02f ---------- */
+if (has("c-02f-cal") && S2f) (function () {
+  const Bd = S2f, ro = has("ro-02f-cal"), cls = { naive_lightgbm: ["grey", "grey"], naive_network: ["grey", "grey"], delay_network: ["navy", "navy"], weibull_network: ["blue", "blue"], delay_sequence_network: ["light", "blue"], oracle_lightgbm: ["orange", "orange"] };
+  const short = { naive_lightgbm: "LightGBM, seen", naive_network: "Network, seen", delay_network: "Delay, exponential", weibull_network: "Delay, Weibull",
+    delay_sequence_network: "Delay + GRU", oracle_lightgbm: "30-day (reference)" };
+  const rows = T => Bd.cut[T].rows.map(r => ({ label: r.key === "oracle_lightgbm" ? "LightGBM, 30-day labels (reference)" : r.label, short: short[r.key], v: r.v, lo: r.lo, hi: r.hi, text: r.v.toFixed(3),
+    strong: r.key === "delay_network" || r.key === "weibull_network", fcls: "f-" + cls[r.key][0], scls: "s-" + cls[r.key][1],
+    tip: `${r.label}: predicted / actual ${r.v.toFixed(3)} (95% interval ${r.lo.toFixed(3)} to ${r.hi.toFixed(3)})` }));
+  const note = T => { const c = Bd.cut[T], d = c.rows.find(r => r.key === "delay_network").v;
+    ro.innerHTML = kv("Delayed feedback, exponential", d.toFixed(3), "navy", "predicted / actual") + kv(d < 1 ? "Too few" : "Too many", Math.abs(100 * (1 - d)).toFixed(0) + "%", "navy")
+      + kv(`Arrive after day ${T}`, (100 * c.beyond).toFixed(0) + "%", "orange", "of 30-day conversions"); };
+  let T = "14";
+  const chart = dotRows(has("c-02f-cal"), { rows: rows(T), dom: [0.5, 1.2], ticks: [0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2], label: 250, rh: 38, top: 22,
+    band: [0.9, 1.1], bandLabel: ["pre-specified 0.90 to 1.10", "t-orange"], refs: [{ v: 1, cls: "s-grey", label: "" }], intro: true });
+  makeSeg(has("seg-02f-cal"), Object.keys(Bd.cut).map(t => [t, "Retrained on day " + t]), T, v => { T = v; chart.update(rows(v), [0.5, 1.2]); note(v); }); note(T);
+})();
+if (has("c-02f-tail") && S2f) (function () {
+  // why day 14 falls short: the share of conversions that arrive after the cutoff against the delay model's shortfall
+  const host = has("c-02f-tail"), Bd = S2f, Ts = Object.keys(Bd.cut);
+  const data = Ts.map(T => ({ T, beyond: 100 * Bd.cut[T].beyond, short: 100 * (1 - Bd.cut[T].rows.find(r => r.key === "delay_network").v) }));
+  function draw(anim) {
+    const w = W(host), L = w < 520 ? 60 : 150, R = w - 46, rh = 64, T0 = 8, h = T0 + Ts.length * rh + 34, svg = svgIn(host, w, h), x = lin(-5, 25, L, R);
+    (w < 520 ? [0, 10, 20] : [-5, 0, 5, 10, 15, 20, 25]).forEach(v => { el("line", { x1: x(v), x2: x(v), y1: T0, y2: h - 30, class: v === 0 ? "axis" : "gridl" }, svg); txt(svg, x(v), h - 12, v + "%", { "text-anchor": "middle", class: "t-muted", "font-size": 11 }); });
+    const bars = [];
+    data.forEach((d, i) => {
+      const y = T0 + i * rh, g = el("g", { class: "hot" }, svg);
+      txt(g, 0, y + rh / 2 + 4, w < 520 ? `Day ${d.T}` : `Retrained on day ${d.T}`, { class: "t-strong", "font-size": 12.5 });
+      [["beyond", "orange", 14], ["short", "navy", 36]].forEach(([k, c, dy]) => {
+        const v = d[k], x0 = x(Math.min(0, v)), wd = Math.abs(x(v) - x(0));
+        const r = el("rect", { x: anim && !reduce ? x(0) : x0, y: y + dy - 8, width: anim && !reduce ? 0 : wd, height: 16, rx: 4, class: "f-" + c }, g);
+        const t = txt(g, Math.max(x(v), x(0)) + 6, y + dy + 4, `${v >= 0 ? "" : "−"}${Math.abs(v).toFixed(0)}%`, { class: `t-${c}`, "font-size": 11.5 });
+        bars.push([r, { x: x0, width: wd }, t]);
+      });
+      hoverTip(g, `Retrained on day ${d.T}<br>${d.beyond.toFixed(1)}% of 30-day conversions arrive more than ${d.T} days after the impression<br>Delay model: ${d.short >= 0 ? d.short.toFixed(1) + "% too few" : (-d.short).toFixed(1) + "% too many"}`);
+    });
+    if (anim && !reduce) { bars.forEach(b => b[2].setAttribute("opacity", 0));
+      whenVisible(host, () => bars.forEach((b, i) => setTimeout(() => animate([[b[0], b[1]], [b[2], { opacity: 1 }]], 800), 150 * i))); }
+  }
+  draw(true); redrawers.push(() => draw(false));
+})();
+/* ---------- 02e ---------- */
+if (has("c-02e") && S2e) (function () {
+  const C = S2e, ro = has("ro-02e"), color = { naive: "orange", dm: "blue", ips_known: "navy", ips_estimated: "blue", snips: "blue", dr: "navy", dr_known: "blue" };
+  let st = "moderate", pol = "response_20", zoom = true;
+  const dom = () => { const all = C.est[st][pol].filter(r => !zoom || r.key !== "naive").flatMap(r => [r.p02, r.p98]).concat([C.truth[pol].v]); return [Math.min(0, Math.min(...all)), Math.max(...all) * 1.08]; };
+  const rows = d => C.est[st][pol].map(r => { const off = zoom && r.key === "naive";
+    return { label: r.label, short: { naive: "Naive", dm: "Direct method", ips_known: "IPS, logged", ips_estimated: "IPS, estimated", snips: "SNIPS, estimated",
+      dr_known: "DR, logged", dr: "DR, estimated" }[r.key], v: off ? d[1] : r.mean, lo: off ? d[1] : r.p02, hi: off ? d[1] : r.p98, strong: r.key === "ips_known" || r.key === "dr",
+      text: off ? `${r.mean.toFixed(1)} →` : `${r.mean.toFixed(1)}` + (r.cov == null ? "" : ` · ${Math.round(100 * r.cov)}%`), fcls: "f-" + color[r.key], scls: "s-" + color[r.key],
+      tip: `${r.label}<br>mean over 200 logs ${r.mean.toFixed(2)} (benchmark ${C.truth[pol].v.toFixed(2)})<br>middle 95% of logs ${r.p02.toFixed(2)} to ${r.p98.toFixed(2)}<br>one log is off by ${Math.round(100 * r.mae)}% of the benchmark on average` + (r.cov == null ? "" : `<br>95% intervals cover the benchmark in ${Math.round(100 * r.cov)}% of logs`) + (off ? "<br>off the scale; show it to scale above" : "") }; });
+  const band = () => [C.truth[pol].v - 1.96 * C.truth[pol].se, C.truth[pol].v + 1.96 * C.truth[pol].se];
+  const ticks = d => { const step = d[1] > 40 ? 20 : d[1] > 16 ? 5 : 2; const t = []; for (let v = 0; v <= d[1]; v += step) t.push(v); return t; };
+  let d = dom();
+  const o = { rows: rows(d), dom: d, ticks: ticks(d), label: 220, rh: 36, top: 22, band: band(), bandLabel: ["benchmark"], intro: true };
+  const chart = dotRows(has("c-02e"), o);
+  const redo = () => { d = dom(); o.band = band(); chart.update(rows(d), d, ticks(d));
+    const by = k => C.est[st][pol].find(r => r.key === k);
+    ro.innerHTML = kv("Benchmark from the experiment", C.truth[pol].v.toFixed(2), "navy", "extra visits per 1,000") + kv("IPS, logged propensity: mean", by("ips_known").mean.toFixed(2), "navy", `one log off by ${Math.round(100 * by("ips_known").mae)}%`)
+      + kv("DR, estimated propensity: mean", by("dr").mean.toFixed(2), "navy", `one log off by ${Math.round(100 * by("dr").mae)}%`) + kv("Unweighted comparison", by("naive").mean.toFixed(1), "orange", `${(by("naive").mean / C.truth[pol].v).toFixed(1)}× the benchmark`); };
+  makeSeg(has("seg-02e-set"), [["moderate", "Moderate bias"], ["strong", "Strong bias"]], st, v => { st = v; redo(); });
+  makeSeg(has("seg-02e-pol"), Object.entries(C.policies), pol, v => { pol = v; redo(); });
+  if (has("seg-02e-zoom")) makeSeg(has("seg-02e-zoom"), [["zoom", "Zoom on the estimators"], ["all", "Unweighted comparison to scale"]], "zoom", v => { zoom = v === "zoom"; redo(); });
+  redo();
+})();
+if (has("c-02e-adj") && S2e) (function () {
+  // the experiment's value of each policy, adjusted for the features and unadjusted, drawn like the credited and caused counts of part 1
+  const host = has("c-02e-adj"), C = S2e, P = Object.keys(C.policies);
+  function draw(anim) {
+    const w = W(host), L = Math.min(120, w * .26), R = w - 64, rh = 46, T0 = 22, B = T0 + P.length * rh, h = B + 44, svg = svgIn(host, w, h), x = lin(0, 12, L, R);
+    [0, 2, 4, 6, 8, 10, 12].forEach(v => { el("line", { x1: x(v), x2: x(v), y1: T0, y2: B, class: v === 0 ? "axis" : "gridl" }, svg); txt(svg, x(v), B + 16, v, { "text-anchor": "middle", class: "t-muted", "font-size": 11 }); });
+    const go = [];
+    P.forEach((p, i) => {
+      const y = T0 + i * rh + rh / 2, a = C.truth[p].v, u = C.truth[p].u, g = el("g", { class: "hot" }, svg), s = anim && !reduce;
+      txt(g, 0, y + 4, C.policies[p], { class: "t-strong", "font-size": 12.5 });
+      const band = el("rect", { x: x(a), y: y - 7, width: s ? 0 : x(u) - x(a), height: 14, rx: 7, class: "f-osoft" }, g);
+      const dm = el("rect", { x: (s ? x(a) : x(u)) - 7, y: y - 7, width: 14, height: 14, transform: `rotate(45 ${s ? x(a) : x(u)} ${y})`, class: "f-orange s-card", "stroke-width": 2 }, g);
+      el("circle", { cx: x(a), cy: y, r: 7.5, class: "f-navy s-card", "stroke-width": 2 }, g);
+      const t = txt(g, x(u) + 12, y + 4, `+${Math.round(100 * (u / a - 1))}%`, { class: "t-orange", "font-size": 12, opacity: s ? 0 : 1 });
+      if (i === 0) { const nar = w < 520; // on a phone the two labels would touch, so "adjusted" goes left of its dot
+        txt(g, nar ? x(a) - 12 : x(a), nar ? y + 4 : y - 13, "adjusted", { "text-anchor": nar ? "end" : "middle", class: "t-navy halo", "font-size": 11 });
+        txt(g, x(u), y - 13, "unadjusted", { "text-anchor": "middle", class: "t-orange halo", "font-size": 11 }); }
+      hoverTip(g, `${C.policies[p]}<br>adjusted for the features (the benchmark of the study): ${a.toFixed(2)}<br>unadjusted: ${u.toFixed(2)} extra visits per 1,000 users`);
+      go.push(() => { animate([[band, { width: x(u) - x(a) }], [dm, { x: x(u) - 7 }], [t, { opacity: 1 }]], 900); tween(900, q => dm.setAttribute("transform", `rotate(45 ${x(a) + (x(u) - x(a)) * q} ${y})`)); });
+    });
+    txt(svg, (L + R) / 2, B + 36, "Extra visits per 1,000 users", { "text-anchor": "middle", class: "t-muted", "font-size": 11 });
+    if (anim && !reduce) whenVisible(host, () => go.forEach((f, i) => setTimeout(f, 200 + 150 * i)));
+  }
+  draw(true); redrawers.push(() => draw(false));
 })();
 /* ---------- nav and theme ---------- */
 const page = document.body.dataset.page;

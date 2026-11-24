@@ -123,7 +123,37 @@ the variance of the reconciled errors, given the covariance of the base forecast
 estimated covariance, its gain in study [03c](03_planning_a_test/03c_hierarchical_forecasting) held with one base model and not with another, and bottom-up
 reconciliation was the safe default.
 
-## 9. Where the field is going
+## 9. Proxy outcomes, delayed labels and logged policies
+
+[Athey, Chetty, Imbens, and Kang (2026)](https://doi.org/10.3386/w26463) combine short-run outcomes into a surrogate
+index that predicts the long-run outcome, and show on a job-training experiment that six quarters of employment
+data would have given the long-run effect with 35% smaller standard errors. The index is valid when the treatment
+affects the long-run outcome only through the surrogates. Study [03d](03_planning_a_test/03d_surrogate_outcome)
+is a case where the index falls short and the experiment shows it: the visit-based index is 42% of the directly
+measured effect on conversions. The study does not identify by which path the ads raised conversions.
+
+[Chapelle (2014)](https://doi.org/10.1145/2623330.2623634) models the delay between a display-ad click and the
+conversion as exponential and fits it jointly with the conversion probability, so that recent clicks whose
+conversions have not arrived are not counted as failures. Study [02f](02_without_an_experiment/02f_delayed_conversions)
+fits the same likelihood in PyTorch on Criteo's attribution log, at the impression rather than the click level.
+It removes most of the under-prediction after three or four weeks of data but not after two.
+[Yoshikawa and Imai (2018)](https://arxiv.org/abs/1802.00255) replace the exponential delay with a non-parametric
+one and report better predictions on Criteo data. In study 02f's two-week window, any delay model still has to assume
+the delays that are longer than the window.
+
+[Dudík, Langford, and Li (2011)](https://arxiv.org/abs/1103.4601) show that the doubly robust estimator of a policy's
+value is accurate when either the model of rewards or the model of the logging policy is good.
+[Gentzel, Pruthi, and Jensen (2021)](https://proceedings.mlr.press/v139/gentzel21a.html) build observational data
+sets with an experimental benchmark by sampling from randomized experiments, the construction of study
+[02e](02_without_an_experiment/02e_off_policy_evaluation). There, with the logging propensity recorded, the mean of
+inverse propensity weighting over 200 logs is within 3% of the benchmark for four targeting policies; with it
+estimated, the mean of the doubly robust estimator stays within 6% and inverse weighting loses most of a lift that is
+small next to the visit rate. A single log of about 108,000 rows is off by 22% to 53% on average. The
+practical counterpart is to record the probability of each decision when it is made. The same study shows a
+condition of the construction that is easy to miss: the experiment's assignment share must be known for every
+row, and in a pooled release it may vary with the features.
+
+## 10. Where the field is going
 
 [Gordon, Moakler, and Zettelmeyer (2026)](https://www.nber.org/papers/w35044) use 2,226 experiment–conversion-event pairs from 839 experiments at Meta to predict the incremental effect of
 campaigns that have no experiment, from campaign-level measures that include last-click conversion counts. Their
@@ -134,16 +164,20 @@ version of that calibration.
 
 ## References
 
+- Athey, Susan, Raj Chetty, Guido W. Imbens, and Hyunseung Kang. 2026. "The Surrogate Index: Combining Short-Term Proxies to Estimate Long-Term Treatment Effects More Rapidly and Precisely." *Review of Economic Studies* 93 (4): 2284–2312. Working paper version: https://doi.org/10.3386/w26463.
 - Blake, Thomas, Chris Nosko, and Steven Tadelis. 2015. "Consumer Heterogeneity and Paid Search Effectiveness: A Large-Scale Field Experiment." *Econometrica* 83 (1): 155–74. https://doi.org/10.3982/ECTA12423.
 - Chan, David, and Mike Perry. 2017. "Challenges and Opportunities in Media Mix Modeling." Technical report. Google. https://research.google/pubs/challenges-and-opportunities-in-media-mix-modeling/.
+- Chapelle, Olivier. 2014. "Modeling Delayed Feedback in Display Advertising." In *Proceedings of the 20th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining*, 1097–1105. New York: ACM. https://doi.org/10.1145/2623330.2623634.
 - Deng, Alex, Ya Xu, Ron Kohavi, and Toby Walker. 2013. "Improving the Sensitivity of Online Controlled Experiments by Utilizing Pre-experiment Data." In *Proceedings of the Sixth ACM International Conference on Web Search and Data Mining*, 123–32. New York: ACM. https://doi.org/10.1145/2433396.2433413.
 - Diemert, Eustache, Artem Betlei, Christophe Renaudin, and Massih-Reza Amini. 2018. "A Large Scale Benchmark for Uplift Modeling." Paper presented at the AdKDD and TargetAd Workshop, KDD 2018, London, August 20. https://ailab.criteo.com/criteo-uplift-prediction-dataset/.
 - Diemert, Eustache, Julien Meynet, Pierre Galland, and Damien Lefortier. 2017. "Attribution Modeling Increases Efficiency of Bidding in Display Advertising." In *Proceedings of the ADKDD’17*, 1–6. New York: ACM. https://doi.org/10.1145/3124749.3124752.
+- Dudík, Miroslav, John Langford, and Lihong Li. 2011. "Doubly Robust Policy Evaluation and Learning." In *Proceedings of the 28th International Conference on Machine Learning*, 1097–1104. https://arxiv.org/abs/1103.4601.
 - Dwork, Cynthia, Frank McSherry, Kobbi Nissim, and Adam Smith. 2006. "Calibrating Noise to Sensitivity in Private Data Analysis." In *Theory of Cryptography: Third Theory of Cryptography Conference, TCC 2006*, edited by Shai Halevi and Tal Rabin, 265–84. Lecture Notes in Computer Science 3876. Berlin: Springer. https://doi.org/10.1007/11681878_14.
 - Fader, Peter S., Bruce G. S. Hardie, and Ka Lok Lee. 2005. "‘Counting Your Customers’ the Easy Way: An Alternative to the Pareto/NBD Model." *Marketing Science* 24 (2): 275–84. https://doi.org/10.1287/mksc.1040.0098.
 - Feit, Elea McDonnell, and Ron Berman. 2019. "Test & Roll: Profit-Maximizing A/B Tests." *Marketing Science* 38 (6): 1038–58. https://doi.org/10.1287/mksc.2019.1194.
 - Fernández-Loría, Carlos, and Foster Provost. 2022. "Causal Classification: Treatment Effect Estimation vs. Outcome Prediction." *Journal of Machine Learning Research* 23 (59): 1–35. https://jmlr.org/papers/v23/19-480.html.
 - Focke, Florens, Stefan Ruenzi, and Michael Ungeheuer. 2020. "Advertising, Attention, and Financial Markets." *Review of Financial Studies* 33 (10): 4676–4720. https://doi.org/10.1093/rfs/hhz142.
+- Gentzel, Amanda M., Purva Pruthi, and David Jensen. 2021. "How and Why to Use Experimental Data to Evaluate Methods for Observational Causal Inference." In *Proceedings of the 38th International Conference on Machine Learning*, PMLR 139: 3660–71. https://proceedings.mlr.press/v139/gentzel21a.html.
 - Gordon, Brett R., Robert Moakler, and Florian Zettelmeyer. 2023. "Close Enough? A Large-Scale Exploration of Non-experimental Approaches to Advertising Measurement." *Marketing Science* 42 (4): 768–93. https://doi.org/10.1287/mksc.2022.1413.
 - Gordon, Brett R., Robert Moakler, and Florian Zettelmeyer. 2026. "Predicted Incrementality by Experimentation (PIE) for Ad Measurement." NBER Working Paper 35044. Cambridge, MA: National Bureau of Economic Research. https://www.nber.org/papers/w35044.
 - Gordon, Brett R., Florian Zettelmeyer, Neha Bhargava, and Dan Chapsky. 2019. "A Comparison of Approaches to Advertising Measurement: Evidence from Big Field Experiments at Facebook." *Marketing Science* 38 (2): 193–225. https://doi.org/10.1287/mksc.2018.1135.
@@ -157,3 +191,4 @@ version of that calibration.
 - Wernerfelt, Nils, Anna Tuchman, Bradley T. Shapiro, and Robert Moakler. 2025. "Estimating the Value of Offsite Tracking Data to Advertisers: Evidence from Meta." *Marketing Science* 44 (2): 268–86. https://doi.org/10.1287/mksc.2023.0274.
 - Wickramasuriya, Shanika L., George Athanasopoulos, and Rob J. Hyndman. 2019. "Optimal Forecast Reconciliation for Hierarchical and Grouped Time Series through Trace Minimization." *Journal of the American Statistical Association* 114 (526): 804–19. https://doi.org/10.1080/01621459.2018.1448825.
 - Wübben, Markus, and Florian von Wangenheim. 2008. "Instant Customer Base Analysis: Managerial Heuristics Often ‘Get It Right.’" *Journal of Marketing* 72 (3): 82–93. https://doi.org/10.1509/jmkg.72.3.082.
+- Yoshikawa, Yuya, and Yusaku Imai. 2018. "A Nonparametric Delayed Feedback Model for Conversion Rate Prediction." arXiv preprint 1802.00255. https://arxiv.org/abs/1802.00255.

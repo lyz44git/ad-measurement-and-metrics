@@ -1,0 +1,4 @@
+Tue Nov 24 00:02:39 CST 2026
+[    93s] rebuilt: surrogate unadjusted 0.000489 vs main 0.000489
+[   628s] outcome models fitted
+[   628s] {"aipw_estimated_assignment": [0.333, [0.294, 0.372]], "aipw_constant_share": [0.314, [0.279, 0.349]]}

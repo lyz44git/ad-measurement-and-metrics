@@ -73,6 +73,13 @@
   </div>
 
   <div class="card">
+    <h3>What a targeting policy is worth, estimated from a biased log</h3>
+    <p class="sub">The same check for a decision not yet taken: 200 logs that favor likely visitors, each estimate set against a feature-adjusted benchmark from the experiment. Dots are averages over logs; one log is much less exact. Choose how strong the bias is and which policy to value.</p>
+    <div class="ctrl"><div class="seg" id="seg-02e-set"></div></div><div class="ctrl"><div class="seg" id="seg-02e-pol"></div></div><div class="ctrl"><div class="seg" id="seg-02e-zoom"></div></div><div id="c-02e"></div><div class="readout" id="ro-02e"></div>
+    <p class="src">Study <a href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/02_without_an_experiment/02e_off_policy_evaluation">02e</a>. Extra visits per 1,000 users; dots are means over 200 logs, bars the middle 95% of logs, the shaded band the benchmark with its 95% interval.</p>
+  </div>
+
+  <div class="card">
     <h3>Conversion credit by attribution rule</h3>
     <p class="sub">Each square is 1% of the credit for conversions whose path had more than one ad touch. Colors give how long before the last touch an ad was shown.</p>
     <div class="ctrl"><span class="lab">Rule</span><div class="seg" id="seg-rule"><button type="button" data-v="cr_last">Last touch</button><button type="button" data-v="cr_decay">Time decay</button><button type="button" data-v="cr_linear">Linear</button><button type="button" data-v="cr_first">First touch</button></div><button class="btn ghost" id="play-rule" type="button">▶ Cycle</button></div>
@@ -90,6 +97,13 @@
   </div>
 
   <div class="card">
+    <h3>A bidder's model is trained before its conversions arrive</h3>
+    <p class="sub">Predicted over actual conversions for models retrained before the labels arrive, scored on the next three days against 30-day labels. Choose the retraining day.</p>
+    <div class="ctrl"><div class="seg" id="seg-02f-cal"></div></div><div id="c-02f-cal"></div><div class="readout" id="ro-02f-cal"></div>
+    <p class="src">Study <a href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/02_without_an_experiment/02f_delayed_conversions">02f</a>. 16.5 million impressions of the same log; the shaded band is the pre-specified 0.90 to 1.10.</p>
+  </div>
+
+  <div class="card">
     <h3>Marketing mix models: recovery error and the signal-to-noise index</h3>
     <p class="sub">Each point is one brand and channel in a simulation with known returns. The index is computed before the marketing mix model is fitted, from the simulation's planted contribution, so it is a simulation diagnostic.</p>
     <div class="row2 v">
@@ -102,7 +116,7 @@
 </div></section>
 
 <!-- ============================== 3 ============================== -->
-<div class="wrap explore"><a href="02.html">Explore the four studies without an experiment →</a></div>
+<div class="wrap explore"><a href="02.html">Explore the six studies without an experiment →</a></div>
 <section class="part" id="tests"><div class="wrap">
   <div class="kicker">3 · Planning a test</div>
   <h2 class="serif">Measuring the effect again requires a test, and a large one for conversions.</h2>
@@ -114,6 +128,13 @@
     <div id="c-size"></div>
     <p class="note">80% power, two-sided 5% test, at this experiment's control rates (visits 3.82%, conversions 0.19%).</p>
     <p class="src">Study <a href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/01_with_an_experiment/01c_sql_metric_readout">01c</a>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Can the conversion effect be read from visits instead?</h3>
+    <p class="sub">The surrogate index converts extra visits at the rate predicted for visitors of their kind.</p>
+    <div class="ctrl"><div class="seg" id="seg-03d-est"></div></div><div id="c-03d-est"></div><div class="readout" id="ro-03d-est"></div>
+    <p class="src">Study <a href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/03_planning_a_test/03d_surrogate_outcome">03d</a>. Half of the experiment (7.0 million users); 95% intervals, the shaded band is the direct estimate's.</p>
   </div>
 
   <div class="row2">
@@ -134,7 +155,7 @@
 </div></section>
 
 <!-- ============================== 4 ============================== -->
-<div class="wrap explore"><a href="03.html">Explore the three studies on planning a test →</a></div>
+<div class="wrap explore"><a href="03.html">Explore the four studies on planning a test →</a></div>
 <section class="part" id="customers"><div class="wrap">
   <div class="kicker">4 · Customer metrics</div>
   <h2 class="serif">Customer counts require the same scrutiny.</h2>
@@ -165,7 +186,7 @@
   <p><a href="https://github.com/lyz44git/ad-measurement-and-metrics">The repository on GitHub</a></p>
 </div></footer>
 <div id="tip" role="tooltip"></div>
-<script src="data.js?v=20261118g"></script>
-<script src="assets/explorer.js?v=20261118m"></script>
+<script src="data.js?v=20261124d"></script>
+<script src="assets/explorer.js?v=20261124d"></script>
 </body>
 </html>

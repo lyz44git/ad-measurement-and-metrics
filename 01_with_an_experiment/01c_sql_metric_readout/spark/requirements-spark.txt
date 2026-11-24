@@ -1,0 +1,2 @@
+# The Spark check only; also needs a Java 17 or 21 runtime (JAVA_HOME)
+pyspark==4.3.0

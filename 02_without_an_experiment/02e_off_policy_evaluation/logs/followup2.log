@@ -1,0 +1,4 @@
+Mon Nov 23 23:08:49 CST 2026
+[    50s] setup rebuilt; thresholds identical to the main run: True
+[   300s] truth-part models fitted
+[   373s] {"all": 0.719, "random_20": 0.716, "response_20": 0.69, "uplift_20": 0.681} auc [np.float64(0.5088), np.float64(0.5088)]

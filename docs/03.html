@@ -16,7 +16,7 @@
 <header class="pagehero"><div class="wrap">
   <div class="kicker">Part 3 · Planning a test</div>
   <h1 class="serif">How large must the test be, and what is the baseline?</h1>
-  <p class="dek">Studies 03a and 03b size the next experiment, by user and by market; in both, adjusting for what is known before the test is the main way to make it smaller. Study 03c forecasts the baseline of a metric so that national, state and metro levels agree.</p>
+  <p class="dek">Studies 03a and 03b size the next experiment, by user and by market; in both, adjusting for what is known before the test is the main way to make it smaller. Study 03c forecasts the baseline of a metric so that national, state and metro levels agree. Study 03d asks whether a test can be made smaller by reading the effect on conversions from visits.</p>
 </div></header>
 
 <section class="part" id="s03a"><div class="wrap">
@@ -78,13 +78,31 @@
     <p class="src">Data Provided by Zillow Group.</p>
   </div>
 </div></section>
+<section class="part" id="s03d"><div class="wrap">
+  <div class="kicker study-k"><span class="code">03d</span></div>
+  <h2 class="serif">Can the effect on visits stand in for the effect on conversions?</h2>
+  <p class="lead">No. An estimate that converts the extra visits at the rate predicted for visitors of their kind is 42% of the directly measured effect on conversions, and a third once both are adjusted for the features; the pre-specified ±20% margin was not met. Among visitors, 6.36% converted in the ad arm against 5.03% in the control arm. Assignment can change who visits, so this describes the gap without identifying how the ads worked.</p>
+  <a class="gh" href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/03_planning_a_test/03d_surrogate_outcome">Full study on GitHub →</a>
+  <div class="card">
+    <h3>Direct and visit-based estimates of the effect on the conversion rate</h3>
+    <p class="sub">Half of the experiment (7.0 million users). The surrogate index uses a model of which visitors convert, fitted on control-arm visitors of the other half. After the dot: share of the direct estimate.</p>
+    <div class="ctrl"><div class="seg" id="seg-03d-est"></div></div><div id="c-03d-est"></div><div class="readout" id="ro-03d-est"></div>
+    <p class="note">95% intervals; the shaded band is the direct estimate's. "Adjusted" is AIPW with an assignment model, because the assignment share varies slightly with the features in this pooled release (study 02e).</p>
+  </div>
+  <div class="card">
+    <h3>Error of the two unadjusted estimates, by test size</h3>
+    <p class="sub">Root mean squared error against the direct estimate on the full half, for equal arms. Each dot summarizes 500 resampled tests at one size.</p>
+    <div id="c-03d-size"></div>
+    <p class="note">The curves use the estimated bias and variances and cross at about 8,900 users per arm, where each error is about 65% of the effect. They are for the unadjusted estimates and do not change with the switch above.</p>
+  </div>
+</div></section>
 <footer><div class="wrap">
   <div class="pager"><a href="02.html"><small>Previous</small>2 · Without an experiment</a><a class="next" href="04.html"><small>Next</small>4 · Customer metrics</a></div>
   <p>All numbers on these pages are read from the result files of the repository by <code>docs/build_data.py</code>. Methods, pre-specified rules and limits are in each study's page on GitHub. Data: Criteo uplift and attribution datasets (public research releases); a public marketing mix dataset released by Conjura; Zillow Research metro series (Data Provided by Zillow Group); Online Retail II (UCI Machine Learning Repository).</p>
   <p><a href="https://github.com/lyz44git/ad-measurement-and-metrics">The repository on GitHub</a></p>
 </div></footer>
 <div id="tip" role="tooltip"></div>
-<script src="data.js?v=20261118g"></script>
-<script src="assets/explorer.js?v=20261118m"></script>
+<script src="data.js?v=20261124d"></script>
+<script src="assets/explorer.js?v=20261124d"></script>
 </body>
 </html>

@@ -1,0 +1,7 @@
+Mon Nov 23 22:33:17 CST 2026
+[     3s] loaded 13,979,592 rows; parts [4192415, 4892936, 4894241]
+[    62s] policies fitted
+[    63s] truth: {"all": 10.258, "random_20": 1.879, "response_20": 9.533, "uplift_20": 9.194}
+[   328s] moderate: 200 logs done
+[   613s] strong: 200 logs done
+[   613s] decision {"met": false, "by_policy": {"all": false, "random_20": false, "response_20": false, "uplift_20": false}, "rule": "moderate setting: DR mean absolute bias below 10% of the true lift and 95% coverage of at least 90% for each of the four policies"}

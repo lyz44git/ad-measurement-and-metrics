@@ -1,0 +1,6 @@
+Mon Nov 23 23:17:35 CST 2026
+checks {"rows": 1, "cells": 6, "max_relative_difference": 0.0} 0
+duplicates {"rows": 1, "cells": 1, "max_relative_difference": 0.0} 0
+readout_by_arm {"rows": 2, "cells": 20, "max_relative_difference": 0.0} 0
+readout_effects {"rows": 2, "cells": 28, "max_relative_difference": 0.0} 0
+{"spark_version": "4.3.0", "java": "21.0.9", "cells": 55, "agree": true, "matches_committed_readout_by_arm": true, "seconds_csv_to_parquet": 60.3}

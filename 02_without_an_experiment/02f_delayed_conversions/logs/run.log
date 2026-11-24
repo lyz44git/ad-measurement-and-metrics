@@ -1,0 +1,51 @@
+Mon Nov 23 22:39:50 CST 2026
+[    21s] prepared 16,468,027 impressions, 675 campaigns
+[    23s] cutoff 14: train 7,776,135 (seen 0.0286 vs 30-day 0.0481), test 1,505,551
+[   241s]   naive_lightgbm fitted
+[   270s]   oracle_lightgbm fitted
+[   274s]   epoch 1: loss 0.11244
+[   277s]   epoch 2: loss 0.10926
+[   281s]   epoch 3: loss 0.10894
+[   281s]   naive_network fitted
+[   286s]   epoch 1: loss 0.15097
+[   290s]   epoch 2: loss 0.14676
+[   295s]   epoch 3: loss 0.14630
+[   295s]   delay_network fitted
+[   320s]   epoch 1: loss 0.15090
+[   348s]   epoch 2: loss 0.14663
+[   376s]   epoch 3: loss 0.14606
+[   377s]   delay_sequence_network fitted
+[   572s]   calibration: {"naive_lightgbm": 0.557, "naive_network": 0.587, "delay_network": 0.78, "delay_sequence_network": 0.784, "oracle_lightgbm": 1.066}
+[   574s] cutoff 21: train 11,405,791 (seen 0.0334 vs 30-day 0.0490), test 1,597,224
+[   822s]   naive_lightgbm fitted
+[   861s]   oracle_lightgbm fitted
+[   867s]   epoch 1: loss 0.12627
+[   874s]   epoch 2: loss 0.12387
+[   881s]   epoch 3: loss 0.12360
+[   881s]   naive_network fitted
+[   891s]   epoch 1: loss 0.18603
+[   901s]   epoch 2: loss 0.18267
+[   910s]   epoch 3: loss 0.18230
+[   910s]   delay_network fitted
+[   951s]   epoch 1: loss 0.18585
+[   992s]   epoch 2: loss 0.18240
+[  1033s]   epoch 3: loss 0.18190
+[  1034s]   delay_sequence_network fitted
+[  1169s]   calibration: {"naive_lightgbm": 0.661, "naive_network": 0.682, "delay_network": 0.95, "delay_sequence_network": 0.945, "oracle_lightgbm": 1.104}
+[  1171s] cutoff 28: train 15,046,374 (seen 0.0364 vs 30-day 0.0488), test 1,421,653
+[  1213s]   naive_lightgbm fitted
+[  1251s]   oracle_lightgbm fitted
+[  1259s]   epoch 1: loss 0.13525
+[  1267s]   epoch 2: loss 0.13324
+[  1275s]   epoch 3: loss 0.13298
+[  1276s]   naive_network fitted
+[  1287s]   epoch 1: loss 0.21104
+[  1298s]   epoch 2: loss 0.20831
+[  1309s]   epoch 3: loss 0.20793
+[  1310s]   delay_network fitted
+[  1355s]   epoch 1: loss 0.21081
+[  1400s]   epoch 2: loss 0.20797
+[  1444s]   epoch 3: loss 0.20747
+[  1445s]   delay_sequence_network fitted
+[  1494s]   calibration: {"naive_lightgbm": 0.724, "naive_network": 0.729, "delay_network": 1.036, "delay_sequence_network": 1.031, "oracle_lightgbm": 1.09}
+[  1494s] decision {"delay_model_corrects_bias": false, "history_adds_to_delay_model": false}

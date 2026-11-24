@@ -1,0 +1,164 @@
+{
+ "1_truth_part": {
+  "all": {
+   "unadjusted_ips": 10.257925415133089,
+   "unadjusted_se": 0.2525540698790464,
+   "aipw_constant_p": 7.370695760710368,
+   "aipw_se": 0.20587121094882027,
+   "ips_estimated_assignment": 6.818682497617451,
+   "aipw_over_unadjusted": 0.7185366886989341
+  },
+  "random_20": {
+   "unadjusted_ips": 1.8792197487938358,
+   "unadjusted_se": 0.11379962524325085,
+   "aipw_constant_p": 1.3446094779843016,
+   "aipw_se": 0.09251183023284627,
+   "ips_estimated_assignment": 1.1891095763240136,
+   "aipw_over_unadjusted": 0.7155147655548693
+  },
+  "response_20": {
+   "unadjusted_ips": 9.533231212523203,
+   "unadjusted_se": 0.24273634888874487,
+   "aipw_constant_p": 6.5807219252801605,
+   "aipw_se": 0.1938203147343807,
+   "ips_estimated_assignment": 6.048503673802766,
+   "aipw_over_unadjusted": 0.6902929110368666
+  },
+  "uplift_20": {
+   "unadjusted_ips": 9.194447492723173,
+   "unadjusted_se": 0.20562977674907149,
+   "aipw_constant_p": 6.262726965567027,
+   "aipw_se": 0.16581071983250942,
+   "ips_estimated_assignment": 5.726073629613914,
+   "aipw_over_unadjusted": 0.6811422840277876
+  }
+ },
+ "2_assignment_model": {
+  "heldout_auc_by_fold": [
+   0.5088037955632747,
+   0.5087778027063974
+  ],
+  "assigned_share": 0.8499121999552007,
+  "estimated_assignment_quantiles": [
+   0.8280973553827522,
+   0.8438032831405418,
+   0.8481654049067253,
+   0.8561787546201068,
+   0.9046901960922183
+  ]
+ },
+ "3_moderate_errors_against_both_truths": {
+  "all": {
+   "naive": {
+    "vs_unadjusted": 6.3505756182324,
+    "vs_adjusted": 9.22992386309766
+   },
+   "dm": {
+    "vs_unadjusted": 0.04895312905343441,
+    "vs_adjusted": 0.4598463036769782
+   },
+   "ips_known": {
+    "vs_unadjusted": 0.001142178329175625,
+    "vs_adjusted": 0.3933069724553102
+   },
+   "ips_estimated": {
+    "vs_unadjusted": -0.8825929467402801,
+    "vs_adjusted": -0.8366025630892825
+   },
+   "snips": {
+    "vs_unadjusted": -0.7958401637633511,
+    "vs_adjusted": -0.7158672069949213
+   },
+   "dr": {
+    "vs_unadjusted": -0.3238063241357907,
+    "vs_adjusted": -0.0589295070115291
+   }
+  },
+  "random_20": {
+   "naive": {
+    "vs_unadjusted": 6.603780483793325,
+    "vs_adjusted": 9.627007086145491
+   },
+   "dm": {
+    "vs_unadjusted": 0.14290955912403502,
+    "vs_adjusted": 0.5973249108810894
+   },
+   "ips_known": {
+    "vs_unadjusted": 0.07505069749588378,
+    "vs_adjusted": 0.5024856917693385
+   },
+   "ips_estimated": {
+    "vs_unadjusted": -0.9128553993313474,
+    "vs_adjusted": -0.8782071246271578
+   },
+   "snips": {
+    "vs_unadjusted": -0.8222401597913955,
+    "vs_adjusted": -0.7515637010359181
+   },
+   "dr": {
+    "vs_unadjusted": -0.3200483967694314,
+    "vs_adjusted": -0.04970290486838802
+   }
+  },
+  "response_20": {
+   "naive": {
+    "vs_unadjusted": 4.560867915369211,
+    "vs_adjusted": 7.055809101409444
+   },
+   "dm": {
+    "vs_unadjusted": 0.006733861630826343,
+    "vs_adjusted": 0.4584154719460234
+   },
+   "ips_known": {
+    "vs_unadjusted": 0.009579882237029436,
+    "vs_adjusted": 0.4625383892767667
+   },
+   "ips_estimated": {
+    "vs_unadjusted": -0.9451318646087546,
+    "vs_adjusted": -0.9205147054040731
+   },
+   "snips": {
+    "vs_unadjusted": -0.8387296703819083,
+    "vs_adjusted": -0.766374060866636
+   },
+   "dr": {
+    "vs_unadjusted": -0.34548629810849985,
+    "vs_adjusted": -0.05183192319275565
+   }
+  },
+  "uplift_20": {
+   "naive": {
+    "vs_unadjusted": 3.509785021539267,
+    "vs_adjusted": 5.620914788715845
+   },
+   "dm": {
+    "vs_unadjusted": -0.06381471901035685,
+    "vs_adjusted": 0.374434245153177
+   },
+   "ips_known": {
+    "vs_unadjusted": 0.01862852882454047,
+    "vs_adjusted": 0.49547099440237496
+   },
+   "ips_estimated": {
+    "vs_unadjusted": -0.8078332423742043,
+    "vs_adjusted": -0.7178757476492883
+   },
+   "snips": {
+    "vs_unadjusted": -0.72218156792011,
+    "vs_adjusted": -0.5921286365646385
+   },
+   "dr": {
+    "vs_unadjusted": -0.3452987432580601,
+    "vs_adjusted": -0.038818654935785846
+   }
+  }
+ },
+ "4_top_decile_control_weights": {
+  "control_rows": 1549.8,
+  "w_true": 8.974143331148191,
+  "w_hat": 11.363269181261307,
+  "w_true_visit": 10.636835368992656,
+  "w_hat_visit": 13.656713525212792
+ },
+ "seconds": 373
+}

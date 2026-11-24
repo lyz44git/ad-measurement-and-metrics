@@ -16,7 +16,7 @@
 <header class="pagehero"><div class="wrap">
   <div class="kicker">Part 2 · Without an experiment</div>
   <h1 class="serif">When can the usual metrics be trusted?</h1>
-  <p class="dek">Studies 02a and 02c check a metric used in place of an experiment against a benchmark: the experiment of study 01a, or a simulation with known returns. Study 02b shows how much the credit given to each touch depends on the rule chosen, and study 02d whether that changes what a bidder buys.</p>
+  <p class="dek">Studies 02a and 02c check a metric used in place of an experiment against a benchmark: the experiment of study 01a, or a simulation with known returns. Study 02b shows how much the credit given to each touch depends on the rule chosen, and study 02d whether that changes what a bidder buys. Study 02e checks estimates of what a new targeting rule would bring against a benchmark from the experiment, and study 02f checks conversion forecasts made before the labels arrive against the labels that arrive later.</p>
 </div></header>
 
 <section class="part" id="s02a"><div class="wrap">
@@ -98,13 +98,50 @@
     
   </div>
 </div></section>
+<section class="part" id="s02e"><div class="wrap">
+  <div class="kicker study-k"><span class="code">02e</span></div>
+  <h2 class="serif">What is a targeting policy worth before it has run?</h2>
+  <p class="lead">On 200 logs that favor likely visitors, the mean of inverse probability weighting with the recorded probability of assignment is within 3% of a feature-adjusted benchmark from the experiment for each of four policies, and the mean of the doubly robust estimator, which has to estimate the probability, within 6%. One log of about 108,000 rows is off by 22% to 53% on average, above the 10% the plan set. Inverse weighting with an estimated probability loses two thirds or more of the lift, and an unweighted comparison gives 6 to 10 times the benchmark.</p>
+  <a class="gh" href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/02_without_an_experiment/02e_off_policy_evaluation">Full study on GitHub →</a>
+  <div class="card">
+    <h3>Off-policy estimates from 200 biased logs against the experiment</h3>
+    <p class="sub">Each log keeps users so that likely visitors were more often assigned to ads. Choose how strong that bias is and which policy to value.</p>
+    <div class="ctrl"><div class="seg" id="seg-02e-set"></div></div><div class="ctrl"><div class="seg" id="seg-02e-pol"></div></div><div class="ctrl"><div class="seg" id="seg-02e-zoom"></div></div><div id="c-02e"></div><div class="readout" id="ro-02e"></div>
+    <p class="note">Extra visits per 1,000 users compared with assigning nobody. Dots: mean over 200 logs; bars: the middle 95% of logs; after the dot, the share of logs whose 95% interval covers the benchmark. The shaded band is the benchmark for the same policy, a feature-adjusted estimate from the experiment, with its 95% interval. The plan's rules are for the moderate setting; under strong bias the doubly robust estimator with an estimated probability is 29% to 53% too low on average.</p>
+  </div>
+  <div class="card">
+    <h3>The experiment's value of each policy, adjusted and unadjusted</h3>
+    <p class="sub">In this pooled release the chance of being assigned to ads varies slightly with the features. The unadjusted comparison of the two groups is 42% to 49% higher than the value adjusted for the features, which this study uses as its benchmark.</p>
+    <div id="c-02e-adj"></div>
+    <p class="note">The same gap explains why study 01a's adjusted effect on visits (0.77 points) is below its unadjusted one (1.03). A first design that took the unadjusted value as the truth did not meet its rule.</p>
+  </div>
+</div></section>
+<section class="part" id="s02f"><div class="wrap">
+  <div class="kicker study-k"><span class="code">02f</span></div>
+  <h2 class="serif">Can a conversion model trained before its labels arrive be corrected for the delay?</h2>
+  <p class="lead">Partly. Across three cutoffs, two models trained on the conversions seen at the cutoff predict 27% to 44% too few. A delayed-feedback network in PyTorch brings predicted over actual conversions to 0.95 and 1.04 with three and four weeks of data, and to 0.78 with two. At two weeks no impression has been followed for longer than two weeks, 21% of conversions take longer, and the answer depends on an assumed tail.</p>
+  <a class="gh" href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/02_without_an_experiment/02f_delayed_conversions">Full study on GitHub →</a>
+  <div class="card">
+    <h3>Predicted over actual conversions in the three days after retraining</h3>
+    <p class="sub">16.5 million impressions of the attribution log of studies 02b and 02d. Choose the retraining day.</p>
+    <div class="ctrl"><div class="seg" id="seg-02f-cal"></div></div><div id="c-02f-cal"></div><div class="readout" id="ro-02f-cal"></div>
+    <p class="note">The shaded band is the pre-specified 0.90 to 1.10. The reference is trained on complete 30-day labels, which no model has at the cutoff. The Weibull row is a follow-up, scored on the probability of converting within 30 days; on that score the exponential row is 0.788, 0.947 and 1.018.</p>
+  </div>
+  <div class="card">
+    <h3>How much of the outcome lies beyond each cutoff</h3>
+    <p class="sub">At a cutoff of T days no training impression has been watched for longer than T days, so conversions that take longer are never seen and have to be extrapolated.</p>
+    <div class="legend"><span><i style="background:var(--orange)"></i>Share of 30-day conversions arriving after the cutoff</span><span><i style="background:var(--navy)"></i>Delay model's shortfall (negative: too many)</span></div>
+    <div id="c-02f-tail"></div>
+    <p class="note">The first bar is a share of all 30-day conversions in the log; the second is the delay model's shortfall on the three test days. They are close at day 14 only, which does not show that one causes the other: at day 28 the model predicts too many although 2% still arrive later. The bidders of study 02d price impressions with a model of this kind, trained there on complete labels.</p>
+  </div>
+</div></section>
 <footer><div class="wrap">
   <div class="pager"><a href="01.html"><small>Previous</small>1 · With an experiment</a><a class="next" href="03.html"><small>Next</small>3 · Planning a test</a></div>
   <p>All numbers on these pages are read from the result files of the repository by <code>docs/build_data.py</code>. Methods, pre-specified rules and limits are in each study's page on GitHub. Data: Criteo uplift and attribution datasets (public research releases); a public marketing mix dataset released by Conjura; Zillow Research metro series (Data Provided by Zillow Group); Online Retail II (UCI Machine Learning Repository).</p>
   <p><a href="https://github.com/lyz44git/ad-measurement-and-metrics">The repository on GitHub</a></p>
 </div></footer>
 <div id="tip" role="tooltip"></div>
-<script src="data.js?v=20261118g"></script>
-<script src="assets/explorer.js?v=20261118m"></script>
+<script src="data.js?v=20261124d"></script>
+<script src="assets/explorer.js?v=20261124d"></script>
 </body>
 </html>
