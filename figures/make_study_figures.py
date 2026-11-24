@@ -296,7 +296,7 @@ def fig02e():
 
 def fig02f():
     fig, ax = plt.subplots(1, 3, figsize=(10.4, 3.3), dpi=300, gridspec_kw=dict(width_ratios=[1.15, 1, 1]))
-    p_delay_daily(ax[0], "A"); p_delay_designs(ax[1], "B"); p_delay_fit(ax[2], "C")
+    p_delay_daily(ax[0], "A"); p_delay_campaign(ax[1], "B"); p_delay_fit(ax[2], "C")
     fig.subplots_adjust(left=0.06, right=0.985, top=0.84, bottom=0.17, wspace=0.62)
     save(fig, f"{S02F}/out/fig_delay.png")
 

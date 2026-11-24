@@ -171,3 +171,23 @@ def test_delay_network_recovers_the_rate_from_censored_labels():
     net = v2.fit(1, "delay", X, target, 0.05, seed=1, epochs=3, bs=2048, lr=5e-3, dev=torch.device("cpu"))
     p, pi = v2.predict(net, {k: v[:1000] for k, v in X.items()}, dev=torch.device("cpu"))
     assert seen.mean() < 0.08 and abs(p.mean() - 0.10) < 0.01 and abs(pi[0] - 0.4) < 0.05
+
+
+# ----------------------------------------------------------------------------- follow-up 3 (followup3_core.py)
+
+def test_corrected_ranker_keeps_order_within_a_campaign_and_takes_the_delay_level():
+    import followup3_core as f3
+    camp_tr = np.array([0, 0, 1, 1]); p_delay = np.array([0.02, 0.04, 0.10, 0.10]); p_seen = np.array([0.01, 0.02, 0.08, 0.12])
+    k = f3.campaign_ratio(camp_tr, p_delay, p_seen, 3)
+    assert np.allclose(k, [2.0, 1.0, 0.26 / 0.23])          # campaign 2 has no training rows: pooled ratio
+    p = f3.corrected(np.array([0.01, 0.03, 0.05]), np.array([0, 0, 1]), k)
+    assert np.allclose(p, [0.02, 0.06, 0.05])
+
+
+def test_campaign_error_weights_by_conversions():
+    import followup3_core as f3
+    y = np.array([1, 1, 1, 0, 1, 0]); camp = np.array([0, 0, 0, 0, 1, 1]); p = np.array([0.5, 0.5, 0.5, 0.0, 0.5, 0.0])
+    keep = np.array([True, True])
+    # campaign 0: 1.5 / 3 -> 0.5 error, weight 3; campaign 1: 0.5 / 1 -> 0.5 error, weight 1
+    assert abs(f3.campaign_error(p, y, camp, keep, 2) - 0.5) < 1e-12
+    assert abs(f3.campaign_error(p, y, camp, np.array([True, False]), 2) - 0.5) < 1e-12

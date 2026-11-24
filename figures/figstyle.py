@@ -676,46 +676,33 @@ def p_delay_daily(ax, letter, title="Predicted over actual, 14-day label", src="
     ax.set_xlabel("Test day (retrained the day before)"); ax.set_ylabel("Predicted / actual"); clean(ax); panel(ax, letter, title)
 
 
-def p_delay_designs(ax, letter, title="Three designs, pooled"):
-    """Predicted over actual conversions of the labels-seen network and the delayed-feedback network in each design of
-    02f: the first design's three cutoffs (30-day label, cold start), the second (7-day label) and the third (14-day)."""
-    d1 = load(f"{S02F}/out/delay.json")["cutoffs"]; d2 = load(f"{S02F}/out/delay_v2.json")["pooled"]["models"]
-    d3 = load(f"{S02F}/out/delay_v3.json")["pooled"]["models"]
-    rows = [("30-day, cold, day 14", d1["14"]["models"]["naive_network"]["calibration_ratio"]["estimate"], d1["14"]["models"]["delay_network"]["calibration_ratio"]["estimate"]),
-            ("30-day, cold, day 21", d1["21"]["models"]["naive_network"]["calibration_ratio"]["estimate"], d1["21"]["models"]["delay_network"]["calibration_ratio"]["estimate"]),
-            ("30-day, cold, day 28", d1["28"]["models"]["naive_network"]["calibration_ratio"]["estimate"], d1["28"]["models"]["delay_network"]["calibration_ratio"]["estimate"]),
-            ("7-day, daily", d2["labels_seen"]["calibration_ratio"]["estimate"], d2["delay"]["calibration_ratio"]["estimate"]),
-            ("14-day, daily (final)", d3["labels_seen"]["calibration_ratio"]["estimate"], d3["delay"]["calibration_ratio"]["estimate"])]
-    n = len(rows); ax.axvline(1, color=MUTED, lw=0.8, zorder=1)
-    for i, (lab, a_, b_) in enumerate(rows):
-        y = n - 1 - i
-        ax.annotate("", xy=(b_, y), xytext=(a_, y), arrowprops=dict(arrowstyle="-|>", color=NAVY, lw=1.6, mutation_scale=9, shrinkA=4, shrinkB=5), zorder=3)
-        dot(ax, a_, y, GREY, s=40); dot(ax, b_, y, NAVY, s=48)
-        ax.text(1.17, y, f"{b_:.2f}", va="center", fontsize=8, fontweight="bold", color=NAVY)
-    ax.set_yticks(range(n), [r[0] for r in rows][::-1]); ax.set_ylim(-0.6, n - 0.3); ax.set_xlim(0.5, 1.22)
-    for t in ax.get_yticklabels():
-        t.set_color(INK); t.set_fontsize(7.6)
-        if "final" in t.get_text():
-            t.set_fontweight("bold")
-    tag(ax, 0.62, n - 1 + 0.42, "labels seen", GREY, ha="center"); tag(ax, 0.86, n - 1 + 0.42, "delay model", NAVY, ha="center")
-    ax.grid(axis="x", color=GRID); ax.grid(axis="y", visible=False); clean(ax, x=False)
-    ax.set_xlabel("Predicted / actual conversions"); panel(ax, letter, title)
-
-
 def p_delay_fit(ax, letter, title="Fit and ranking, 14-day label"):
-    """Final design of 02f: log loss above the reference and ROC AUC of the four networks, pooled."""
-    P = load(f"{S02F}/out/delay_v3.json")["pooled"]["models"]
-    items = [("labels_seen", "labels seen", GREY), ("delay", "delay model", NAVY), ("complete_only", "complete labels only", BLUE)]
-    ref = P["reference"]["log_loss"]["estimate"]
+    """Follow-up 3 of 02f: pooled log loss above the network trained on complete labels, and ROC AUC."""
+    F = load(f"{S02F}/out/followup3.json")["forecasts"]; ref = F["reference"]["log_loss"]["estimate"]
+    items = [("labels_seen", "labels seen", GREY), ("delay", "delay model", NAVY), ("corrected_ranker", "ranker, corrected level", BLUE)]
     for i, (k, lab, col) in enumerate(items):
-        v = 1000 * (P[k]["log_loss"]["estimate"] - ref)
+        v = 1000 * (F[k]["log_loss"]["estimate"] - ref)
         ax.barh(len(items) - 1 - i, v, height=0.55, color=col, lw=0, zorder=2)
-        ax.text(v + 0.12, len(items) - 1 - i, f"+{v:.2f}  ·  AUC {P[k]['roc_auc']['estimate']:.3f}", va="center", fontsize=7.6, color=INK)
-    ax.set_yticks(range(len(items)), [i[1] for i in items][::-1]); ax.set_xlim(0, 8.5); ax.set_ylim(-0.6, len(items) - 0.4)
+        ax.text(v + 0.03, len(items) - 1 - i, f"+{v:.2f}  ·  AUC {F[k]['roc_auc']['estimate']:.3f}", va="center", fontsize=7.6, color=INK)
+    ax.set_yticks(range(len(items)), [i[1] for i in items][::-1]); ax.set_xlim(0, 2.0); ax.set_ylim(-0.6, len(items) - 0.4)
     for t in ax.get_yticklabels():
         t.set_color(INK); t.set_fontsize(8)
     ax.grid(axis="x", color=GRID); ax.grid(axis="y", visible=False); clean(ax, x=False)
-    ax.set_xlabel(f"Log loss above complete labels (×10⁻³; reference AUC {P['reference']['roc_auc']['estimate']:.3f})"); panel(ax, letter, title)
+    ax.set_xlabel(f"Log loss above complete labels (×10⁻³)"); panel(ax, letter, title)
+
+
+F3_NAMES = {"labels_seen": ("labels seen", GREY), "delay": ("delay model", NAVY), "corrected_ranker": ("ranker, corrected level", BLUE),
+            "reference": ("complete labels", ORANGE)}
+
+
+def p_delay_campaign(ax, letter, title="Error of each campaign's forecast"):
+    """Follow-up 3 of 02f: conversion-weighted mean of |predicted / actual - 1| over campaigns with at least 200 test
+    conversions, with 95% intervals; the reference trained on complete labels gives the floor."""
+    f = load(f"{S02F}/out/followup3.json"); F = f["forecasts"]
+    keys = ["labels_seen", "delay", "corrected_ranker", "reference"]
+    v = [100 * F[k]["campaign_error"]["estimate"] for k in keys]
+    dotrows(ax, [F3_NAMES[k][0] for k in keys], v, v, v, [F3_NAMES[k][1] for k in keys], lambda u: f"{u:.1f}%", (0, 22), bold=["delay model"])
+    ax.set_xlabel(f"Weighted mean |predicted / actual − 1|, {f['campaigns_scored']} campaigns"); panel(ax, letter, title)
 
 
 DELAY_MODELS = [("naive_lightgbm", "LightGBM, labels seen", GREY_L), ("naive_network", "network, labels seen", GREY),

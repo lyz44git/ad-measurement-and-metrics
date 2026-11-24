@@ -2,14 +2,15 @@
 
 **[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02f)**
 
-> **Takeaway.** The level, yes; the overall fit, not measurably. A network retrained each day on the conversions seen
-> so far predicts 11.5% too few 14-day conversions on the following day, because recent impressions whose conversions
-> are still to come count as failures. A delayed-feedback network (Chapelle 2014) in PyTorch, which learns the
-> conversion probability and the share of conversions arriving on each of the 14 days, predicts 1.8% too many, against
-> 0.0% for a reference trained on complete labels; this pre-specified rule was met. Its log loss is the same as the
-> uncorrected network's (the second rule was not met): it fixes the level and ranks slightly less well. Waiting for
-> complete labels instead, by dropping the last 14 days, is far worse on both log loss and ranking. Two earlier designs,
-> on a cold start and a 7-day window, are below.
+> **Takeaway.** The level, yes, overall and campaign by campaign; the overall fit, not measurably. A network retrained
+> each day on the conversions seen so far predicts 11.5% too few 14-day conversions on the following day, because
+> recent impressions whose conversions are still to come count as failures. A delayed-feedback network (Chapelle 2014)
+> in PyTorch, which learns the conversion probability and the share of conversions arriving on each of the 14 days,
+> predicts 1.8% too many, against 0.0% for a reference trained on complete labels. Campaign by campaign, where an
+> advertiser reads its cost per conversion, it lowers the forecast error from 16.0% to 13.3%, against a floor of
+> 11.7% for the reference. Both of these pre-specified rules were met. Its log loss is the same as the uncorrected
+> network's (a rule not met), and a follow-up that combined the uncorrected network's ranking with the delay model's
+> level over-corrected. Two earlier designs, on a cold start and a 7-day window, are below.
 
 ## Question
 
@@ -88,7 +89,37 @@ At the cutoffs, the conversions seen in the training data are 77% to 85% of thei
   1.13 and the reference from 0.91 to 1.11, moving together, because the 14-day conversion rate itself ranges from
   3.6% to 4.1% between days. The rules were pooled for this reason.
 
-[![Calibration of conversion models by test day, design history and delay tails](out/fig_delay.png)](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02f)
+[![Calibration of conversion models by test day, error of each campaign's forecast, and fit and ranking](out/fig_delay.png)](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02f)
+
+## Follow-up 3: campaign by campaign, and a ranker with a corrected level
+
+A follow-up plan ([`design/followup_plan_3.md`](design/followup_plan_3.md), hashed before it ran) refitted the
+labels-seen, delayed-feedback and reference networks with this design's seeds and kept their predictions. Source:
+[`out/followup3.json`](out/followup3.json). The refitted networks reproduce the main run to within 0.002 in predicted
+over actual. Before the run, without any model: among campaigns with at least 100 complete conversions in training,
+the conversions seen at cutoff 22 were 64% (10th percentile) to 89% (90th percentile) of the complete count.
+
+**Campaign forecasts.** Over the 148 campaigns with at least 200 test conversions (84% of them), the
+conversion-weighted mean of |predicted / actual − 1|:
+
+| Forecast | Campaign error | Campaigns with a smaller error than labels seen | Log loss above the reference (×10⁻³) | ROC AUC |
+|---|---|---|---|---|
+| Labels seen | 16.0% |  | 0.61 | 0.793 |
+| **Delayed-feedback network** | **13.3%** | **68%** | 0.58 | 0.791 |
+| Ranker with corrected level | 16.8% | 57% | 1.18 | 0.790 |
+| Reference, complete labels | 11.7% | 69% | 0 | 0.795 |
+
+- **Rule 1 was met.** The delayed-feedback network lowers the campaign error by 2.7 points (95% interval of the
+  difference −3.1 to −1.8), closing 63% of the distance between the labels-seen network and the reference. The
+  reference's 11.7% is the floor that campaign sizes and day-to-day variation set for any model.
+- **Rule 2 was not met.** The ranker with a corrected level multiplied each campaign's labels-seen predictions by the
+  ratio of the two networks' mean predictions on that campaign's training impressions (median 1.19 to 1.40 across
+  cutoffs). On the test day the labels-seen network was already less low than on its training impressions (0.885
+  against labels 77% to 85% complete), so the ratio over-corrected: 13.7% too many conversions pooled, and a log loss
+  0.00056 above the labels-seen network's (interval above zero). A ratio taken on the test impressions' own
+  predictions, which needs no labels, would avoid that; it was not part of this plan and was not run.
+- The bootstrap intervals of each campaign error on its own are shifted upward, because resampling adds noise to an
+  absolute error; the comparison relies on the paired difference.
 
 ## How this design came about
 
@@ -125,6 +156,7 @@ same log, chosen with the first two results known, so it is not an independent r
 
 ```bash
 python code/run_delay_v3.py /path/to/derived/criteo_attr.parquet out   # this design, about 13 minutes on an Apple M3 Ultra (MPS)
+python code/run_followup3.py /path/to/derived/criteo_attr.parquet out  # follow-up 3, about 12 minutes
 python code/run_delay_v2.py /path/to/derived/criteo_attr.parquet out   # second design, about 25 minutes
 python code/run_delay.py /path/to/derived/criteo_attr.parquet out      # first design, about 25 minutes
 python code/run_followup.py /path/to/derived/criteo_attr.parquet out   # first follow-up, about 9 minutes
@@ -133,8 +165,9 @@ python code/run_followup2.py /path/to/derived/criteo_attr.parquet out  # second 
 
 `tests/` checks on small simulated logs that features and histories use only earlier impressions, that the rolling
 window drops impressions older than 7 days, that labels after the cutoff are hidden, that both delayed-feedback losses
-match their formulas, that the delay models remove the under-prediction of a naive model on censored labels, and that
-the grouped ROC and PR AUC match scikit-learn with ties and weights.
+match their formulas, that the delay models remove the under-prediction of a naive model on censored labels, that the
+grouped ROC and PR AUC match scikit-learn with ties and weights, and that the corrected ranker and the campaign error
+of follow-up 3 match hand calculations.
 
 ## Scope
 

@@ -1,0 +1,11 @@
+[    67s] cutoff 22: {"labels_seen": 0.861, "delay": 1.006, "reference": 1.005, "corrected_ranker": 1.185}; k_c p10/p50/p90 [1.184, 1.396, 1.649]
+[   127s] cutoff 23: {"labels_seen": 0.962, "delay": 1.134, "reference": 1.109, "corrected_ranker": 1.292}; k_c p10/p50/p90 [1.167, 1.374, 1.595]
+[   200s] cutoff 24: {"labels_seen": 0.912, "delay": 1.078, "reference": 1.043, "corrected_ranker": 1.223}; k_c p10/p50/p90 [1.15, 1.345, 1.578]
+[   270s] cutoff 25: {"labels_seen": 0.815, "delay": 0.951, "reference": 0.966, "corrected_ranker": 1.052}; k_c p10/p50/p90 [1.135, 1.323, 1.542]
+[   347s] cutoff 26: {"labels_seen": 0.916, "delay": 1.079, "reference": 1.02, "corrected_ranker": 1.188}; k_c p10/p50/p90 [1.137, 1.299, 1.521]
+[   430s] cutoff 27: {"labels_seen": 0.888, "delay": 1.055, "reference": 0.995, "corrected_ranker": 1.134}; k_c p10/p50/p90 [1.128, 1.29, 1.503]
+[   513s] cutoff 28: {"labels_seen": 0.87, "delay": 0.953, "reference": 0.961, "corrected_ranker": 1.072}; k_c p10/p50/p90 [1.086, 1.253, 1.424]
+[   592s] cutoff 29: {"labels_seen": 0.82, "delay": 0.923, "reference": 0.907, "corrected_ranker": 1.004}; k_c p10/p50/p90 [1.096, 1.236, 1.389]
+[   678s] cutoff 30: {"labels_seen": 0.92, "delay": 0.994, "reference": 1.006, "corrected_ranker": 1.077}; k_c p10/p50/p90 [1.048, 1.193, 1.336]
+[   716s] {"labels_seen": {"calibration_ratio": 0.88493, "log_loss": 0.13922, "roc_auc": 0.79292, "campaign_error": 0.15985}, "delay": {"calibration_ratio": 1.01946, "log_loss": 0.13919, "roc_auc": 0.7912, "campaign_error": 0.13272}, "reference": {"calibration_ratio": 1.00106, "log_loss": 0.1386, "roc_auc": 0.79459, "campaign_error": 0.11728}, "corrected_ranker": {"calibration_ratio": 1.13681, "log_loss": 0.13978, "roc_auc": 0.79044, "campaign_error": 0.16761}}
+[   716s] decision {"1_campaign_forecasts_corrected": true, "2_corrected_ranker_improves_fit": false}

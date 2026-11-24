@@ -103,9 +103,11 @@ threshold set in advance ([02d](02_without_an_experiment/02d_attribution_and_bid
 The bidding replay used complete labels. A model retrained each day has only the conversions that have arrived: on
 nine days of daily retraining, a network trained on those predicted 11.5% too few conversions within 14 days. A
 network that also learns how conversions are spread over the 14 days predicted 1.8% too many, against 0.0% for one
-trained on complete labels, which met the threshold set in advance. It did not improve the log loss, a second
-threshold: it corrects the level, which a bid is priced on, and ranks impressions slightly less well. Waiting for
-complete labels instead, by leaving out the last two weeks, ranks much worse ([02f](02_without_an_experiment/02f_delayed_conversions)).
+trained on complete labels, which met the threshold set in advance. Campaign by campaign, where an advertiser reads
+its cost per conversion, it lowered the forecast error from 16.0% to 13.3%, against 11.7% with complete labels, also
+meeting its threshold. It did not improve the log loss: it corrects the level, which a bid is priced on, and ranks
+impressions slightly less well. Waiting for complete labels instead, by leaving out the last two weeks, ranks much
+worse ([02f](02_without_an_experiment/02f_delayed_conversions)).
 
 <a href="https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02e"><img src="figures/figure3b.png" alt="Two panels: error of one log's off-policy estimates against the experiment's value of a targeting policy; predicted over actual conversions on nine test days for a model trained on the labels seen, a delay model and a reference with complete labels." width="100%"></a>
 
@@ -176,7 +178,7 @@ past sales performed better than the model ([04](04_customer_metrics_retention))
 
 <sub><b>Methods.</b> Two years of transactions (794,163 lines, 5,875 accounts; no ads in these data). The metric tables rebuilt in SQL match the Python results in all 92 cells.</sub>
 
-## 5. Eight pre-specified tests were not passed.
+## 5. Nine pre-specified tests were not passed.
 
 Each of the following fell short of a threshold that was fixed before the result was seen.
 
@@ -191,6 +193,8 @@ Each of the following fell short of a threshold that was fixed before the result
   segments by their conversion effect ([03d](03_planning_a_test/03d_surrogate_outcome)).
 - A delayed-feedback model corrected the level of a conversion forecast but did not lower its log loss
   ([02f](02_without_an_experiment/02f_delayed_conversions)).
+- Combining the uncorrected model's ranking with the delay model's level did not lower it either; the level was
+  over-corrected ([02f](02_without_an_experiment/02f_delayed_conversions)).
 
 Studies 02e and 02f each record earlier designs whose pre-specified rules were not met, and why the design changed;
 the list above holds the final designs.

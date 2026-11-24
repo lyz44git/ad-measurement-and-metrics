@@ -1,0 +1,203 @@
+{
+ "campaigns_scored": 148,
+ "share_of_test_conversions": 0.8409365166430901,
+ "test_impressions": 4500151,
+ "test_conversions": 173195,
+ "forecasts": {
+  "labels_seen": {
+   "calibration_ratio": {
+    "estimate": 0.8849287889113346,
+    "ci95": [
+     0.8781988282296347,
+     0.8909110839616255
+    ]
+   },
+   "log_loss": {
+    "estimate": 0.13921656052418316,
+    "ci95": [
+     0.13848678920744764,
+     0.1401374695289714
+    ]
+   },
+   "roc_auc": {
+    "estimate": 0.7929166489050377
+   },
+   "pr_auc": {
+    "estimate": 0.17965853949090577
+   },
+   "campaign_error": {
+    "estimate": 0.15985020304252717,
+    "ci95": [
+     0.15825301536262196,
+     0.1719790040533153
+    ]
+   }
+  },
+  "delay": {
+   "calibration_ratio": {
+    "estimate": 1.0194591401291373,
+    "ci95": [
+     1.0114704470716793,
+     1.026574945516617
+    ]
+   },
+   "log_loss": {
+    "estimate": 0.1391870301642137,
+    "ci95": [
+     0.13848165911503663,
+     0.1400244799726647
+    ]
+   },
+   "roc_auc": {
+    "estimate": 0.7911978957818647
+   },
+   "pr_auc": {
+    "estimate": 0.17814227903336494
+   },
+   "campaign_error": {
+    "estimate": 0.1327156681845142,
+    "ci95": [
+     0.13400100192224382,
+     0.14770097641674176
+    ]
+   }
+  },
+  "reference": {
+   "calibration_ratio": {
+    "estimate": 1.0010553232402817,
+    "ci95": [
+     0.9935762376443728,
+     1.0078384427524043
+    ]
+   },
+   "log_loss": {
+    "estimate": 0.13860368084395064,
+    "ci95": [
+     0.13790819090820267,
+     0.139471070875394
+    ]
+   },
+   "roc_auc": {
+    "estimate": 0.7945856144330725
+   },
+   "pr_auc": {
+    "estimate": 0.18130608090438985
+   },
+   "campaign_error": {
+    "estimate": 0.11727943704461048,
+    "ci95": [
+     0.11822911321635383,
+     0.13270143197237938
+    ]
+   }
+  },
+  "corrected_ranker": {
+   "calibration_ratio": {
+    "estimate": 1.1368080086796266,
+    "ci95": [
+     1.1281464724405945,
+     1.1444224426614484
+    ]
+   },
+   "log_loss": {
+    "estimate": 0.1397809609557984,
+    "ci95": [
+     0.1390875524291583,
+     0.14059364375453484
+    ]
+   },
+   "roc_auc": {
+    "estimate": 0.7904443228166149
+   },
+   "pr_auc": {
+    "estimate": 0.1760411603101866
+   },
+   "campaign_error": {
+    "estimate": 0.16760547859526884,
+    "ci95": [
+     0.1663098027565291,
+     0.18296678007398978
+    ]
+   }
+  }
+ },
+ "differences": {
+  "campaign_error_delay_minus_labels_seen": {
+   "estimate": -0.027134534858012982,
+   "ci95": [
+    -0.03148323947026863,
+    -0.017972189717277667
+   ]
+  },
+  "campaign_error_corrected_minus_labels_seen": {
+   "estimate": 0.007755275552741664,
+   "ci95": [
+    -0.002063605934528337,
+    0.020420309871214046
+   ]
+  },
+  "log_loss_corrected_minus_labels_seen": {
+   "estimate": 0.0005644004316152362,
+   "ci95": [
+    0.00046415240972865965,
+    0.0006495309267616136
+   ]
+  },
+  "log_loss_delay_minus_labels_seen": {
+   "estimate": -2.9530359969470732e-05,
+   "ci95": [
+    -8.871131581568575e-05,
+    2.8712378549341378e-05
+   ]
+  },
+  "log_loss_corrected_minus_reference": {
+   "estimate": 0.001177280111847756,
+   "ci95": [
+    0.0011164180179255904,
+    0.0012566681435654619
+   ]
+  }
+ },
+ "share_of_campaigns_smaller_error_than_labels_seen": {
+  "delay": 0.6756756756756757,
+  "corrected_ranker": 0.5675675675675675,
+  "reference": 0.6891891891891891
+ },
+ "campaign_error_quantiles": {
+  "labels_seen": [
+   0.06509303493105736,
+   0.15250654322743112,
+   0.2567220602213294,
+   0.3172858347301357
+  ],
+  "delay": [
+   0.06196595824654905,
+   0.12058030780945106,
+   0.18323616285172753,
+   0.30913497740439677
+  ],
+  "reference": [
+   0.043860259309523975,
+   0.11976019328966331,
+   0.16396221656089238,
+   0.24130801499750773
+  ],
+  "corrected_ranker": [
+   0.05069988832735137,
+   0.12029719575615427,
+   0.25627688257782594,
+   0.42445623218013245
+  ]
+ },
+ "decision": {
+  "1_campaign_forecasts_corrected": {
+   "met": true,
+   "rule": "campaign calibration error of the delayed-feedback network below the labels-seen network's (95% interval of the difference below zero)"
+  },
+  "2_corrected_ranker_improves_fit": {
+   "met": false,
+   "rule": "pooled log loss of the corrected ranker below the labels-seen network's (95% interval of the difference below zero)"
+  }
+ },
+ "seconds": 716
+}
