@@ -1,0 +1,2 @@
+680a1d32a7a1f997d589fd099eb0c5b4b3a9d2ac3060b5c98c8dff5ea780b204  design/analysis_plan_v2.md
+Tue Nov 24 20:19:58 UTC 2026

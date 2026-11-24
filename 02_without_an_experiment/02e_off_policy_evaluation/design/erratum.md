@@ -30,3 +30,12 @@ the plan.
 
 **What stands.** On average over logs both estimators are close to the benchmark (within 3% and 6%) and their
 intervals cover it at the stated rate. What does not hold is the accuracy of a single log of about 108,000 rows.
+
+## Item 2, third design: the "unadjusted" column of the benchmark
+
+Written on 2026-11-24 after the third design ran. `run_ope_v3.py` first wrote, as the unadjusted value of each
+policy, the difference between rows whose assignment agrees with the policy and control rows. For a policy that
+treats only some users that is not a policy value (for the response 20% policy it gave 88 visits per 1,000).
+[`code/fix_unadjusted_v3.py`](../code/fix_unadjusted_v3.py) recomputes the column as in the earlier designs, IPS with
+the experiment's constant assignment share, and keeps the first value under `unadjusted_as_first_written`. The column
+is descriptive; no estimate, error or rule uses it. The line in `run_ope_v3.py` is corrected.

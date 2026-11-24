@@ -68,3 +68,33 @@ def test_resampled_error_of_the_direct_estimate_matches_the_formula():
 def test_deciles():
     d = sc.deciles(np.arange(1000)[::-1].astype(float))
     assert np.bincount(d).tolist() == [100] * 10 and d[0] == 9
+
+
+def test_noise_corrected_correlation_recovers_the_true_one():
+    """Follow-up 2: segment effects with true correlation 0.9, estimated from noisy counts with shared noise."""
+    import run_followup2 as f2
+    rng = np.random.default_rng(5); K = f2.K
+    base_v, base_c = 0.04, 0.002
+    z1, z2 = rng.normal(size=K), rng.normal(size=K)
+    dv = 0.01 * (1.5 + z1); dcv = 0.0012 * (1.5 + 0.9 * z1 + np.sqrt(1 - 0.81) * z2)
+    n = np.full((K, 2), 200_000.0)
+    pv = np.stack([np.full(K, base_v), base_v + dv], 1); pc = np.stack([np.full(K, base_c), base_c + dcv], 1)
+    vals = []
+    for _ in range(20):
+        nv, nc = np.zeros((K, 2)), np.zeros((K, 2))
+        for a in range(2):
+            draw = np.array([rng.multinomial(int(n[g, a]), [1 - pv[g, a], pv[g, a] - pc[g, a], pc[g, a]]) for g in range(K)])
+            nc[:, a] = draw[:, 2]; nv[:, a] = draw[:, 1] + draw[:, 2]
+        vals.append(f2.corrected_corr(n, nv, nc)["corrected"])
+    true = np.corrcoef(dv, dcv)[0, 1]
+    assert abs(np.mean(vals) - true) < 0.05
+
+
+def test_segments_are_equal_size_ranks():
+    import run_followup2 as f2
+    rng = np.random.default_rng(0); n = 10_000
+    cols = [rng.integers(0, 3, n).astype(float) for _ in range(6)]
+    seg = f2.segments(cols)
+    assert np.bincount(seg).min() == np.bincount(seg).max() == n // f2.K
+    order = np.lexsort([np.arange(n)] + cols[::-1])
+    assert (np.diff(seg[order]) >= 0).all()

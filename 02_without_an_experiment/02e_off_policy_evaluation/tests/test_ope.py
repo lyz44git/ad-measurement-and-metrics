@@ -125,3 +125,15 @@ def test_mean_absolute_error_is_not_the_absolute_mean_error():
     assert not oc.rule_as_written(acc, coverage=0.95)           # coverage alone does not meet the rule
     assert oc.rule_as_written(oc.accuracy(truth + rng.normal(0, 0.0005, 5000), truth), coverage=0.95)
     assert not oc.rule_as_written(oc.accuracy(truth + rng.normal(0, 0.0005, 5000), truth), coverage=0.85)
+
+
+def test_pool_log_has_the_logging_propensity():
+    """Kept rows of draw_log_pool are treated with probability e(x) when r(x) is the assignment probability."""
+    rng = np.random.default_rng(3); n = 800_000
+    x = rng.normal(size=n); r = np.clip(0.85 + 0.02 * x, 0.8, 0.9)
+    a = (rng.random(n) < r).astype(np.int8)
+    e = oc.logging_propensity(x, 0.25)
+    idx = oc.draw_log_pool(rng, a, e, r, 0.1)
+    lo = x[idx] < 0
+    assert abs(a[idx][lo].mean() - e[idx][lo].mean()) < 0.01 and abs(a[idx][~lo].mean() - e[idx][~lo].mean()) < 0.01
+    assert abs(len(idx) / n - 0.1) < 0.005

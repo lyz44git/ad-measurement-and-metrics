@@ -84,12 +84,14 @@ ones are effects on users exposed because of assignment, so the range between th
 ([02a](02_without_an_experiment/02a_attribution_metric_validation)).
 
 The experiment can also check an estimate for a decision not yet taken: the extra visits a new targeting rule would
-bring. On 200 logs built from the experiment so that an earlier rule favored likely visitors, weighting by the
-recorded probability of assignment gives, on average, a value within 3% of a feature-adjusted benchmark from the
-experiment for each of four rules; a doubly robust estimator that has to estimate the probability comes within 6%.
-One log of about 108,000 users is far less exact: its error averages 22% to 53% across the rules, above the 10% set
-in advance. An unweighted comparison gives 6 to 10 times the benchmark. These estimates value a targeting rule; they
-do not divide credit among the ads that precede a conversion ([02e](02_without_an_experiment/02e_off_policy_evaluation)).
+bring. On 200 logs of about 1.6 million users built from the experiment so that an earlier rule favored likely
+visitors, an unweighted comparison gives 3 to 4 times a feature-adjusted benchmark from the experiment. A doubly
+robust estimator that has to estimate the probability of assignment is off by 2.5% to 2.7% of the benchmark in a
+single log, and weighting by the recorded probability by 3.0% to 3.9%, below the 10% set in advance for each of three
+rules. When the earlier rule is more biased, the doubly robust estimate stays within 6% while weighting by an
+estimated probability falls about a third short. Two earlier designs with logs of about 108,000 users did not meet
+their rules. These estimates value a targeting rule; they do not divide credit among the ads that precede a
+conversion ([02e](02_without_an_experiment/02e_off_policy_evaluation)).
 
 When a conversion follows several ad contacts, the rule that divides the credit matters greatly for the credit
 itself: assigning all of it to the last contact leaves 82% of the contacts with none ([02b](02_without_an_experiment/02b_multi_touch_attribution)). It matters little
@@ -98,15 +100,16 @@ last-touch credit and one that values them by time-decay credit spent 90% of the
 half the logged budget, and bidding with the other rule's model lost at most 2.2% of the credit, below the 5%
 threshold set in advance ([02d](02_without_an_experiment/02d_attribution_and_bidding)).
 
-The bidding replay used complete labels. A model retrained each day has only the conversions that have arrived:
-across three cutoffs, two models trained on those predicted 27% to 44% too few. A model of the delay brought
-predicted over actual conversions to 0.95 and 1.04 with three and four weeks of data, and to 0.78 with two. At two
-weeks no impression has been followed for longer than two weeks, 21% of conversions take longer, and the forecast
-depends on how the model extrapolates ([02f](02_without_an_experiment/02f_delayed_conversions)).
+The bidding replay used complete labels. A model retrained each day has only the conversions that have arrived: on
+nine days of daily retraining, a network trained on those predicted 11.5% too few conversions within 14 days. A
+network that also learns how conversions are spread over the 14 days predicted 1.8% too many, against 0.0% for one
+trained on complete labels, which met the threshold set in advance. It did not improve the log loss, a second
+threshold: it corrects the level, which a bid is priced on, and ranks impressions slightly less well. Waiting for
+complete labels instead, by leaving out the last two weeks, ranks much worse ([02f](02_without_an_experiment/02f_delayed_conversions)).
 
-<a href="https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02e"><img src="figures/figure3b.png" alt="Two panels: error of off-policy estimators against the experiment's value of a targeting policy; predicted over actual conversions at three retraining cutoffs for a model trained on the labels seen, a delay model and a reference with complete labels." width="100%"></a>
+<a href="https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02e"><img src="figures/figure3b.png" alt="Two panels: error of one log's off-policy estimates against the experiment's value of a targeting policy; predicted over actual conversions on nine test days for a model trained on the labels seen, a delay model and a reference with complete labels." width="100%"></a>
 
-**Figure 3b. Two checks on estimates made from logs.** *Notes:* Panel A compares off-policy estimates of the extra visits under a targeting policy with a feature-adjusted benchmark from the experiment, on logs that favor likely visitors (moderate setting). Each dot is the mean error over 200 logs as a share of the benchmark, averaged over four policies; the bar spans the four policies, and the shaded band marks ±10%. The gray text gives the mean absolute error of a single log, which is the quantity the plan's accuracy rule names; the rule was not met. IPS is inverse probability weighting, SNIPS its self-normalized form and DR the doubly robust estimator; "logged" and "estimated" refer to the probability of assignment. The unweighted comparison is off the scale. Panel B shows predicted over actual conversions for impressions in the three days after a retraining cutoff, for a network trained on the conversions seen at the cutoff, the same network with a delayed-feedback likelihood, and LightGBM trained on complete 30-day labels (dashed), with 95% intervals; 1 is exact calibration in aggregate, and the shaded band is the pre-specified 0.90 to 1.10. Studies 02e and 02f.
+**Figure 3b. Two checks on estimates made from logs.** *Notes:* Panel A compares off-policy estimates of the extra visits under a targeting policy with a feature-adjusted benchmark from the experiment, on logs that favor likely visitors (moderate setting, 200 logs of about 1.6 million users). Each dot is the mean absolute error of a single log as a share of the benchmark, averaged over the three policies of the pre-specified rule; the bar spans the three policies, and the shaded band marks the 10% of the rule. IPS is inverse probability weighting, SNIPS its self-normalized form and DR the doubly robust estimator; "logged" and "estimated" refer to the probability of assignment. The unweighted comparison is off the scale. Panel B shows predicted over actual conversions within 14 days, on each of nine test days after daily retraining, for a network trained on the conversions seen at the cutoff (grey), the same network with a delayed-feedback likelihood (navy) and a network trained on complete labels (dashed); the pooled values are written at the right, 1 is exact calibration in aggregate, and the shaded band is the pre-specified 0.95 to 1.05 for the pooled value. Studies 02e and 02f.
 
 A marketing mix model can measure a channel only where spending on that channel varies sufficiently on its own. In
 simulations with known returns on real spending, a signal-to-noise index computed from the planted contribution,
@@ -119,7 +122,7 @@ frequency alone. Fitting all brands in a single model did not improve the estima
 
 **Figure 4. When a marketing mix model can measure a channel.** *Notes:* Panel A plots the absolute relative error of a channel's estimated return on ad spend (ROAS) against a signal-to-noise index computed from the planted contribution before the model is fitted, for 54 brand-channel pairs in a held-out simulation with known returns on real daily spending; the dashed line marks the threshold of 2, fixed before the held-out test, and the horizontal lines the median error on each side. Panel B shows the share of brand-channel pairs with an index of 2 or more, in the weekly and the daily simulation. Study 02c.
 
-<sub><b>Methods.</b> Attribution counts set against the experiment of section 1; regression and double machine learning for the adjusted estimates. Credit rules on 6.1M display-ad paths. A replay of two bidders on 4.6M logged impressions at their logged prices. Marketing mix simulations with known returns on the real spend of 31 to 34 e-commerce brands, with the index tested on simulations it had not seen. Inverse propensity, self-normalized and doubly robust estimators on 400 logs built from the experiment by rejection sampling. A delayed-feedback network in PyTorch on 16.5M impressions, retrained at days 14, 21 and 28.</sub>
+<sub><b>Methods.</b> Attribution counts set against the experiment of section 1; regression and double machine learning for the adjusted estimates. Credit rules on 6.1M display-ad paths. A replay of two bidders on 4.6M logged impressions at their logged prices. Marketing mix simulations with known returns on the real spend of 31 to 34 e-commerce brands, with the index tested on simulations it had not seen. Inverse propensity, self-normalized and doubly robust estimators on 400 logs of 1.4 to 1.6 million users built from the experiment by rejection sampling, with the attainable precision calculated before the run. A delayed-feedback network in PyTorch on 16.5M impressions, retrained daily for nine days.</sub>
 
 ## 3. Measuring the effect again requires a test, and a large one for conversions.
 
@@ -133,16 +136,19 @@ characteristics recorded before the test reduces this to about 4,400 ([03a](03_p
 Conversions are about 20 times rarer than visits, and the required sample grows by the same factor: detecting a 10%
 lift requires 849,000 users per group for conversions, against 41,000 for visits ([01c](01_with_an_experiment/01c_sql_metric_readout)).
 
-Visits cannot stand in for conversions in a smaller test. An estimate that converts the extra visits at the rate
-predicted for visitors of their kind is 0.049 points, 42% of the 0.116 measured directly, and a third after
-adjustment for the user features; the margin of ±20% set in advance was not met. Among visitors, 6.36% converted in
-the ad group against 5.03% in the control group. Because assignment can also change who visits, this describes the
-gap and does not identify how the ads worked. The errors of the two estimates are equal at about 8,900 users per
-group, where each is about 65% of the effect ([03d](03_planning_a_test/03d_surrogate_outcome)).
+Visits cannot give the size of the conversion effect, but they show where it is. An estimate that converts the
+extra visits at the rate predicted for visitors of their kind is 0.049 points, 42% of the 0.116 measured directly,
+and a third after adjustment for the user features; the margin of ±20% set in advance was not met. Among visitors,
+6.36% converted in the ad group against 5.03% in the control group; because assignment can also change who visits,
+this describes the gap and does not identify how the ads worked. Across 100 user segments, however, the effects on
+visits and on conversions move together (a correlation of 0.95 after removing sampling noise). In a test of 2% of the
+users, too small to read conversions by segment, choosing the 20 segments with the largest visit effect picked
+segments with a 15% larger conversion effect than choosing by conversions, in 20 of 20 samples; both thresholds set
+in advance were met ([03d](03_planning_a_test/03d_surrogate_outcome)).
 
-<a href="https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03d"><img src="figures/figure5b.png" alt="Two panels: the effect on the conversion rate estimated directly and from visits; error of the direct and the visit-based estimate by test size." width="100%"></a>
+<a href="https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03d"><img src="figures/figure5b.png" alt="Two panels: the effect on the conversion rate estimated directly and from visits; conversion effect of segments chosen by visits or by conversions in small test samples." width="100%"></a>
 
-**Figure 5b. How much of the conversion effect a visit-based estimate contains.** *Notes:* Panel A shows unadjusted estimates of the effect of assignment on the conversion rate, on the half of the experiment not used to fit the models: the direct difference between groups (the shaded band repeats its 95% confidence interval), visits times a fixed conversion rate, and a surrogate index from a model of which visitors convert, fitted on control-group visitors of the other half or on visitors of both groups; with 95% confidence intervals and each estimate's share of the direct one. The pre-specified test compared the 90% interval of the relative difference, −61% to −54%, with a margin of ±20%. Panel B shows the root mean squared error of the direct estimate and of the surrogate index against the direct estimate on that half, for equal groups. The curves use the estimated bias and variances, each dot summarizes 500 resampled tests at one of four sizes, and the dashed line marks where the curves cross. Study 03d.
+**Figure 5b. Visits understate the conversion effect but find where it is.** *Notes:* Panel A shows unadjusted estimates of the effect of assignment on the conversion rate, on the half of the experiment not used to fit the models: the direct difference between groups (the shaded band repeats its 95% confidence interval), visits times a fixed conversion rate, and a surrogate index from a model of which visitors convert, fitted on control-group visitors of the other half or on visitors of both groups; with 95% confidence intervals and each estimate's share of the direct one. The pre-specified test compared the 90% interval of the relative difference, −61% to −54%, with a margin of ±20%. Panel B shows, for test samples of 1% to 20% of the experiment drawn from the other half, the conversion effect on the first half of the 20 of 100 user segments chosen by their visit effect or by their conversion effect in the sample; small dots are 20 samples, large dots their means. The dashed lines mark random choice and the 20 best segments on the first half, an upper reference biased upward. Study 03d.
 
 When only whole markets can be randomized, the test is less sensitive. In placebo tests on housing-market series for
 151 U.S. metros, a two-month test in 100 metros detects a 6.7% change with regression adjustment on pre-period volume,
@@ -152,7 +158,7 @@ A test plan also requires a baseline at every level at which the result will be 
 housing-market series made separately for each level differed from the sum of the forecasts one level below by 3.5%
 to 5.2% at the three parent levels (US, divisions, states) until they were reconciled ([03c](03_planning_a_test/03c_hierarchical_forecasting)).
 
-<sub><b>Methods.</b> For users, 2,000 resampled studies per sample size with A/A checks, and the two-proportion sample-size formula. For markets, 5,000 placebo tests per design. For forecasts, 24 rolling forecast origins on a hierarchy of 873 series. For the visit-based estimate, a surrogate index from a model of which visitors convert, with 500 resampled tests per size.</sub>
+<sub><b>Methods.</b> For users, 2,000 resampled studies per sample size with A/A checks, and the two-proportion sample-size formula. For markets, 5,000 placebo tests per design. For forecasts, 24 rolling forecast origins on a hierarchy of 873 series. For the visit-based estimate, a surrogate index from a model of which visitors convert, with 500 resampled tests per size, and a noise-corrected correlation of segment effects with 20 disjoint 2% samples.</sub>
 
 ## 4. Customer counts require the same scrutiny.
 
@@ -170,7 +176,7 @@ past sales performed better than the model ([04](04_customer_metrics_retention))
 
 <sub><b>Methods.</b> Two years of transactions (794,163 lines, 5,875 accounts; no ads in these data). The metric tables rebuilt in SQL match the Python results in all 92 cells.</sub>
 
-## 5. Thirteen pre-specified tests were not passed.
+## 5. Eight pre-specified tests were not passed.
 
 Each of the following fell short of a threshold that was fixed before the result was seen.
 
@@ -181,21 +187,13 @@ Each of the following fell short of a threshold that was fixed before the result
 - Ranking segments by estimated lift did not reliably outperform ranking by response rate at a 30% budget, although it
   did at 10% and 20% ([01d](01_with_an_experiment/01d_private_segment_effects)).
 - The purchase model did not outperform a past-sales rule in ranking 12-month sales ([04](04_customer_metrics_retention)).
-- The effect on visits did not recover the effect on conversions within ±20%
-  ([03d](03_planning_a_test/03d_surrogate_outcome)).
-- A delayed-feedback model did not reach the calibration band at all three retraining cutoffs; it missed at day 14
+- The effect on visits did not recover the size of the effect on conversions within ±20%, although it ranked
+  segments by their conversion effect ([03d](03_planning_a_test/03d_surrogate_outcome)).
+- A delayed-feedback model corrected the level of a conversion forecast but did not lower its log loss
   ([02f](02_without_an_experiment/02f_delayed_conversions)).
-- A GRU over the user's recent impressions did not improve the delayed-feedback model
-  ([02f](02_without_an_experiment/02f_delayed_conversions)).
-- A Weibull delay did not improve the day-14 calibration of the delayed-feedback model when scored as planned, on
-  the probability of converting at any time ([02f](02_without_an_experiment/02f_delayed_conversions)).
-- In a first design that assumed a constant assignment share, the mean of doubly robust estimates from biased logs
-  did not come within 10% of the experiment's unadjusted policy values ([02e](02_without_an_experiment/02e_off_policy_evaluation)).
-- In the second design, inverse probability weighting with the logged probability did not reach a mean absolute error
-  below 10% of the benchmark: one log is off by 22% to 53% on average, although the mean over logs is within 3% and
-  the interval coverage met its 90% ([02e](02_without_an_experiment/02e_off_policy_evaluation)).
-- In the same design, the doubly robust estimator with an estimated probability did not reach it either: 22% to 50%
-  for one log, with a mean within 6% and coverage above 90% ([02e](02_without_an_experiment/02e_off_policy_evaluation)).
+
+Studies 02e and 02f each record earlier designs whose pre-specified rules were not met, and why the design changed;
+the list above holds the final designs.
 
 ## 6. Published research reports the same pattern.
 
@@ -221,10 +219,10 @@ suggests. The full comparison, result by result and with references, is in [RELA
   identified effect on investor attention remains ([Liaukonytė and Žaldokas 2022](https://doi.org/10.1287/mnsc.2021.4003)).
 - **Proxies and logged data.** A surrogate index recovers a long-run effect when the treatment acts only through
   the proxies ([Athey et al. 2026](https://doi.org/10.3386/w26463)); here the visit-based index was 42% of the
-  directly measured effect on conversions ([03d](03_planning_a_test/03d_surrogate_outcome)). The doubly robust estimator is accurate when either the
+  directly measured effect on conversions, yet ranked segments correctly ([03d](03_planning_a_test/03d_surrogate_outcome)). The doubly robust estimator is accurate when either the
   outcome model or the model of the logging policy is good ([Dudík, Langford, and Li 2011](https://arxiv.org/abs/1103.4601));
-  in study [02e](02_without_an_experiment/02e_off_policy_evaluation) its mean stayed within 6% of the benchmark where inverse weighting with the same estimated
-  propensity lost most of the lift.
+  in study [02e](02_without_an_experiment/02e_off_policy_evaluation) one log's estimate stayed within 6% of the benchmark under strong bias where inverse weighting with the same estimated
+  propensity fell about a third short.
 - **Where the field is going.** Calibrated on 2,226 experiment–conversion-event pairs from 839 experiments,
   campaign-level measures that include last-click counts explain 88% of the variation in incremental conversions per dollar, against 19% for last-click attribution
   alone ([Gordon, Moakler, and Zettelmeyer 2026](https://www.nber.org/papers/w35044)). Attribution becomes informative once it is calibrated
@@ -266,7 +264,7 @@ results, limits and the commands to reproduce it.
 | Uplift models (T-, X- and DR-learner, causal forest) and targeting curves | 01a |
 | Surrogate index for a rare outcome; bias against variance by test size | 03d |
 | Off-policy evaluation (inverse propensity, self-normalized and doubly robust estimators) on logs built from an experiment | 02e |
-| Delayed-feedback conversion models and a GRU over user histories (PyTorch) | 02f |
+| Delayed-feedback conversion models with a non-parametric delay, under simulated daily retraining (PyTorch) | 02f |
 | Spark SQL: the readout queries rerun on Spark and checked cell by cell against DuckDB | 01c |
 | Bayesian multilevel models (NUTS) | 01b, 01d, 02c |
 | Differential privacy (Laplace mechanism on counts) | 01d |

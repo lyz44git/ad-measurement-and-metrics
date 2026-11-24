@@ -1,0 +1,21 @@
+[    14s] prepared 16,468,027 impressions, 675 campaigns
+[    15s] cutoff 22: train 8,000,814 (seen 0.0303, complete 0.0395), older than the window 546,166, test 528,347
+[    79s]   predicted/actual: {"labels_seen": 0.861, "complete_only": 0.644, "delay": 1.006, "reference": 1.006}
+[    81s] cutoff 23: train 8,529,161 (seen 0.0310, complete 0.0396), older than the window 1,110,960, test 506,792
+[   151s]   predicted/actual: {"labels_seen": 0.966, "complete_only": 1.08, "delay": 1.132, "reference": 1.109}
+[   153s] cutoff 24: train 9,035,953 (seen 0.0315, complete 0.0395), older than the window 1,611,343, test 436,408
+[   210s]   predicted/actual: {"labels_seen": 0.912, "complete_only": 0.515, "delay": 1.09, "reference": 1.041}
+[   212s] cutoff 25: train 9,472,361 (seen 0.0317, complete 0.0394), older than the window 2,072,250, test 507,128
+[   277s]   predicted/actual: {"labels_seen": 0.816, "complete_only": 1.992, "delay": 0.953, "reference": 0.966}
+[   279s] cutoff 26: train 9,979,489 (seen 0.0320, complete 0.0392), older than the window 2,646,661, test 581,336
+[   351s]   predicted/actual: {"labels_seen": 0.915, "complete_only": 0.912, "delay": 1.075, "reference": 1.016}
+[   353s] cutoff 27: train 10,560,825 (seen 0.0322, complete 0.0391), older than the window 3,255,984, test 518,487
+[   421s]   predicted/actual: {"labels_seen": 0.887, "complete_only": 0.775, "delay": 1.056, "reference": 0.993}
+[   423s] cutoff 28: train 11,079,312 (seen 0.0325, complete 0.0390), older than the window 3,809,073, test 459,375
+[   500s]   predicted/actual: {"labels_seen": 0.869, "complete_only": 1.004, "delay": 0.954, "reference": 0.959}
+[   502s] cutoff 29: train 11,538,687 (seen 0.0329, complete 0.0390), older than the window 4,331,136, test 493,827
+[   600s]   predicted/actual: {"labels_seen": 0.818, "complete_only": 0.928, "delay": 0.911, "reference": 0.906}
+[   602s] cutoff 30: train 12,032,514 (seen 0.0333, complete 0.0391), older than the window 4,836,944, test 468,451
+[   689s]   predicted/actual: {"labels_seen": 0.923, "complete_only": 0.895, "delay": 0.989, "reference": 1.007}
+[   759s] pooled: {"labels_seen": 0.885, "complete_only": 0.967, "delay": 1.018, "reference": 1.0} gap closed 0.03
+[   759s] decision {"1_level_is_corrected": true, "2_fit_improves": false}

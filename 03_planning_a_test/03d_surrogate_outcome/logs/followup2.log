@@ -1,0 +1,8 @@
+[    28s] segments built
+[    28s] direction: {"corrected": 0.9452547209287221, "raw": 0.9173837025909869, "signal_share_visit": 0.9881474469851108, "signal_share_conversion": 0.9410068502145481, "ci90": [0.879780843469184, 0.9501857020834462], "draws_undefined": 0}
+[    29s] 1%: by visit 0.3731 pp, by conversion 0.3229 pp, visit higher in 18/20
+[    29s] 2%: by visit 0.3936 pp, by conversion 0.3415 pp, visit higher in 20/20
+[    30s] 5%: by visit 0.4084 pp, by conversion 0.3681 pp, visit higher in 20/20
+[    32s] 10%: by visit 0.4169 pp, by conversion 0.3955 pp, visit higher in 19/20
+[    35s] 20%: by visit 0.4160 pp, by conversion 0.4084 pp, visit higher in 16/20
+[    35s] decision {"1_visits_point_the_same_way": true, "2_visits_choose_better_in_a_small_test": true}

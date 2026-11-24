@@ -2,14 +2,14 @@
 
 **[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02e)**
 
-> **Takeaway.** On average, a biased log gives the right answer; a single log gives it only roughly. On 200 logs
-> that favor likely visitors, inverse probability weighting (IPS) with the logged probability of assignment is within
-> 3% of a feature-adjusted benchmark from the experiment for each of four targeting policies, and the doubly robust
-> estimator (DR) with an estimated probability within 6%; the 95% intervals of both cover the benchmark in 94% to 97%
-> of logs. One log of about 108,000 rows is off by 22% to 53% on average, so the accuracy rules of the plan, a mean
-> absolute error below 10%, were not met. IPS with an estimated probability loses 67% to 83% of the lift, and an
-> unweighted comparison gives 6 to 10 times the benchmark. A first design, which assumed that every user had the
-> same chance of assignment, also missed its rule; why is part of the result.
+> **Takeaway.** Yes, it can be read from a biased log, if the log is large enough. On logs of about 1.6 million rows
+> that favor likely visitors, so that an unweighted comparison gives 3 to 4 times the lift, the doubly robust
+> estimator (DR) with an estimated probability of assignment is off by 2.5% to 2.7% of a feature-adjusted
+> experimental benchmark in a single log, and inverse probability weighting (IPS) with the logged probability by 3.0%
+> to 3.9%, for each of three targeting policies; their 95% intervals cover the benchmark in 97.5% to 99% of logs. Both
+> pre-specified rules were met. Under a stronger bias DR stays within 5% to 6%, while IPS with an estimated
+> probability falls 29% to 35% short and its intervals almost never cover the benchmark. Two earlier designs, with
+> logs of about 108,000 rows, did not meet their rules; why is below.
 
 ## Question
 
@@ -24,153 +24,174 @@ study checks an estimate of what a rule that has not run would bring.
 
 Criteo Uplift Prediction Dataset v2.1, the experiment of [study 01a](../../01_with_an_experiment/01a_ad_incrementality):
 13,979,592 rows, outcome `visit`. A random 30% of rows (4,192,415) fits the policies' models and an assignment
-model, 35% (4,894,241; the log part) is the source of the logs and of the benchmark, and 35% (4,892,936) replicates
-the benchmark. Pass the path to `criteo-research-uplift-v2.1.csv.gz`.
+model; the other 70% is the pool that the logs are drawn from and the benchmark is computed on. Rows of the pool whose
+estimated assignment probability lies outside its 0.5th to 99.5th percentile are dropped, which leaves 9,689,305
+rows. Pass the path to `criteo-research-uplift-v2.1.csv.gz`.
 
 ## Method
 
-The plan of this design, [`design/analysis_plan_v2.md`](design/analysis_plan_v2.md), was fixed after the first design
-and its follow-ups, whose results were known, and before this design ran (SHA-256 in `logs/plan_v2_hash.txt`). The
-plan calls the benchmark "the truth".
+The plan of this design, [`design/analysis_plan_v3.md`](design/analysis_plan_v3.md), was fixed after the two earlier
+designs and a calculation of the attainable precision, and before any log of this design was drawn (SHA-256 in
+`logs/plan_v3_hash.txt`).
 
-1. **Policies.** Assign to ads: every user; a fixed random 20%; the top 20% by a response model P(visit | X); the top
-   20% by a T-learner's predicted uplift. LightGBM, fitted on the model part.
+1. **Policies.** Assign to ads: every user; the top 20% by a response model P(visit | X); the top 20% by a
+   T-learner's predicted uplift; a fixed random 20%. LightGBM, fitted on the model part.
 2. **Assignment model.** In this pooled release the probability of assignment varies slightly with the features
-   (held-out ROC AUC 0.509; between 0.83 and 0.90 for 98% of users). A LightGBM model r̂(x) of it is fitted on the
-   model part.
+   (held-out ROC AUC 0.509). A LightGBM model r̂(x) of it is fitted on the model part; on the trimmed pool it lies
+   between 0.83 and 0.92.
 3. **Benchmark.** The lift of each policy over assigning nobody, in extra visits per 1,000 users, by AIPW on the whole
-   log part with r̂(x) and cross-fitted outcome models. It is an estimate from the experiment, not a known value. The
-   logs are subsamples of the same rows, so the sampling error of the log part does not enter the comparison.
-4. **Logs.** Rejection sampling from the experiment (Gentzel, Pruthi and Jensen 2021): from 2,000,000 rows of the log
-   part, keep a treated row with probability c · e(x) / r̂(x) and a control row with probability
-   c · (1 − e(x)) / (1 − r̂(x)), with c = 0.054. If r̂(x) is the assignment probability, the probability of assignment
-   among kept rows is e(x) = sigmoid(β · z(x)), clipped to [0.02, 0.98], where z is the standardized logit of the
-   response model: likely visitors are more often assigned. About 108,000 rows per log. Two settings, β = 1
-   (moderate) and β = 2 (strong), 200 logs each.
-5. **Estimators.** An unweighted comparison of the rows whose logged assignment agrees with the policy with the rows
-   assigned to no ads (the "naive" estimator of the result files); the direct method (DM, outcome models only); IPS
-   and DR with the logged e(x); IPS, self-normalized IPS (SNIPS) and DR (Dudík, Langford and Li 2011) with a
-   propensity model fitted on the log. Outcome and propensity models are LightGBM with 300 trees, cross-fitted in two
-   folds. 95% normal intervals from per-row contributions.
-6. **Decision rules (moderate setting).** (1) IPS with the logged propensity, a check of the construction, and
-   (2) DR with an estimated propensity, the primary rule, each have a mean absolute error below 10% of the benchmark
-   and coverage of at least 90% for each of the four policies. The run compared the absolute value of the *mean*
-   error with 10%, which is a different quantity. The rules are read here as written, and both quantities are
-   reported ([`design/erratum.md`](design/erratum.md)).
+   pool with r̂(x) and cross-fitted outcome models. It is an estimate from the experiment, not a known value. The logs
+   are drawn from the same rows, so the pool's own sampling error does not enter the comparison.
+4. **Logs.** Rejection sampling from the experiment (Gentzel, Pruthi and Jensen 2021): every row of the pool is kept,
+   a treated row with probability c · e(x) / r̂(x) and a control row with probability c · (1 − e(x)) / (1 − r̂(x)).
+   If r̂(x) is the assignment probability, the probability of assignment among kept rows is
+   e(x) = sigmoid(β · z(x)), clipped to [0.02, 0.98], where z is the standardized logit of the response model: likely
+   visitors are more often assigned. Three settings: mild (β = 0.1), moderate (β = 0.25) and strong (β = 1); 100, 200
+   and 100 logs.
+5. **Precision calculated before the run.** For each setting, the expected rows of a log and the standard error that
+   IPS with the logged propensity would have on one log follow from the pool without drawing a log
+   ([`code/design_calc_v3.py`](code/design_calc_v3.py)). In the moderate setting: about 1.65 million rows and a mean
+   absolute error of 3.9% to 4.4% for the three larger policies and 10.2% for the random 20% policy.
+6. **Estimators.** An unweighted comparison of the rows whose logged assignment agrees with the policy with the rows
+   assigned to no ads; the direct method (DM, outcome models only); IPS and DR with the logged e(x); IPS,
+   self-normalized IPS (SNIPS) and DR (Dudík, Langford and Li 2011) with a propensity model fitted on the log. Outcome
+   and propensity models are LightGBM with 300 trees, cross-fitted in two folds. 95% normal intervals from per-row
+   contributions.
+7. **Decision rules (moderate setting; all users, response 20% and uplift 20%).** (1) IPS with the logged propensity
+   and (2) DR with an estimated propensity, the primary rule, each have a **mean absolute error of one log** below 10%
+   of the benchmark and 95% interval coverage of at least 90%. The random 20% policy is reported and not part of the
+   rules: its lift is a fifth of the others and its calculated error was 10.2%, at the threshold itself.
 
 ## Results
 
-Sources: [`out/ope_v2.json`](out/ope_v2.json); [`out/ope_v2_accuracy.json`](out/ope_v2_accuracy.json) for the errors
-of single logs; every estimate of every log is in [`out/ope_v2_logs.csv`](out/ope_v2_logs.csv).
+Sources: [`out/ope_v3.json`](out/ope_v3.json), [`out/design_calc_v3.json`](out/design_calc_v3.json); every estimate
+of every log is in `out/ope_v3_logs.csv`.
 
 **Benchmark** (extra visits per 1,000 users):
 
-| Policy | AIPW with r̂, log part (benchmark, SE) | Same, other part | AIPW with the constant 0.85 | IPS with r̂ | Unadjusted |
-|---|---|---|---|---|---|
-| All users | 7.41 (0.22) | 7.41 | 7.41 | 7.45 | 10.48 |
-| Response model 20% | 6.70 (0.21) | 6.62 | 6.70 | 6.75 | 9.83 |
-| Uplift model 20% | 6.42 (0.18) | 6.29 | 6.42 | 6.47 | 9.59 |
-| Random 20% | 1.41 (0.10) | 1.34 | 1.46 | 1.38 | 2.04 |
+| Policy | AIPW with r̂ (benchmark, SE) | IPS with r̂ | Unadjusted |
+|---|---|---|---|
+| All users | 6.58 (0.15) | 6.43 | 8.83 (+34%) |
+| Response model 20% | 5.84 (0.14) | 5.70 | 8.15 (+39%) |
+| Uplift model 20% | 5.54 (0.12) | 5.48 | 7.85 (+42%) |
+| Random 20% | 1.21 (0.07) | 1.15 | 1.65 (+36%) |
 
-The three adjusted estimates agree within 0.05 visits per 1,000 for every policy but one, and the benchmark is close
-on the other part. The unadjusted comparison is 42% to 49% higher: in this release a slightly uneven assignment share
-among the most likely visitors moves it, as study 01a's gap between its unadjusted and adjusted effects (1.03 against
-0.77 points) also shows.
+The unadjusted value, which takes the assignment share as the same for every user, is 34% to 42% higher: in this
+release a slightly uneven assignment share among the most likely visitors moves it, as study 01a's gap between its
+unadjusted and adjusted effects (1.03 against 0.77 points) also shows.
 
-**Moderate setting.** In each cell, the mean error over 200 logs and the mean absolute error of one log, as shares
-of the benchmark; coverage of the 95% intervals over the four policies:
+**Moderate setting** (logs of 1.65 million rows, half of them assigned to ads). In each cell, the mean error over 200
+logs and the mean absolute error of one log, as shares of the benchmark; then coverage of the 95% intervals for the
+three policies of the rules:
 
 | Estimator | All users | Response 20% | Uplift 20% | Random 20% | Coverage |
 |---|---|---|---|---|---|
-| Unweighted comparison | +901% / 901% | +682% / 682% | +534% / 534% | +902% / 902% |  |
-| Direct method | +50% / 50% | +48% / 49% | +37% / 37% | +56% / 57% |  |
-| **IPS, logged propensity** | **0% / 22%** | **−1% / 24%** | **−2% / 22%** | **+3% / 53%** | **94.5% to 97.0%** |
-| DR, logged propensity | 0% / 17% | −1% / 19% | −2% / 18% | +4% / 42% | 96.0% to 96.5% |
-| **DR, estimated propensity** | **−4% / 23%** | **−5% / 25%** | **−6% / 22%** | **0% / 50%** | **94.0% to 96.5%** |
-| SNIPS, estimated propensity | −65% / 65% | −69% / 69% | −55% / 56% | −63% / 76% |  |
-| IPS, estimated propensity | −75% / 75% | −83% / 83% | −67% / 67% | −73% / 86% | 38.0% to 90.0% |
+| Unweighted comparison | +311% / 311% | +272% / 272% | +208% / 208% | +334% / 334% |  |
+| Direct method | +1% / 2.9% | 0% / 2.9% | 0% / 2.3% | +10% / 9.8% |  |
+| **IPS, logged propensity** | **−2% / 3.6%** | **−3% / 3.9%** | **−1% / 3.0%** | −5% / 8.9% | **97.5% to 99.0%** |
+| DR, logged propensity | 0% / 2.6% | 0% / 2.7% | 0% / 2.4% | +1% / 6.6% | 98.0% to 98.5% |
+| **DR, estimated propensity** | **0% / 2.6%** | **0% / 2.7%** | **0% / 2.5%** | +1% / 6.7% | **98.0% to 98.5%** |
+| SNIPS, estimated propensity | −3% / 3.6% | −4% / 4.2% | −4% / 4.0% | −5% / 8.8% |  |
+| IPS, estimated propensity | −3% / 3.8% | −4% / 4.3% | −4% / 4.0% | −6% / 9.4% | 96.5% to 98.0% |
 
-- **Neither pre-specified rule was met as written.** Coverage met its condition (94% to 97% for both estimators).
-  The mean absolute error is 22% to 53% for IPS with the logged propensity and 22% to 50% for DR with an estimated
-  one, above the 10% of the plan for every policy. What the run had checked, and what the first plan had named, is
-  the mean error, which is within 3% and 6% ([`design/erratum.md`](design/erratum.md)).
-- **On average the estimators are right, and their intervals say how far one log can be off.** The 95% interval of a
-  single log is about ±55% of the benchmark for the three larger policies and wider than the benchmark for the
-  random 20% policy, whose lift is 1.4 visits per 1,000. The lift per assigned user is small next to the visit rate,
-  so about 108,000 rows do not pin it down. A team with one log would report the interval, not the point.
-- **The logged probability is what keeps the average right.** With it, IPS needs no model. Without it, the mean of
-  DR is still within 6%, while IPS and SNIPS with the same estimated propensity lose most of the lift and the direct
-  method is 37% to 56% too high.
-- **Why IPS with an estimated propensity fails.** Among untreated rows in the top decile of the logging propensity,
-  the mean weight 1/(1 − ê) is 10.5 against 9.1 for 1/(1 − e), and 12.6 against 10.8 among those with a visit (first
-  50 logs). The weight is convex in the propensity, so estimation error near 1 raises its mean even when ê is right
-  on average. The untreated likely visitors are counted too often, the visit rate without ads is overstated, and the
-  lift, a difference of two rates that are close, mostly disappears.
-- **Ranking the three 20% policies** in the benchmark's order: the unweighted comparison in 100% and DM in 98.5% of
-  logs, because they rank policies by how likely to visit the users they treat are, which happens to be the order
-  here; IPS with the logged propensity in 64% and DR in 61%. The response and uplift policies are 0.28 visits per
-  1,000 apart, about one standard error, so their order is close to a coin flip for an estimator that is right on
-  average.
+- **Both pre-specified rules were met.** The mean absolute error of one log is 3.0% to 3.9% for IPS with the logged
+  propensity, close to the 3.9% to 4.4% calculated before the run, and 2.5% to 2.7% for DR with an estimated
+  propensity. Coverage is 97.5% to 99%.
+- **Coverage is above the nominal 95%.** Each log holds about 17% of the pool and the benchmark is computed on the
+  whole pool, so a log's error and the benchmark's share part of the sampling noise; the intervals, which allow for
+  all of it, are therefore conservative here.
+- **The random 20% policy**, outside the rules, is off by 6.7% (DR) and 8.9% (IPS) in one log: its lift is 1.2 visits
+  per 1,000, a fifth of the others, on the same noise.
+- **Ranking the three 20% policies** in the benchmark's order: DR in 100% of logs, IPS with the logged propensity in
+  92%, the unweighted comparison in 100%, because it ranks policies by how likely to visit the users they treat are,
+  which happens to be the order here.
 
-**Strong setting** (propensities from 0.09 to 0.98): the mean of IPS with the logged propensity stays within 16% of
-the benchmark (coverage 95% to 98%) and that of DR with it within 16%; DR with an estimated propensity is 29% to 53%
-below the benchmark (coverage 92% to 94%); IPS with an estimated propensity turns negative; DM is 88% to 123% above
-and the unweighted comparison 6.9 to 12.8 times the benchmark. The stronger the bias of the log, the more the answer
-depends on having recorded the probability.
+**Strong setting** (logs of 1.36 million rows; the unweighted comparison is 6.7 to 10.5 times the benchmark):
+
+| Estimator | Mean error | Mean absolute error, one log | Coverage |
+|---|---|---|---|
+| IPS, logged propensity | −1% to −3% | 6.6% to 8.0% | 93% to 95% |
+| **DR, estimated propensity** | **+1%** | **5.2% to 5.7%** | **95% to 97%** |
+| Direct method | +7% to +10% | 7.3% to 10.0% |  |
+| SNIPS, estimated propensity | −26% to −32% | 25.6% to 31.6% |  |
+| IPS, estimated propensity | −29% to −35% | 28.6% to 35.3% | 4% to 10% |
+
+(three larger policies). The stronger the bias of the log, the more an estimate depends on having either the
+recorded probability or an outcome model. IPS with an estimated probability is close in the moderate setting and
+fails here: among untreated rows that were very likely to be assigned, the weight 1/(1 − ê) is convex in the
+estimate, so small errors in ê near 1 raise the weights of untreated likely visitors, overstate the visit rate without
+ads and shrink the lift. DR's outcome model carries most of the estimate where those weights are unreliable.
+
+**Mild setting** (100 logs, the unweighted comparison 1.9 to 2.3 times the benchmark): every weighted estimator and DM
+are within 2.1% to 3.9% for the three larger policies.
 
 [![Error and interval coverage of off-policy estimators, and the experiment's value with and without adjustment](out/fig_ope.png)](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02e)
 
 ## How this design came about
 
-The first design ([`design/analysis_plan.md`](design/analysis_plan.md); results in [`out/ope.json`](out/ope.json))
-built the logs as if every user had been assigned with probability 0.85 and took the unadjusted lift as the
-benchmark. Its rule, a mean bias of DR within 10% with 90% coverage, was not met: DR was 32% to 35% below that value.
-Two follow-ups, each planned and hashed before it ran ([`design/followup_plan.md`](design/followup_plan.md),
-[`design/followup_plan_2.md`](design/followup_plan_2.md); results in [`out/followup.json`](out/followup.json) and
-[`out/followup2.json`](out/followup2.json)), found:
+**First design** ([`design/analysis_plan.md`](design/analysis_plan.md); results in [`out/ope.json`](out/ope.json)).
+It built logs as if every user had been assigned with probability 0.85 and took the unadjusted lift as the benchmark.
+Its rule, a mean bias of DR within 10% with 90% coverage, was not met: DR was 32% to 35% below that value. Two
+follow-ups, each planned and hashed before it ran ([`design/followup_plan.md`](design/followup_plan.md),
+[`design/followup_plan_2.md`](design/followup_plan_2.md); [`out/followup.json`](out/followup.json),
+[`out/followup2.json`](out/followup2.json)), found that the propensity model was well calibrated, that a model of
+assignment on the features has a held-out AUC of 0.509 and that the feature-adjusted lift of every policy is 28% to
+32% below the unadjusted one. The constant 0.85 was therefore not the logging probability.
 
-1. The propensity model was calibrated within 0.01 in every decile of the true propensity, and DR given the "known"
-   propensity was as far off, so the propensity model was not the cause.
-2. A model of assignment on the features has a held-out AUC of 0.509, and the feature-adjusted lift of every policy is
-   28% to 32% below the unadjusted one. The constant 0.85 was therefore not the logging probability, and the
-   unadjusted lift not the only candidate for the benchmark.
-3. Against the adjusted value, the mean of the first design's DR was within 6%, with 95% to 97% coverage.
+**Second design** ([`design/analysis_plan_v2.md`](design/analysis_plan_v2.md); [`out/ope_v2.json`](out/ope_v2.json),
+[`out/ope_v2_accuracy.json`](out/ope_v2_accuracy.json)). It built the logs and the benchmark on r̂(x). On average
+over 200 logs IPS with the logged propensity was within 3% of the benchmark and DR within 6%, but a single log was
+off by 22% to 53%, so its rules, a mean absolute error below 10%, were not met. The code had compared the absolute
+mean error instead ([`design/erratum.md`](design/erratum.md)). Three faults, none in the estimators:
 
-The second design was planned with these results in hand: the sampling scheme and the benchmark were changed after
-it was known that DR was close to the adjusted value on average. It is a design chosen after a failure and a
-diagnosis, not an independent confirmation.
+1. The logs were too small for the rule. A log kept 5.4% of 2,000,000 candidate rows, about 108,000, because the
+   experiment assigns only 15% of users to control and a few rows with an extreme r̂ capped the keep constant. At that
+   size IPS has a standard error of about a quarter of the lift, so no single log could be within 10%. The attainable
+   precision had not been calculated before the rule was written.
+2. Its "moderate" setting overstated the lift about tenfold in the unweighted comparison; it is this design's strong
+   setting.
+3. The rule's wording and the code named different quantities.
 
-In a sensitivity check on 20 logs, not committed, keeping identical rows in one cross-fitting fold gave the same
-bias, so the file's duplicate rows (study 01c: 16% of rows have an exact twin) are an unlikely cause. One deviation
-from the first plan, made on simulated data before the Criteo file was read, is in
-[`design/deviations.md`](design/deviations.md): the nuisance models use 300 trees, not 100, because 100 left the
-propensity model compressed toward 0.5.
+**This design** fixes the three: every row of the trimmed pool is a candidate, the precision is calculated before the
+rule is set, two milder settings are added, and the code compares the quantity the plan names, with the functions
+written for the erratum. It was planned with the results of the first two designs known and is drawn from the same
+experiment, so it is a third design on data already seen, not an independent replication. After the run, the
+"unadjusted" column of the benchmark was found to have been computed as an unweighted comparison rather than as the
+policy value with a constant assignment share; [`code/fix_unadjusted_v3.py`](code/fix_unadjusted_v3.py) recomputes it
+and keeps the first value in the result file. No estimate or rule uses that column.
+
+In a sensitivity check on 20 logs of the first design, not committed, keeping identical rows in one cross-fitting fold
+gave the same bias, so the file's duplicate rows (study 01c: 16% of rows have an exact twin) are an unlikely cause.
+One deviation from the first plan, made on simulated data before the Criteo file was read, is in
+[`design/deviations.md`](design/deviations.md): the nuisance models use 300 trees, not 100.
 
 ## Reproduce
 
 ```bash
-python code/run_ope_v2.py /path/to/criteo-research-uplift-v2.1.csv.gz out      # this design, about 25 minutes on 32 cores
-python code/accuracy_from_logs.py out                                          # single-log errors and the rules as written, seconds
-python code/run_ope.py /path/to/criteo-research-uplift-v2.1.csv.gz out         # first design, about 10 minutes
-python code/run_followup.py /path/to/criteo-research-uplift-v2.1.csv.gz out    # first follow-up, about 20 minutes
-python code/run_followup2.py /path/to/criteo-research-uplift-v2.1.csv.gz out   # second follow-up, about 6 minutes
+python code/design_calc_v3.py /path/to/criteo-research-uplift-v2.1.csv.gz out    # precision before the run, 2 minutes
+python code/run_ope_v3.py /path/to/criteo-research-uplift-v2.1.csv.gz out        # this design, about an hour on 32 cores
+python code/fix_unadjusted_v3.py /path/to/criteo-research-uplift-v2.1.csv.gz out # the unadjusted column, 2 minutes
+python code/run_ope_v2.py /path/to/criteo-research-uplift-v2.1.csv.gz out        # second design, about 25 minutes
+python code/accuracy_from_logs.py out                                            # second design's single-log errors
+python code/run_ope.py /path/to/criteo-research-uplift-v2.1.csv.gz out           # first design, about 10 minutes
+python code/run_followup.py /path/to/criteo-research-uplift-v2.1.csv.gz out      # first follow-up, about 20 minutes
+python code/run_followup2.py /path/to/criteo-research-uplift-v2.1.csv.gz out     # second follow-up, about 6 minutes
 ```
 
 `tests/` checks on simulated experiments that the policy value from the experiment recovers a known lift, that logs
-have the intended propensity and the experiment's feature distribution, that IPS and DR recover the lift where the
-unweighted comparison does not, that a propensity model with too few trees is compressed toward 0.5, that when the
-assignment share varies with the features a constant-share benchmark is biased while AIPW with the true share and
-logs built on it are not, and that a mean error near zero does not imply a small mean absolute error.
+have the intended propensity and the experiment's feature distribution (for both samplers), that IPS and DR recover
+the lift where the unweighted comparison does not, that a propensity model with too few trees is compressed toward
+0.5, that when the assignment share varies with the features a constant-share benchmark is biased while AIPW with the
+true share and logs built on it are not, and that a mean error near zero does not imply a small mean absolute error.
 
 ## Scope
 
 - The logs are built from a randomized experiment, so every confounder is among the features; a real log need not
   have that property, and an estimated propensity is then likely to do worse, not better.
-- The benchmark and the logs both rest on the estimated assignment probability r̂(x). The agreement of three adjusted
-  estimates, their closeness on the other part and the small mean error of IPS with the logged propensity support
-  it; none of them is a known population value.
-- The accuracy figures are for logs of about 108,000 rows. A larger log narrows the error of a single log; it does
-  not remove the bias of the estimators that have one.
+- The benchmark and the logs both rest on the estimated assignment probability r̂(x). The agreement of AIPW and IPS
+  with r̂ and the small error of IPS with the logged propensity support it; neither is a known population value.
+- The accuracy figures are for logs of 1.4 to 1.6 million rows. With about 108,000 rows (second design) one log was
+  off by 22% or more; the error of one log scales roughly with one over the square root of its size.
 - A policy here chooses who may be assigned to ads, not which ad or what bid; only 3.6% of the ad arm saw an ad, so the
-  lift per assigned user is small next to the visit rate, which is what makes the propensity's errors costly.
+  lift per assigned user is small next to the visit rate.
 - One display network; absolute visit rates are not population rates because of the data's subsampling.

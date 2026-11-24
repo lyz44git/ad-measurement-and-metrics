@@ -295,17 +295,16 @@ def fig02e():
 
 
 def fig02f():
-    fig, ax = plt.subplots(1, 3, figsize=(8.4, 3.3), dpi=300, gridspec_kw=dict(width_ratios=[1.1, 0.95, 0.95]))
-    p_delay_calibration(ax[0], "A", "Predicted / actual conversions"); p_delay_logloss(ax[1], "B", "Log loss above complete labels")
-    p_delay_tail(ax[2], "C", "Two tails, 30-day label")
-    fig.subplots_adjust(left=0.07, right=0.985, top=0.84, bottom=0.17, wspace=0.42)
+    fig, ax = plt.subplots(1, 3, figsize=(10.4, 3.3), dpi=300, gridspec_kw=dict(width_ratios=[1.15, 1, 1]))
+    p_delay_daily(ax[0], "A"); p_delay_designs(ax[1], "B"); p_delay_fit(ax[2], "C")
+    fig.subplots_adjust(left=0.06, right=0.985, top=0.84, bottom=0.17, wspace=0.62)
     save(fig, f"{S02F}/out/fig_delay.png")
 
 
 def fig03d():
-    fig, ax = plt.subplots(1, 2, figsize=(7.4, 3.0), dpi=300, gridspec_kw=dict(width_ratios=[1.1, 1]))
-    p_surrogate(ax[0], "A"); p_surrogate_size(ax[1], "B")
-    fig.subplots_adjust(left=0.24, right=0.97, top=0.84, bottom=0.18, wspace=0.42)
+    fig, ax = plt.subplots(1, 3, figsize=(10.6, 3.1), dpi=300, gridspec_kw=dict(width_ratios=[1.1, 1, 1]))
+    p_surrogate(ax[0], "A"); p_surrogate_size(ax[1], "B"); p_surrogate_choice(ax[2], "C")
+    fig.subplots_adjust(left=0.17, right=0.985, top=0.84, bottom=0.18, wspace=0.38)
     save(fig, f"{S03D}/out/fig_surrogate.png")
 
 

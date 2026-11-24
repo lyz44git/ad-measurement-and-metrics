@@ -130,3 +130,44 @@ def test_horizon_prediction_is_p_times_the_delay_cdf():
         _, (ls, lk) = w(t["camp"], t["num"])
     want = 1 - np.exp(-(30.0 / np.exp(ls.numpy())) ** np.exp(lk.numpy()))
     assert np.allclose(f, want, atol=1e-5)
+
+
+# ----------------------------------------------------------------------------- second design (delay_v2.py)
+
+def test_window_features_count_only_the_last_seven_days():
+    import pandas as pd
+    import delay_v2 as v2
+    day = 86400
+    d = pd.DataFrame({"uid": [1, 1, 1, 1, 2], "timestamp": [0, 1 * day, 9 * day, 10 * day, 5 * day],
+                      "campaign": 1, "click": [1, 0, 1, 0, 0], "time_since_last_click": [-1, day, 9 * day, day, -1]})
+    out = v2.prepare(d)
+    assert out.n_prev.tolist() == [0, 1, 0, 1, 0]          # day 9 no longer sees days 0 and 1
+    assert out.n_prev_clicks.tolist() == [0, 1, 0, 1, 0]
+    assert out.no_click_before.tolist() == [1, 0, 1, 0, 1]  # a click 9 days ago is outside the window
+
+
+def test_delay_cdf_and_likelihood_match_a_hand_calculation():
+    import delay_v2 as v2
+    pi = torch.tensor([[0.5, 0.2, 0.1, 0.1, 0.05, 0.03, 0.02]])
+    assert abs(float(v2.delay_cdf(pi, torch.tensor([1.5]))) - 0.6) < 1e-6
+    assert abs(float(v2.delay_cdf(pi, torch.tensor([7.0]))) - 1.0) < 1e-6
+    s, bins = torch.tensor([0.0, 0.0]), torch.log(pi).repeat(2, 1)        # p = 0.5
+    nll = v2.hazard_nll(s, bins, torch.tensor([1.0, 0.0]), torch.tensor([1.2, 0.0]), torch.tensor([3.0, 1.5]))
+    want = -(np.log(0.5 * 0.2) + np.log(1 - 0.5 * 0.6)) / 2
+    assert abs(float(nll) - want) < 1e-5
+
+
+def test_delay_network_recovers_the_rate_from_censored_labels():
+    """Half the rows are watched for one day only; the labels-seen rate is too low, the delay model's is not."""
+    import delay_v2 as v2
+    rng = np.random.default_rng(0); n = 200_000
+    conv = rng.random(n) < 0.10
+    delay = rng.choice(7, n, p=[0.4, 0.2, 0.1, 0.1, 0.1, 0.05, 0.05]) + rng.random(n)
+    elapsed = np.where(rng.random(n) < 0.5, 1.0, 7.0)
+    seen = conv & (delay < elapsed)
+    X = {"camp": torch.zeros(n, dtype=torch.long), "num": torch.zeros(n, 2)}
+    target = {"label": torch.from_numpy(seen.astype(np.float32)), "delay": torch.from_numpy(np.where(seen, delay, 0).astype(np.float32)),
+              "elapsed": torch.from_numpy(elapsed.astype(np.float32))}
+    net = v2.fit(1, "delay", X, target, 0.05, seed=1, epochs=3, bs=2048, lr=5e-3, dev=torch.device("cpu"))
+    p, pi = v2.predict(net, {k: v[:1000] for k, v in X.items()}, dev=torch.device("cpu"))
+    assert seen.mean() < 0.08 and abs(p.mean() - 0.10) < 0.01 and abs(pi[0] - 0.4) < 0.05

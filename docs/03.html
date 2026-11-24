@@ -81,7 +81,7 @@
 <section class="part" id="s03d"><div class="wrap">
   <div class="kicker study-k"><span class="code">03d</span></div>
   <h2 class="serif">Can the effect on visits stand in for the effect on conversions?</h2>
-  <p class="lead">No. An estimate that converts the extra visits at the rate predicted for visitors of their kind is 42% of the directly measured effect on conversions, and a third once both are adjusted for the features; the pre-specified ±20% margin was not met. Among visitors, 6.36% converted in the ad arm against 5.03% in the control arm. Assignment can change who visits, so this describes the gap without identifying how the ads worked.</p>
+  <p class="lead">Not for the size of the effect, but for where it is. An estimate that converts the extra visits at the rate predicted for visitors of their kind is 42% of the directly measured effect on conversions, and a third once both are adjusted for the features; the pre-specified ±20% margin was not met. Across 100 user segments, though, the two effects move together, and in a test of 2% of the users choosing segments by their visit effect picks a 15% larger conversion effect than choosing by conversions, in 20 of 20 samples.</p>
   <a class="gh" href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/03_planning_a_test/03d_surrogate_outcome">Full study on GitHub →</a>
   <div class="card">
     <h3>Direct and visit-based estimates of the effect on the conversion rate</h3>
@@ -95,6 +95,12 @@
     <div id="c-03d-size"></div>
     <p class="note">The curves use the estimated bias and variances and cross at about 8,900 users per arm, where each error is about 65% of the effect. They are for the unadjusted estimates and do not change with the switch above.</p>
   </div>
+  <div class="card">
+    <h3>Choosing 20 of 100 segments in a small test</h3>
+    <p class="sub">Samples drawn from one half of the experiment choose the 20 segments with the largest visit effect or the largest conversion effect; each choice is scored by its conversion effect on the other half. Choose the sample size.</p>
+    <div class="ctrl"><div class="seg" id="seg-03d-choice"></div></div><div id="c-03d-choice"></div><div class="readout" id="ro-03d-choice"></div>
+    <p class="note">Change in the conversion rate of the 20 chosen segments, in points; dots are the mean over 20 samples, bars the range. Across the 100 segments the visit and conversion effects have a correlation of 0.95 after removing sampling noise (90% interval 0.88 to 0.95). The best 20 are chosen and scored on the same half, so they are an upper reference biased upward. Visits still understate the size of the effect.</p>
+  </div>
 </div></section>
 <footer><div class="wrap">
   <div class="pager"><a href="02.html"><small>Previous</small>2 · Without an experiment</a><a class="next" href="04.html"><small>Next</small>4 · Customer metrics</a></div>
@@ -102,7 +108,7 @@
   <p><a href="https://github.com/lyz44git/ad-measurement-and-metrics">The repository on GitHub</a></p>
 </div></footer>
 <div id="tip" role="tooltip"></div>
-<script src="data.js?v=20261124d"></script>
-<script src="assets/explorer.js?v=20261124d"></script>
+<script src="data.js?v=20261125a"></script>
+<script src="assets/explorer.js?v=20261125a"></script>
 </body>
 </html>

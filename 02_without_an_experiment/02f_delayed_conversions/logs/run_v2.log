@@ -1,0 +1,31 @@
+[    12s] prepared 16,468,027 impressions, 675 campaigns
+[    13s] cutoff 17: train 5,314,624 (seen 0.0258, complete 0.0309), older than the window 1,611,343, test 450,258
+[    60s]   predicted/actual: {"labels_seen": 0.868, "complete_only": 1.116, "delay": 0.911, "reference": 0.916}
+[    62s] cutoff 18: train 5,764,882 (seen 0.0262, complete 0.0310), older than the window 2,072,250, test 538,532
+[   219s]   predicted/actual: {"labels_seen": 0.911, "complete_only": 0.745, "delay": 0.998, "reference": 0.925}
+[   221s] cutoff 19: train 6,303,414 (seen 0.0267, complete 0.0311), older than the window 2,646,661, test 582,350
+[   532s]   predicted/actual: {"labels_seen": 0.905, "complete_only": 1.499, "delay": 0.961, "reference": 0.939}
+[   534s] cutoff 20: train 6,885,764 (seen 0.0269, complete 0.0311), older than the window 3,255,984, test 552,965
+[   833s]   predicted/actual: {"labels_seen": 0.976, "complete_only": 0.427, "delay": 1.045, "reference": 1.033}
+[   835s] cutoff 21: train 7,438,729 (seen 0.0273, complete 0.0312), older than the window 3,809,073, test 562,085
+[   921s]   predicted/actual: {"labels_seen": 0.918, "complete_only": 0.997, "delay": 0.939, "reference": 0.913}
+[   923s] cutoff 22: train 8,000,814 (seen 0.0276, complete 0.0311), older than the window 4,331,136, test 528,347
+[   982s]   predicted/actual: {"labels_seen": 0.954, "complete_only": 0.946, "delay": 0.984, "reference": 0.979}
+[   984s] cutoff 23: train 8,529,161 (seen 0.0279, complete 0.0312), older than the window 4,836,944, test 506,792
+[  1329s]   predicted/actual: {"labels_seen": 0.942, "complete_only": 1.006, "delay": 0.976, "reference": 0.958}
+[  1331s] cutoff 24: train 9,035,953 (seen 0.0281, complete 0.0311), older than the window 5,314,624, test 436,408
+[  1921s]   predicted/actual: {"labels_seen": 1.034, "complete_only": 1.074, "delay": 1.024, "reference": 1.088}
+[  1923s] cutoff 25: train 9,472,361 (seen 0.0281, complete 0.0310), older than the window 5,764,882, test 507,128
+[  2447s]   predicted/actual: {"labels_seen": 1.087, "complete_only": 1.002, "delay": 1.108, "reference": 1.116}
+[  2449s] cutoff 26: train 9,979,489 (seen 0.0282, complete 0.0308), older than the window 6,303,414, test 581,336
+[  2720s]   predicted/actual: {"labels_seen": 0.965, "complete_only": 1.02, "delay": 0.99, "reference": 0.981}
+[  2722s] cutoff 27: train 10,560,825 (seen 0.0281, complete 0.0307), older than the window 6,885,764, test 518,487
+[  3042s]   predicted/actual: {"labels_seen": 1.06, "complete_only": 0.99, "delay": 1.07, "reference": 1.075}
+[  3044s] cutoff 28: train 11,079,312 (seen 0.0282, complete 0.0307), older than the window 7,438,729, test 459,375
+[  3488s]   predicted/actual: {"labels_seen": 1.018, "complete_only": 0.921, "delay": 1.046, "reference": 1.036}
+[  3491s] cutoff 29: train 11,538,687 (seen 0.0284, complete 0.0307), older than the window 8,000,814, test 493,827
+[  3608s]   predicted/actual: {"labels_seen": 0.904, "complete_only": 0.961, "delay": 0.939, "reference": 0.916}
+[  3611s] cutoff 30: train 12,032,514 (seen 0.0286, complete 0.0308), older than the window 8,529,161, test 468,451
+[  3721s]   predicted/actual: {"labels_seen": 0.976, "complete_only": 1.037, "delay": 0.98, "reference": 0.97}
+[  3831s] pooled: {"labels_seen": 0.963, "complete_only": 0.98, "delay": 0.997, "reference": 0.986} gap closed -0.16
+[  3831s] decision {"1_delay_is_corrected": false, "2_most_of_the_cost_recovered": false}

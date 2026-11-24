@@ -1060,45 +1060,46 @@ if (has("c-03d-size") && S3d) (function () {
   }
   draw(true); redrawers.push(() => draw(false));
 })();
+if (has("c-03d-choice") && S3d && S3d.choice) (function () {
+  // follow-up 2: the conversion effect of 20 segments chosen in a small sample by visits or by conversions
+  const C = S3d.choice, ro = has("ro-03d-choice"), mean = a => a.reduce((x, y) => x + y, 0) / a.length;
+  const rows = k => { const z = C.sizes[k];
+    const mk = (key, label, short, arr, cls, strong) => ({ label, short, v: mean(arr), lo: Math.min(...arr), hi: Math.max(...arr), strong, text: mean(arr).toFixed(3) + " pp",
+      fcls: "f-" + cls, scls: "s-" + cls, tip: `${label}, samples of ${fmt(z.users)} users<br>mean over 20 samples ${mean(arr).toFixed(3)} pp (range ${Math.min(...arr).toFixed(3)} to ${Math.max(...arr).toFixed(3)})` });
+    return [mk("v", "Chosen by visit effect", "By visits", z.visit, "navy", true), mk("c", "Chosen by conversion effect", "By conversions", z.conv, "grey", false),
+      { label: "Random choice", short: "Random", v: C.ref.random, lo: C.ref.random, hi: C.ref.random, text: C.ref.random.toFixed(3) + " pp", fcls: "f-grey", scls: "s-grey", tip: "Random choice: the mean conversion effect over all 100 segments" },
+      { label: "Best 20 (upper reference)", short: "Best 20", v: C.ref.best_on_experiment_half, lo: C.ref.best_on_experiment_half, hi: C.ref.best_on_experiment_half, text: C.ref.best_on_experiment_half.toFixed(3) + " pp",
+        fcls: "f-orange", scls: "s-orange", tip: "The 20 segments best on the scoring half, chosen and scored on the same data, so biased upward" }]; };
+  const note = k => { const z = C.sizes[k];
+    ro.innerHTML = kv("Chosen by visits", mean(z.visit).toFixed(3), "navy", "pp") + kv("Chosen by conversions", mean(z.conv).toFixed(3), "grey", "pp") + kv("Visits better in", z.better + " of 20", "navy", "samples"); };
+  let k = "2%";
+  const chart = dotRows(has("c-03d-choice"), { rows: rows(k), dom: [0, 0.5], ticks: [0, 0.1, 0.2, 0.3, 0.4, 0.5], label: 220, rh: 40, top: 22, fmtT: v => v.toFixed(1), intro: true });
+  makeSeg(has("seg-03d-choice"), Object.keys(C.sizes).map(x => [x, x + " of users"]), k, v => { k = v; chart.update(rows(v), [0, 0.5]); note(v); }); note(k);
+})();
 /* ---------- 02f ---------- */
 if (has("c-02f-cal") && S2f) (function () {
-  const Bd = S2f, ro = has("ro-02f-cal"), cls = { naive_lightgbm: ["grey", "grey"], naive_network: ["grey", "grey"], delay_network: ["navy", "navy"], weibull_network: ["blue", "blue"], delay_sequence_network: ["light", "blue"], oracle_lightgbm: ["orange", "orange"] };
-  const short = { naive_lightgbm: "LightGBM, seen", naive_network: "Network, seen", delay_network: "Delay, exponential", weibull_network: "Delay, Weibull",
-    delay_sequence_network: "Delay + GRU", oracle_lightgbm: "30-day (reference)" };
-  const rows = T => Bd.cut[T].rows.map(r => ({ label: r.key === "oracle_lightgbm" ? "LightGBM, 30-day labels (reference)" : r.label, short: short[r.key], v: r.v, lo: r.lo, hi: r.hi, text: r.v.toFixed(3),
-    strong: r.key === "delay_network" || r.key === "weibull_network", fcls: "f-" + cls[r.key][0], scls: "s-" + cls[r.key][1],
-    tip: `${r.label}: predicted / actual ${r.v.toFixed(3)} (95% interval ${r.lo.toFixed(3)} to ${r.hi.toFixed(3)})` }));
-  const note = T => { const c = Bd.cut[T], d = c.rows.find(r => r.key === "delay_network").v;
-    ro.innerHTML = kv("Delayed feedback, exponential", d.toFixed(3), "navy", "predicted / actual") + kv(d < 1 ? "Too few" : "Too many", Math.abs(100 * (1 - d)).toFixed(0) + "%", "navy")
-      + kv(`Arrive after day ${T}`, (100 * c.beyond).toFixed(0) + "%", "orange", "of 30-day conversions"); };
-  let T = "14";
-  const chart = dotRows(has("c-02f-cal"), { rows: rows(T), dom: [0.5, 1.2], ticks: [0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2], label: 250, rh: 38, top: 22,
-    band: [0.9, 1.1], bandLabel: ["pre-specified 0.90 to 1.10", "t-orange"], refs: [{ v: 1, cls: "s-grey", label: "" }], intro: true });
-  makeSeg(has("seg-02f-cal"), Object.keys(Bd.cut).map(t => [t, "Retrained on day " + t]), T, v => { T = v; chart.update(rows(v), [0.5, 1.2]); note(v); }); note(T);
+  // final design: predicted over actual 14-day conversions, pooled over nine test days or for one day
+  const Bd = S2f, ro = has("ro-02f-cal"), cls = { labels_seen: "grey", complete_only: "blue", delay: "navy", reference: "orange" };
+  const short = { labels_seen: "Labels seen", complete_only: "Complete only", delay: "Delay model", reference: "Complete labels" };
+  const rows = T => Bd.cut[T].map(r => ({ label: r.label, short: short[r.key], v: r.v, lo: r.lo == null ? r.v : r.lo, hi: r.hi == null ? r.v : r.hi, text: r.v.toFixed(3),
+    strong: r.key === "delay", fcls: "f-" + cls[r.key], scls: "s-" + cls[r.key],
+    tip: `${r.label}: predicted / actual ${r.v.toFixed(3)}` + (r.lo == null ? "" : ` (95% interval ${r.lo.toFixed(3)} to ${r.hi.toFixed(3)})`) }));
+  const note = T => { const g = k => Bd.cut[T].find(r => r.key === k).v;
+    ro.innerHTML = kv("Labels seen", (100 * (1 - g("labels_seen"))).toFixed(1) + "%", "grey", "too few") + kv("Delayed-feedback network", Math.abs(100 * (g("delay") - 1)).toFixed(1) + "%", "navy", g("delay") >= 1 ? "too many" : "too few")
+      + kv("Complete labels (reference)", g("reference").toFixed(3), "orange", "predicted / actual"); };
+  let T = "pooled";
+  const chart = dotRows(has("c-02f-cal"), { rows: rows(T), dom: [0.4, 1.4], ticks: [0.4, 0.6, 0.8, 1, 1.2, 1.4], label: 250, rh: 40, top: 22, fmtT: v => v.toFixed(1),
+    band: [0.95, 1.05], bandLabel: ["pre-specified 0.95 to 1.05 (pooled)", "t-orange"], refs: [{ v: 1, cls: "s-grey", label: "" }], intro: true });
+  makeSeg(has("seg-02f-cal"), [["pooled", "All nine days"]].concat(Object.keys(Bd.cut).filter(t => t !== "pooled").map(t => [t, "Day " + t])), T,
+    v => { T = v; chart.update(rows(v), [0.4, 1.4]); note(v); }); note(T);
 })();
-if (has("c-02f-tail") && S2f) (function () {
-  // why day 14 falls short: the share of conversions that arrive after the cutoff against the delay model's shortfall
-  const host = has("c-02f-tail"), Bd = S2f, Ts = Object.keys(Bd.cut);
-  const data = Ts.map(T => ({ T, beyond: 100 * Bd.cut[T].beyond, short: 100 * (1 - Bd.cut[T].rows.find(r => r.key === "delay_network").v) }));
-  function draw(anim) {
-    const w = W(host), L = w < 520 ? 60 : 150, R = w - 46, rh = 64, T0 = 8, h = T0 + Ts.length * rh + 34, svg = svgIn(host, w, h), x = lin(-5, 25, L, R);
-    (w < 520 ? [0, 10, 20] : [-5, 0, 5, 10, 15, 20, 25]).forEach(v => { el("line", { x1: x(v), x2: x(v), y1: T0, y2: h - 30, class: v === 0 ? "axis" : "gridl" }, svg); txt(svg, x(v), h - 12, v + "%", { "text-anchor": "middle", class: "t-muted", "font-size": 11 }); });
-    const bars = [];
-    data.forEach((d, i) => {
-      const y = T0 + i * rh, g = el("g", { class: "hot" }, svg);
-      txt(g, 0, y + rh / 2 + 4, w < 520 ? `Day ${d.T}` : `Retrained on day ${d.T}`, { class: "t-strong", "font-size": 12.5 });
-      [["beyond", "orange", 14], ["short", "navy", 36]].forEach(([k, c, dy]) => {
-        const v = d[k], x0 = x(Math.min(0, v)), wd = Math.abs(x(v) - x(0));
-        const r = el("rect", { x: anim && !reduce ? x(0) : x0, y: y + dy - 8, width: anim && !reduce ? 0 : wd, height: 16, rx: 4, class: "f-" + c }, g);
-        const t = txt(g, Math.max(x(v), x(0)) + 6, y + dy + 4, `${v >= 0 ? "" : "−"}${Math.abs(v).toFixed(0)}%`, { class: `t-${c}`, "font-size": 11.5 });
-        bars.push([r, { x: x0, width: wd }, t]);
-      });
-      hoverTip(g, `Retrained on day ${d.T}<br>${d.beyond.toFixed(1)}% of 30-day conversions arrive more than ${d.T} days after the impression<br>Delay model: ${d.short >= 0 ? d.short.toFixed(1) + "% too few" : (-d.short).toFixed(1) + "% too many"}`);
-    });
-    if (anim && !reduce) { bars.forEach(b => b[2].setAttribute("opacity", 0));
-      whenVisible(host, () => bars.forEach((b, i) => setTimeout(() => animate([[b[0], b[1]], [b[2], { opacity: 1 }]], 800), 150 * i))); }
-  }
-  draw(true); redrawers.push(() => draw(false));
+if (has("c-02f-tail") && S2f && S2f.fit) (function () {
+  // fit and ranking of the final design: log loss above the reference, with ROC AUC in the label
+  const Bd = S2f, cls = { labels_seen: "grey", complete_only: "blue", delay: "navy" };
+  const short = { labels_seen: "Labels seen", complete_only: "Complete only", delay: "Delay model" };
+  const rows = Bd.fit.map(r => ({ label: r.label, short: short[r.key], v: r.ll, lo: r.lo, hi: r.hi, strong: r.key === "delay", text: `+${r.ll.toFixed(2)} · AUC ${r.auc.toFixed(3)}`,
+    fcls: "f-" + cls[r.key], scls: "s-" + cls[r.key], tip: `${r.label}<br>log loss above the reference: ${r.ll.toFixed(2)} ×10⁻³<br>ROC AUC ${r.auc.toFixed(3)} (reference ${Bd.auc_ref.toFixed(3)})` }));
+  dotRows(has("c-02f-tail"), { rows, dom: [0, 8], ticks: [0, 2, 4, 6, 8], label: 250, rh: 40, top: 22, right: 120, intro: true });
 })();
 /* ---------- 02e ---------- */
 if (has("c-02e") && S2e) (function () {
@@ -1109,7 +1110,7 @@ if (has("c-02e") && S2e) (function () {
     return { label: r.label, short: { naive: "Naive", dm: "Direct method", ips_known: "IPS, logged", ips_estimated: "IPS, estimated", snips: "SNIPS, estimated",
       dr_known: "DR, logged", dr: "DR, estimated" }[r.key], v: off ? d[1] : r.mean, lo: off ? d[1] : r.p02, hi: off ? d[1] : r.p98, strong: r.key === "ips_known" || r.key === "dr",
       text: off ? `${r.mean.toFixed(1)} →` : `${r.mean.toFixed(1)}` + (r.cov == null ? "" : ` · ${Math.round(100 * r.cov)}%`), fcls: "f-" + color[r.key], scls: "s-" + color[r.key],
-      tip: `${r.label}<br>mean over 200 logs ${r.mean.toFixed(2)} (benchmark ${C.truth[pol].v.toFixed(2)})<br>middle 95% of logs ${r.p02.toFixed(2)} to ${r.p98.toFixed(2)}<br>one log is off by ${Math.round(100 * r.mae)}% of the benchmark on average` + (r.cov == null ? "" : `<br>95% intervals cover the benchmark in ${Math.round(100 * r.cov)}% of logs`) + (off ? "<br>off the scale; show it to scale above" : "") }; });
+      tip: `${r.label}<br>mean over the logs ${r.mean.toFixed(2)} (benchmark ${C.truth[pol].v.toFixed(2)})<br>middle 95% of logs ${r.p02.toFixed(2)} to ${r.p98.toFixed(2)}<br>one log is off by ${Math.round(100 * r.mae)}% of the benchmark on average` + (r.cov == null ? "" : `<br>95% intervals cover the benchmark in ${Math.round(100 * r.cov)}% of logs`) + (off ? "<br>off the scale; show it to scale above" : "") }; });
   const band = () => [C.truth[pol].v - 1.96 * C.truth[pol].se, C.truth[pol].v + 1.96 * C.truth[pol].se];
   const ticks = d => { const step = d[1] > 40 ? 20 : d[1] > 16 ? 5 : 2; const t = []; for (let v = 0; v <= d[1]; v += step) t.push(v); return t; };
   let d = dom();
@@ -1119,7 +1120,7 @@ if (has("c-02e") && S2e) (function () {
     const by = k => C.est[st][pol].find(r => r.key === k);
     ro.innerHTML = kv("Benchmark from the experiment", C.truth[pol].v.toFixed(2), "navy", "extra visits per 1,000") + kv("IPS, logged propensity: mean", by("ips_known").mean.toFixed(2), "navy", `one log off by ${Math.round(100 * by("ips_known").mae)}%`)
       + kv("DR, estimated propensity: mean", by("dr").mean.toFixed(2), "navy", `one log off by ${Math.round(100 * by("dr").mae)}%`) + kv("Unweighted comparison", by("naive").mean.toFixed(1), "orange", `${(by("naive").mean / C.truth[pol].v).toFixed(1)}× the benchmark`); };
-  makeSeg(has("seg-02e-set"), [["moderate", "Moderate bias"], ["strong", "Strong bias"]], st, v => { st = v; redo(); });
+  makeSeg(has("seg-02e-set"), [["mild", "Mild bias"], ["moderate", "Moderate bias"], ["strong", "Strong bias"]], st, v => { st = v; redo(); });
   makeSeg(has("seg-02e-pol"), Object.entries(C.policies), pol, v => { pol = v; redo(); });
   if (has("seg-02e-zoom")) makeSeg(has("seg-02e-zoom"), [["zoom", "Zoom on the estimators"], ["all", "Unweighted comparison to scale"]], "zoom", v => { zoom = v === "zoom"; redo(); });
   redo();

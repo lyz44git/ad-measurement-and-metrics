@@ -210,27 +210,26 @@ def added_studies():
     t = sa["test_size"]
     size = {"n": t["grid_n"], "direct": [r(100 * v, 5) for v in t["rmse_direct"]], "surr": [r(100 * v, 5) for v in t["rmse_surrogate"]],
             "cross": round(t["crossover_n_per_arm"]), "pts": [{"n": int(k), "direct": r(100 * v["direct"], 5), "surr": r(100 * v["surrogate_index"], 5)} for k, v in t["resampling"].items()]}
-    db = load("02_without_an_experiment/02f_delayed_conversions/out/delay.json"); f1 = load("02_without_an_experiment/02f_delayed_conversions/out/followup.json")
-    f2 = load("02_without_an_experiment/02f_delayed_conversions/out/followup2.json")
-    labels = [("naive_lightgbm", "LightGBM, labels seen"), ("naive_network", "Network, labels seen"), ("delay_network", "Delayed feedback, exponential"),
-              ("weibull_network", "Delayed feedback, Weibull"), ("delay_sequence_network", "Exponential + GRU over history"), ("oracle_lightgbm", "LightGBM, 30-day labels")]
-    cut = {}
-    for T, c in db["cutoffs"].items():
-        rows_ = []
-        for k, lab in labels:
-            m = f2["cutoffs"][T]["models_p_times_F30"]["weibull"] if k == "weibull_network" else c["models"][k]
-            cr = m["calibration_ratio"]
-            rows_.append({"key": k, "label": lab, "v": r(cr["estimate"], 4), "lo": r(cr["ci95"][0], 4), "hi": r(cr["ci95"][1], 4)})
-        cut[T] = {"beyond": r(f1["share_of_30_day_conversions_with_delay_longer_than"][T], 4), "rows": rows_}
-    oc = load("02_without_an_experiment/02e_off_policy_evaluation/out/ope_v2.json")
-    acc = load("02_without_an_experiment/02e_off_policy_evaluation/out/ope_v2_accuracy.json")["settings"]
+    d3 = load("02_without_an_experiment/02f_delayed_conversions/out/delay_v3.json")
+    labels = [("labels_seen", "Network, labels seen"), ("complete_only", "Network, complete labels only"),
+              ("delay", "Delayed-feedback network"), ("reference", "Network, complete labels (reference)")]
+    P = d3["pooled"]["models"]
+    cut = {"pooled": [{"key": k, "label": lab, "v": r(P[k]["calibration_ratio"]["estimate"], 4), "lo": r(P[k]["calibration_ratio"]["ci95"][0], 4),
+                       "hi": r(P[k]["calibration_ratio"]["ci95"][1], 4)} for k, lab in labels]}
+    for T, c in d3["cutoffs"].items():
+        cut[T] = [{"key": k, "label": lab, "v": r(c["models"][k]["calibration_ratio"], 4), "lo": None, "hi": None} for k, lab in labels]
+    fit = [{"key": k, "label": lab, "ll": r(1000 * (P[k]["log_loss"]["estimate"] - P["reference"]["log_loss"]["estimate"]), 3),
+            "lo": r(1000 * (P[k]["log_loss"]["ci95"][0] - P["reference"]["log_loss"]["estimate"]), 3),
+            "hi": r(1000 * (P[k]["log_loss"]["ci95"][1] - P["reference"]["log_loss"]["estimate"]), 3),
+            "auc": r(P[k]["roc_auc"]["estimate"], 4)} for k, lab in labels if k != "reference"]
+    oc = load("02_without_an_experiment/02e_off_policy_evaluation/out/ope_v3.json")
     pol = {"all": "All users", "response_20": "Response 20%", "uplift_20": "Uplift 20%", "random_20": "Random 20%"}
     est_names = [("naive", "Unweighted comparison"), ("dm", "Direct method"), ("ips_known", "IPS, logged propensity"), ("ips_estimated", "IPS, estimated propensity"),
                  ("snips", "SNIPS, estimated propensity"), ("dr_known", "DR, logged propensity"), ("dr", "DR, estimated propensity")]
-    logs = rows("02_without_an_experiment/02e_off_policy_evaluation/out/ope_v2_logs.csv")
+    logs = rows("02_without_an_experiment/02e_off_policy_evaluation/out/ope_v3_logs.csv")
     import numpy as np
     est = {}
-    for st in ("moderate", "strong"):
+    for st in ("mild", "moderate", "strong"):
         est[st] = {}
         for pk in pol:
             lst = []
@@ -239,12 +238,17 @@ def added_studies():
                 cov = oc["settings"][st]["summary"][pk][k].get("coverage95")
                 lst.append({"key": k, "label": lab, "mean": r(float(x.mean()), 3), "p02": r(float(np.quantile(x, 0.025)), 3),
                             "p98": r(float(np.quantile(x, 0.975)), 3), "cov": None if cov is None else r(cov, 3),
-                            "mae": r(acc[st][pk][k]["mean_absolute_error"], 3)})
+                            "mae": r(oc["settings"][st]["summary"][pk][k]["mean_absolute_error"], 3)})
             est[st][pk] = lst
-    truth = {pk: {"v": r(oc["truth_log_part"][pk]["aipw_r"], 3), "se": r(oc["truth_log_part"][pk]["aipw_r_se"], 3),
-             "u": r(oc["truth_log_part"][pk]["unadjusted"], 3)} for pk in pol}
-    rows_n = {st: round(oc["settings"][st]["log_rows_mean"]) for st in ("moderate", "strong")}
-    return {"s03d": {"rows": {"unadjusted": unadj, "adjusted": adj}, "size": size}, "s02f": {"cut": cut},
+    truth = {pk: {"v": r(oc["benchmark"][pk]["aipw_r"], 3), "se": r(oc["benchmark"][pk]["aipw_r_se"], 3),
+             "u": r(oc["benchmark"][pk]["unadjusted"], 3)} for pk in pol}
+    rows_n = {st: round(oc["settings"][st]["log_rows_mean"]) for st in ("mild", "moderate", "strong")}
+    f3 = load("03_planning_a_test/03d_surrogate_outcome/out/followup2.json")
+    choice = {"ref": {k: r(v, 4) for k, v in f3["choice_reference_pp"].items()}, "corr": r(f3["direction"]["corrected"], 3),
+              "corr_ci": [r(x, 3) for x in f3["direction"]["ci90"]],
+              "sizes": {k: {"users": v["users"], "visit": [r(d["by_visit"], 4) for d in v["draws"]], "conv": [r(d["by_conversion"], 4) for d in v["draws"]],
+                            "better": v["visit_higher_in"]} for k, v in f3["choice"].items()}}
+    return {"s03d": {"rows": {"unadjusted": unadj, "adjusted": adj}, "size": size, "choice": choice}, "s02f": {"cut": cut, "fit": fit, "auc_ref": r(P["reference"]["roc_auc"]["estimate"], 4)},
             "s02e": {"policies": pol, "truth": truth, "est": est, "rows": rows_n}}
 
 

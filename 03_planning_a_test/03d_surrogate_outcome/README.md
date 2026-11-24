@@ -2,12 +2,14 @@
 
 **[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/03.html#s03d)**
 
-> **Takeaway.** No, in this experiment. An estimate that converts the extra visits at the rate predicted for visitors
-> of their kind is 0.049 points, 42% of the 0.116 measured directly, and the pre-specified equivalence margin of ±20%
-> was not met. Among visitors, 6.36% converted in the ad arm against 5.03% in the control arm, although the mean
-> predicted rates are the same; assignment can change who visits, so this describes the gap and does not identify how
-> the ads worked. The two estimates have equal error at about 8,900 users per arm, where each error is about 65% of
-> the effect. Adjusted for the features, the visit-based estimate is a third of the direct one (follow-up).
+> **Takeaway.** Visits cannot give the size of the effect on conversions, but they point to where it is. An estimate
+> that converts the extra visits at the rate predicted for visitors of their kind is 0.049 points, 42% of the 0.116
+> measured directly (a third after adjustment for the features), so the pre-specified equivalence margin of ±20% was
+> not met. Across 100 user segments, however, the effects on visits and on conversions rise and fall together (a
+> correlation of 0.95 after removing sampling noise; 90% interval 0.88 to 0.95), and in a 2% test, too small to read
+> conversions by segment, choosing the 20 segments with the largest visit effect picks segments with a 15% larger
+> conversion effect than choosing by the conversion effect itself, in 20 of 20 samples. Both rules of that follow-up
+> were met. Use visits to decide where; measure conversions to decide how much.
 
 ## Question
 
@@ -112,16 +114,57 @@ assignment model fitted on the historical half and outcome models cross-fitted o
 - The crossover above was calculated for the unadjusted estimates. It was not estimated for the adjusted comparison,
   where the absolute gap is about the same (0.066 against 0.067 points).
 
+## Follow-up 2: do visits point to the right segments?
+
+A team often needs to know where the effect is larger, for instance which segments to target, rather than its exact
+size, and a small test has too few conversions to tell. A second follow-up plan
+([`design/followup_plan_2.md`](design/followup_plan_2.md), hashed before it ran) asked whether visits can do that.
+Segments are the 100 of [study 01b](../../01_with_an_experiment/01b_bayesian_segment_effects) (equal-size groups by
+rank on six features). Source: [`out/followup2.json`](out/followup2.json).
+
+**Direction.** On the experiment half, the visit effect of a segment ranges from −0.17 to 8.4 points and its
+conversion effect from −0.04 to 1.20 points; the top 20 segments by conversion effect hold 82% of it. Across the 100
+segments the two effects have a correlation of 0.92, and 0.95 (90% interval 0.88 to 0.95) once the sampling noise of
+each segment's two estimates, including their shared noise, is removed. **Rule 1** (at least 0.7, lower end at least
+0.5) **was met.**
+
+**Choosing segments in a small test.** In each of 20 disjoint 2% samples of the historical half (279,592 users, about
+2,800 per segment and 420 of them in the control arm), the 20 segments with the largest visit effect and, separately,
+the 20 with the largest conversion effect were chosen and scored by their conversion effect on the experiment half,
+which shares no user with the sample:
+
+| Sample (share of the experiment) | Chosen by visit effect (points) | Chosen by conversion effect (points) | Visits better in | Share of attainable gain: visits / conversions |
+|---|---|---|---|---|
+| 1% | 0.373 | 0.323 | 18 of 20 | 83% / 67% |
+| **2%** | **0.394** | **0.342** | **20 of 20** | **89% / 73%** |
+| 5% | 0.408 | 0.368 | 20 of 20 | 93% / 81% |
+| 10% | 0.417 | 0.396 | 19 of 20 | 96% / 90% |
+| 20% | 0.416 | 0.408 | 16 of 20 | 96% / 93% |
+
+Random choice gives 0.105 points and the 20 best segments on the experiment half 0.430; the share of attainable gain
+is the position between the two, and the upper reference is biased upward because the same data choose and score.
+**Rule 2** (higher on average in 2% samples, and in at least 15 of 20) **was met.**
+
+- A segment's conversion count in a 2% sample is a handful, so choosing by conversions is mostly noise; visits are
+  about 20 times as frequent and move with conversions across segments, so choosing by visits is closer to right. As
+  the sample grows the conversion-based choice catches up: at 20% of the experiment the two are within 2%.
+- This is the same trade as the crossover above, seen in a decision: a biased but precise signal beats an unbiased but
+  noisy one when the test is small.
+- The correlation is across these 100 segments of six anonymized features; it need not hold for other groupings, and
+  it says nothing about the size of the effect, which visits still understate.
+
 ## Reproduce
 
 ```bash
 python code/run_surrogate.py /path/to/criteo-research-uplift-v2.1.csv.gz out    # about 4 minutes on 32 cores
 python code/run_followup.py /path/to/criteo-research-uplift-v2.1.csv.gz out     # follow-up, about 10 minutes
+python code/run_followup2.py /path/to/criteo-research-uplift-v2.1.csv.gz out    # follow-up 2, under a minute
 ```
 
 `tests/` checks on simulated experiments that the surrogate index recovers the effect when visits carry all of it,
 that it understates the effect when the ads also raise conversion among visitors, the equivalence rule, that the
-crossover is where the two error curves meet, and that the resampled error of the direct estimate matches the formula.
+crossover is where the two error curves meet, that the resampled error of the direct estimate matches the formula, and
+that the noise-corrected correlation of follow-up 2 recovers a known correlation from noisy segment estimates.
 
 ## Scope
 

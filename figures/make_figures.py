@@ -75,15 +75,15 @@ def figure3b():
     """Section 2, added studies: the value of a policy that never ran, and conversions that have not arrived yet."""
     fig, ax = plt.subplots(1, 2, figsize=(7.4, 3.3), dpi=300, gridspec_kw=dict(width_ratios=[1.25, 1]))
     p_ope_error(ax[0], "A", title="Value of a policy from a biased log")
-    p_delay_calibration(ax[1], "B", "Conversions not yet arrived", keys=("naive_network", "delay_network", "oracle_lightgbm"))
+    p_delay_daily(ax[1], "B", "Conversions not yet arrived")
     fig.subplots_adjust(left=0.2, right=0.975, top=0.83, bottom=0.17, wspace=0.42)
     save(fig, "figures/figure3b.png")
 
 
 def figure5b():
-    """Section 3, added study: can a smaller test read the conversion effect from visits?"""
+    """Section 3, added study: visits understate the conversion effect but choose the right segments in a small test."""
     fig, ax = plt.subplots(1, 2, figsize=(7.4, 3.0), dpi=300, gridspec_kw=dict(width_ratios=[1.1, 1]))
-    p_surrogate(ax[0], "A", "Conversion effect from visits"); p_surrogate_size(ax[1], "B", "Error by test size")
+    p_surrogate(ax[0], "A", "Conversion effect from visits"); p_surrogate_choice(ax[1], "B", "Choosing segments in a small test")
     fig.subplots_adjust(left=0.24, right=0.97, top=0.84, bottom=0.18, wspace=0.42)
     save(fig, "figures/figure5b.png")
 

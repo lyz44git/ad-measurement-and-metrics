@@ -74,9 +74,9 @@
 
   <div class="card">
     <h3>What a targeting policy is worth, estimated from a biased log</h3>
-    <p class="sub">The same check for a decision not yet taken: 200 logs that favor likely visitors, each estimate set against a feature-adjusted benchmark from the experiment. Dots are averages over logs; one log is much less exact. Choose how strong the bias is and which policy to value.</p>
+    <p class="sub">The same check for a decision not yet taken: logs of about 1.6 million users that favor likely visitors, each estimate set against a feature-adjusted benchmark from the experiment. In the moderate setting one log's doubly robust estimate is off by about 3%. Choose how strong the bias is and which policy to value.</p>
     <div class="ctrl"><div class="seg" id="seg-02e-set"></div></div><div class="ctrl"><div class="seg" id="seg-02e-pol"></div></div><div class="ctrl"><div class="seg" id="seg-02e-zoom"></div></div><div id="c-02e"></div><div class="readout" id="ro-02e"></div>
-    <p class="src">Study <a href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/02_without_an_experiment/02e_off_policy_evaluation">02e</a>. Extra visits per 1,000 users; dots are means over 200 logs, bars the middle 95% of logs, the shaded band the benchmark with its 95% interval.</p>
+    <p class="src">Study <a href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/02_without_an_experiment/02e_off_policy_evaluation">02e</a>. Extra visits per 1,000 users; dots are means over the logs, bars the middle 95% of logs, the shaded band the benchmark with its 95% interval.</p>
   </div>
 
   <div class="card">
@@ -98,9 +98,9 @@
 
   <div class="card">
     <h3>A bidder's model is trained before its conversions arrive</h3>
-    <p class="sub">Predicted over actual conversions for models retrained before the labels arrive, scored on the next three days against 30-day labels. Choose the retraining day.</p>
+    <p class="sub">Predicted over actual conversions within 14 days, for networks retrained each day before the labels arrive and scored on that day. A delay model brings an 11.5% shortfall to 1.8% over. Choose all nine days or one.</p>
     <div class="ctrl"><div class="seg" id="seg-02f-cal"></div></div><div id="c-02f-cal"></div><div class="readout" id="ro-02f-cal"></div>
-    <p class="src">Study <a href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/02_without_an_experiment/02f_delayed_conversions">02f</a>. 16.5 million impressions of the same log; the shaded band is the pre-specified 0.90 to 1.10.</p>
+    <p class="src">Study <a href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/02_without_an_experiment/02f_delayed_conversions">02f</a>. 16.5 million impressions of the same log; the shaded band is the pre-specified 0.95 to 1.05 for the nine days pooled.</p>
   </div>
 
   <div class="card">
@@ -131,10 +131,10 @@
   </div>
 
   <div class="card">
-    <h3>Can the conversion effect be read from visits instead?</h3>
-    <p class="sub">The surrogate index converts extra visits at the rate predicted for visitors of their kind.</p>
-    <div class="ctrl"><div class="seg" id="seg-03d-est"></div></div><div id="c-03d-est"></div><div class="readout" id="ro-03d-est"></div>
-    <p class="src">Study <a href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/03_planning_a_test/03d_surrogate_outcome">03d</a>. Half of the experiment (7.0 million users); 95% intervals, the shaded band is the direct estimate's.</p>
+    <h3>Visits understate the conversion effect but find where it is</h3>
+    <p class="sub">A visit-based estimate is 42% of the conversion effect measured directly. Choosing 20 of 100 segments in a small test, though, visits pick segments with a larger conversion effect than the scarce conversions do. Choose the test size.</p>
+    <div class="ctrl"><div class="seg" id="seg-03d-choice"></div></div><div id="c-03d-choice"></div><div class="readout" id="ro-03d-choice"></div>
+    <p class="src">Study <a href="https://github.com/lyz44git/ad-measurement-and-metrics/tree/main/03_planning_a_test/03d_surrogate_outcome">03d</a>. Conversion effect of the chosen segments on the other half of the experiment, in points; dots are means over 20 samples, bars the range.</p>
   </div>
 
   <div class="row2">
@@ -186,7 +186,7 @@
   <p><a href="https://github.com/lyz44git/ad-measurement-and-metrics">The repository on GitHub</a></p>
 </div></footer>
 <div id="tip" role="tooltip"></div>
-<script src="data.js?v=20261124d"></script>
-<script src="assets/explorer.js?v=20261124d"></script>
+<script src="data.js?v=20261125a"></script>
+<script src="assets/explorer.js?v=20261125a"></script>
 </body>
 </html>

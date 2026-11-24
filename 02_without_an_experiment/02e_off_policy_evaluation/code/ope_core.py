@@ -158,3 +158,11 @@ def accuracy(x, true_value):
 def rule_as_written(acc, coverage, max_mae=0.10, min_coverage=0.90):
     """The decision rule of analysis_plan_v2.md read literally: mean absolute error below 10% and coverage of 90%."""
     return bool(acc["mean_absolute_error"] < max_mae and coverage >= min_coverage)
+
+
+# ----------------------------------------------------------------------------- third design (analysis_plan_v3.md)
+
+def draw_log_pool(rng, a, e, r, c):
+    """As draw_log_assigned, with every row of the pool a candidate. Returns the indices of the kept rows."""
+    keep_p = np.where(a == 1, c * e / r, c * (1 - e) / (1 - r))
+    return np.flatnonzero(rng.random(len(a)) < keep_p)

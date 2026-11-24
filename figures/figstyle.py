@@ -560,49 +560,66 @@ def p_surrogate_size(ax, letter, title="Error by test size"):
     clean(ax); panel(ax, letter, title)
 
 
+def p_surrogate_choice(ax, letter, title="Choosing 20 of 100 segments"):
+    """Follow-up 2 of 03d: conversion effect, on the experiment half, of the 20 segments chosen in small samples by
+    their visit effect (navy) or by their conversion effect (grey); dots are the 20 samples, lines their means."""
+    f = load(f"{S03D}/out/followup2.json"); ref = f["choice_reference_pp"]; C = f["choice"]; ks = list(C)
+    xs = range(len(ks))
+    ax.axhline(ref["random"], color=MUTED, lw=0.8, ls=(0, (3, 3)), zorder=1)
+    ax.text(len(ks) - 0.55, ref["random"] + 0.008, "random choice", ha="right", fontsize=7, color=MUTED)
+    ax.axhline(ref["best_on_experiment_half"], color=ORANGE, lw=1.0, ls=(0, (4, 3)), zorder=1)
+    ax.text(-0.35, ref["best_on_experiment_half"] + 0.008, "best 20 (upper reference)", ha="left", fontsize=7, color=ORANGE, fontweight="bold", path_effects=HALO)
+    for key, col, off in (("by_conversion", GREY, 0.09), ("by_visit", NAVY, -0.09)):
+        for i, k in enumerate(ks):
+            v = [d[key] for d in C[k]["draws"]]
+            ax.scatter([i + off] * len(v), v, s=7, color=col, alpha=0.45, lw=0, zorder=2)
+        ax.plot([i + off for i in xs], [C[k]["mean_" + key] for k in ks], color=col, lw=2.0, marker="o", ms=5.5, mec="white", mew=0.9, zorder=3)
+    tag(ax, 0.35, C[ks[0]]["mean_by_visit"] + 0.03, "chosen by visits", NAVY, ha="left")
+    tag(ax, 1.2, C[ks[1]]["mean_by_conversion"] - 0.05, "chosen by conversions", GREY, ha="left")
+    ax.set_xticks(list(xs), ks); ax.set_xlim(-0.45, len(ks) - 0.45); ax.set_ylim(0.05, 0.47)
+    ax.set_xlabel("Test sample, share of the experiment"); ax.set_ylabel("Conversion effect of the 20 (points)")
+    clean(ax); panel(ax, letter, title)
+
+
 OPE_NAMES = {"naive": "Unweighted comparison", "dm": "Direct method", "ips_known": "IPS, logged propensity", "ips_estimated": "IPS, estimated",
              "snips": "SNIPS, estimated", "dr": "DR, estimated", "dr_known": "DR, logged propensity"}
 OPE_COLORS = {"ips_known": NAVY, "dr": NAVY, "dr_known": BLUE, "dm": BLUE, "snips": BLUE, "ips_estimated": BLUE, "naive": ORANGE}
 POLICY_NAMES = {"all": "all users", "random_20": "random 20%", "response_20": "response 20%", "uplift_20": "uplift 20%"}
 
 
-def p_ope_error(ax, letter, setting="moderate", title="Mean error, share of the benchmark"):
-    """Mean error of each estimator over 200 logs, as a share of the experiment's adjusted benchmark; bar: range over
-    four policies. Under the two estimators of the decision rules, the mean absolute error of a single log (the
-    quantity the rules name). The unweighted comparison is off the scale and drawn as an arrow at the edge."""
-    s = load(f"{S02E}/out/ope_v2.json")["settings"][setting]["summary"]
-    acc = load(f"{S02E}/out/ope_v2_accuracy.json")["settings"][setting]
-    keys = ["ips_known", "dr", "dm", "snips", "ips_estimated", "naive"]; n = len(keys); xl = (-100, 100)
-    rule_band(ax, -10, 10, "±10%", 12, n - 0.45, axis="x", ha="left")
-    ax.axvline(0, color=MUTED, lw=0.8, zorder=1)
+def p_ope_error(ax, letter, setting="moderate", title="Error of one log, share of the benchmark"):
+    """Mean absolute error of a single log for each estimator, as a share of the experiment's adjusted benchmark (the
+    quantity of the decision rules, design/analysis_plan_v3.md): dot, mean over the three policies of the rules; bar,
+    their range. The unweighted comparison is off the scale and drawn as an arrow at the edge."""
+    s = load(f"{S02E}/out/ope_v3.json")["settings"][setting]["summary"]
+    pol = ["all", "response_20", "uplift_20"]
+    keys = ["dr", "ips_known", "dm", "snips", "ips_estimated", "naive"]; n = len(keys); xl = (0, 40)
+    rule_band(ax, 0, 10, "pre-specified 10%", 10.6, n - 0.45, axis="x", ha="left")
     for i, k in enumerate(keys):
-        y = n - 1 - i; v = [100 * s[p][k]["relative_bias"] for p in s]; m = sum(v) / len(v); c = OPE_COLORS[k]
-        if k == "naive":
-            ax.annotate("", xy=(xl[1], y), xytext=(xl[1] - 20, y), arrowprops=dict(arrowstyle="-|>", color=c, lw=2.2, mutation_scale=11), zorder=4)
-            ax.text(xl[1] - 23, y, f"+{min(v):.0f}% to\n+{max(v):.0f}%", ha="right", va="center", fontsize=7.5, fontweight="bold", color=c, linespacing=1.1)
+        y = n - 1 - i; v = [100 * s[p][k]["mean_absolute_error"] for p in pol]; m = sum(v) / len(v); c = OPE_COLORS[k]
+        if m > xl[1]:
+            ax.annotate("", xy=(xl[1], y), xytext=(xl[1] - 7, y), arrowprops=dict(arrowstyle="-|>", color=c, lw=2.2, mutation_scale=11), zorder=4)
+            ax.text(xl[1] - 8, y, f"{min(v):.0f}% to {max(v):.0f}%", ha="right", va="center", fontsize=7.5, fontweight="bold", color=c)
             continue
         ax.plot([min(v), max(v)], [y, y], color=c, lw=2.2, zorder=3, solid_capstyle="round")
         dot(ax, m, y, c, s=52)
-        ax.text(max(v) + 3.5, y, "0%" if abs(m) < 0.5 else f"{m:+.0f}%".replace("-", "−"), va="center", fontsize=8.5, fontweight="bold", color=INK)
-        if k in ("ips_known", "dr"):
-            mae = [100 * acc[p][k]["mean_absolute_error"] for p in acc]
-            ax.text(xl[0] + 4, y - 0.36, f"one log: off by {min(mae):.0f}% to {max(mae):.0f}%", fontsize=7, color=MUTED, va="center")
+        ax.text(max(v) + 1.2, y, f"{m:.1f}%", va="center", fontsize=8.5, fontweight="bold", color=INK)
     ax.set_yticks(range(n), [OPE_NAMES[k] for k in keys][::-1]); ax.set_ylim(-0.6, n - 0.2); ax.set_xlim(*xl)
-    ax.set_xticks([-100, -50, 0, 50], ["−100%", "−50%", "0", "+50%"])
+    ax.set_xticks([0, 10, 20, 30, 40], ["0", "10%", "20%", "30%", "40%"])
     for t in ax.get_yticklabels():
         t.set_color(INK); t.set_fontsize(8)
         if t.get_text() in ("IPS, logged propensity", "DR, estimated"):
             t.set_fontweight("bold")
     ax.grid(axis="x", color=GRID); ax.grid(axis="y", visible=False); clean(ax, x=False)
-    ax.set_xlabel("Mean error over 200 logs (bar: range over four policies)"); panel(ax, letter, title)
+    ax.set_xlabel("Mean absolute error, 200 logs of 1.6M rows"); panel(ax, letter, title)
 
 
-def p_ope_coverage(ax, letter, setting="moderate", title="Coverage of 95% intervals"):
-    s = load(f"{S02E}/out/ope_v2.json")["settings"][setting]["summary"]
+def p_ope_coverage(ax, letter, setting="strong", title="Coverage of 95% intervals, strong bias"):
+    s = load(f"{S02E}/out/ope_v3.json")["settings"][setting]["summary"]
     keys = ["ips_known", "dr", "ips_estimated"]; pol = list(s)
     mk = {"all": "o", "random_20": "s", "response_20": "D", "uplift_20": "^"}
     ax.axvline(90, color=ORANGE, lw=1.1, ls=(0, (4, 3)), zorder=1)
-    ax.text(88.5, -0.5, "pre-specified 90%", ha="right", va="center", fontsize=7, color=ORANGE, fontweight="bold", path_effects=HALO)
+    ax.text(88.5, -0.5, "90%", ha="right", va="center", fontsize=7, color=ORANGE, fontweight="bold", path_effects=HALO)
     ax.axvline(95, color=MUTED, lw=0.8, ls=(0, (1, 2)), zorder=1); ax.text(96, len(keys) - 0.35, "95%", ha="left", fontsize=7, color=MUTED)
     for i, k in enumerate(keys):
         y = len(keys) - 1 - i
@@ -623,7 +640,7 @@ def p_ope_coverage(ax, letter, setting="moderate", title="Coverage of 95% interv
 def p_ope_adjustment(ax, letter, title="The experiment's value, two ways"):
     """Per policy, the experiment's lift adjusted for the features (the truth of the study) and unadjusted, drawn as
     figure 1 draws the caused and the credited conversions."""
-    f2 = load(f"{S02E}/out/ope_v2.json")["truth_log_part"]
+    f2 = load(f"{S02E}/out/ope_v3.json")["benchmark"]
     pol = ["all", "response_20", "uplift_20", "random_20"]
     for i, p in enumerate(pol):
         y = len(pol) - 1 - i; a_, u = f2[p]["aipw_r"], f2[p]["unadjusted"]
@@ -632,11 +649,73 @@ def p_ope_adjustment(ax, letter, title="The experiment's value, two ways"):
         ax.text(u + 0.6, y, f"+{100 * (u / a_ - 1):.0f}%", va="center", fontsize=8, fontweight="bold", color=ORANGE)
         if i == 0:
             tag(ax, a_ - 0.45, y, "adjusted", NAVY, ha="right"); tag(ax, u, y + 0.4, "unadjusted", ORANGE, ha="center")
-    ax.set_yticks(range(len(pol)), [POLICY_NAMES[p] for p in pol][::-1]); ax.set_ylim(-0.6, len(pol) - 0.1); ax.set_xlim(0, 13)
+    ax.set_yticks(range(len(pol)), [POLICY_NAMES[p] for p in pol][::-1]); ax.set_ylim(-0.6, len(pol) - 0.1); ax.set_xlim(0, 11)
     for t in ax.get_yticklabels():
         t.set_color(INK); t.set_fontsize(8)
     ax.grid(axis="x", color=GRID); ax.grid(axis="y", visible=False); clean(ax, x=False)
     ax.set_xlabel("Extra visits per 1,000 users"); panel(ax, letter, title)
+
+
+def p_delay_daily(ax, letter, title="Predicted over actual, 14-day label", src="delay_v3.json", band=(0.95, 1.05)):
+    """Final design of 02f: predicted over actual conversions on each test day after daily retraining, for the network
+    trained on the labels seen at the cutoff (grey), the delayed-feedback network (navy) and the reference trained on
+    complete labels (orange, dashed); the pooled value of each is written at the right."""
+    d = load(f"{S02F}/out/{src}"); c = d["cutoffs"]; T = list(c); P = d["pooled"]["models"]
+    rule_band(ax, band[0], band[1], "pre-specified band", 3.5, band[0] - 0.006, ha="center", va="top")
+    ax.axhline(1, color=MUTED, lw=0.8, zorder=1)
+    for k, col, ls, lw in (("labels_seen", GREY, "-", 2.0), ("reference", ORANGE, (0, (4, 3)), 1.3), ("delay", NAVY, "-", 2.2)):
+        y = [c[t]["models"][k]["calibration_ratio"] for t in T]
+        ax.plot(range(len(T)), y, color=col, lw=lw, ls=ls, marker="o", ms=4.5 if k != "reference" else 3.5, mec="white", mew=0.8, zorder=3)
+    xr = len(T) - 0.6
+    lab = {"delay": ("delay", NAVY), "reference": ("complete", ORANGE), "labels_seen": ("seen", GREY)}
+    ys = sorted(((P[k]["calibration_ratio"]["estimate"], k) for k in lab), reverse=True)
+    for j, (v, k) in enumerate(ys):
+        tag(ax, xr + 0.15, 1.12 - 0.06 * j, f"{lab[k][0]} {v:.3f}", lab[k][1], ha="left", size=7)
+    ax.set_xticks(range(len(T)), [t if i % 2 == 0 else "" for i, t in enumerate(T)]); ax.set_xlim(-0.4, len(T) + 1.9); ax.set_ylim(0.75, 1.18)
+    ax.text(xr + 0.15, 1.165, "pooled", fontsize=7, color=MUTED, ha="left")
+    ax.set_xlabel("Test day (retrained the day before)"); ax.set_ylabel("Predicted / actual"); clean(ax); panel(ax, letter, title)
+
+
+def p_delay_designs(ax, letter, title="Three designs, pooled"):
+    """Predicted over actual conversions of the labels-seen network and the delayed-feedback network in each design of
+    02f: the first design's three cutoffs (30-day label, cold start), the second (7-day label) and the third (14-day)."""
+    d1 = load(f"{S02F}/out/delay.json")["cutoffs"]; d2 = load(f"{S02F}/out/delay_v2.json")["pooled"]["models"]
+    d3 = load(f"{S02F}/out/delay_v3.json")["pooled"]["models"]
+    rows = [("30-day, cold, day 14", d1["14"]["models"]["naive_network"]["calibration_ratio"]["estimate"], d1["14"]["models"]["delay_network"]["calibration_ratio"]["estimate"]),
+            ("30-day, cold, day 21", d1["21"]["models"]["naive_network"]["calibration_ratio"]["estimate"], d1["21"]["models"]["delay_network"]["calibration_ratio"]["estimate"]),
+            ("30-day, cold, day 28", d1["28"]["models"]["naive_network"]["calibration_ratio"]["estimate"], d1["28"]["models"]["delay_network"]["calibration_ratio"]["estimate"]),
+            ("7-day, daily", d2["labels_seen"]["calibration_ratio"]["estimate"], d2["delay"]["calibration_ratio"]["estimate"]),
+            ("14-day, daily (final)", d3["labels_seen"]["calibration_ratio"]["estimate"], d3["delay"]["calibration_ratio"]["estimate"])]
+    n = len(rows); ax.axvline(1, color=MUTED, lw=0.8, zorder=1)
+    for i, (lab, a_, b_) in enumerate(rows):
+        y = n - 1 - i
+        ax.annotate("", xy=(b_, y), xytext=(a_, y), arrowprops=dict(arrowstyle="-|>", color=NAVY, lw=1.6, mutation_scale=9, shrinkA=4, shrinkB=5), zorder=3)
+        dot(ax, a_, y, GREY, s=40); dot(ax, b_, y, NAVY, s=48)
+        ax.text(1.17, y, f"{b_:.2f}", va="center", fontsize=8, fontweight="bold", color=NAVY)
+    ax.set_yticks(range(n), [r[0] for r in rows][::-1]); ax.set_ylim(-0.6, n - 0.3); ax.set_xlim(0.5, 1.22)
+    for t in ax.get_yticklabels():
+        t.set_color(INK); t.set_fontsize(7.6)
+        if "final" in t.get_text():
+            t.set_fontweight("bold")
+    tag(ax, 0.62, n - 1 + 0.42, "labels seen", GREY, ha="center"); tag(ax, 0.86, n - 1 + 0.42, "delay model", NAVY, ha="center")
+    ax.grid(axis="x", color=GRID); ax.grid(axis="y", visible=False); clean(ax, x=False)
+    ax.set_xlabel("Predicted / actual conversions"); panel(ax, letter, title)
+
+
+def p_delay_fit(ax, letter, title="Fit and ranking, 14-day label"):
+    """Final design of 02f: log loss above the reference and ROC AUC of the four networks, pooled."""
+    P = load(f"{S02F}/out/delay_v3.json")["pooled"]["models"]
+    items = [("labels_seen", "labels seen", GREY), ("delay", "delay model", NAVY), ("complete_only", "complete labels only", BLUE)]
+    ref = P["reference"]["log_loss"]["estimate"]
+    for i, (k, lab, col) in enumerate(items):
+        v = 1000 * (P[k]["log_loss"]["estimate"] - ref)
+        ax.barh(len(items) - 1 - i, v, height=0.55, color=col, lw=0, zorder=2)
+        ax.text(v + 0.12, len(items) - 1 - i, f"+{v:.2f}  ·  AUC {P[k]['roc_auc']['estimate']:.3f}", va="center", fontsize=7.6, color=INK)
+    ax.set_yticks(range(len(items)), [i[1] for i in items][::-1]); ax.set_xlim(0, 8.5); ax.set_ylim(-0.6, len(items) - 0.4)
+    for t in ax.get_yticklabels():
+        t.set_color(INK); t.set_fontsize(8)
+    ax.grid(axis="x", color=GRID); ax.grid(axis="y", visible=False); clean(ax, x=False)
+    ax.set_xlabel(f"Log loss above complete labels (×10⁻³; reference AUC {P['reference']['roc_auc']['estimate']:.3f})"); panel(ax, letter, title)
 
 
 DELAY_MODELS = [("naive_lightgbm", "LightGBM, labels seen", GREY_L), ("naive_network", "network, labels seen", GREY),

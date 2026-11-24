@@ -130,26 +130,32 @@ index that predicts the long-run outcome, and show on a job-training experiment 
 data would have given the long-run effect with 35% smaller standard errors. The index is valid when the treatment
 affects the long-run outcome only through the surrogates. Study [03d](03_planning_a_test/03d_surrogate_outcome)
 is a case where the index falls short and the experiment shows it: the visit-based index is 42% of the directly
-measured effect on conversions. The study does not identify by which path the ads raised conversions.
+measured effect on conversions. The study does not identify by which path the ads raised conversions. A weaker use
+survives: across 100 segments the visit and conversion effects are correlated at 0.95 after removing sampling noise,
+and in a test too small to read conversions by segment, choosing segments by their visit effect does better than
+choosing by conversions. A proxy that fails as a surrogate for the size of an effect can still rank where it is.
 
 [Chapelle (2014)](https://doi.org/10.1145/2623330.2623634) models the delay between a display-ad click and the
 conversion as exponential and fits it jointly with the conversion probability, so that recent clicks whose
 conversions have not arrived are not counted as failures. Study [02f](02_without_an_experiment/02f_delayed_conversions)
 fits the same likelihood in PyTorch on Criteo's attribution log, at the impression rather than the click level.
-It removes most of the under-prediction after three or four weeks of data but not after two.
 [Yoshikawa and Imai (2018)](https://arxiv.org/abs/1802.00255) replace the exponential delay with a non-parametric
-one and report better predictions on Criteo data. In study 02f's two-week window, any delay model still has to assume
-the delays that are longer than the window.
+one, which is the form of study 02f's final design: under daily retraining on a 14-day label it moves the forecast
+from 11.5% too few conversions to 1.8% too many, but does not lower the log loss. An earlier cold-start design of the
+study showed the limit of any parametric tail: with two weeks of data, delays longer than two weeks have to be
+assumed.
 
 [Dudík, Langford, and Li (2011)](https://arxiv.org/abs/1103.4601) show that the doubly robust estimator of a policy's
 value is accurate when either the model of rewards or the model of the logging policy is good.
 [Gentzel, Pruthi, and Jensen (2021)](https://proceedings.mlr.press/v139/gentzel21a.html) build observational data
 sets with an experimental benchmark by sampling from randomized experiments, the construction of study
-[02e](02_without_an_experiment/02e_off_policy_evaluation). There, with the logging propensity recorded, the mean of
-inverse propensity weighting over 200 logs is within 3% of the benchmark for four targeting policies; with it
-estimated, the mean of the doubly robust estimator stays within 6% and inverse weighting loses most of a lift that is
-small next to the visit rate. A single log of about 108,000 rows is off by 22% to 53% on average. The
-practical counterpart is to record the probability of each decision when it is made. The same study shows a
+[02e](02_without_an_experiment/02e_off_policy_evaluation). There, on logs of about 1.6 million rows, one log's
+inverse propensity weighting with the recorded propensity is off by 3% to 4% of the benchmark and the doubly robust
+estimator with an estimated propensity by 2.5% to 2.7%; under a stronger bias the doubly robust estimator stays within
+6% while inverse weighting with the estimated propensity falls about a third short, as the theorem leads one to
+expect. With logs of about 108,000 rows, an earlier design, one log was off by 22% or more: the size of the log
+decides whether a single estimate is usable. The practical counterpart is to record the probability of each decision
+when it is made, and to log enough of them. The same study shows a
 condition of the construction that is easy to miss: the experiment's assignment share must be known for every
 row, and in a pooled release it may vary with the features.
 

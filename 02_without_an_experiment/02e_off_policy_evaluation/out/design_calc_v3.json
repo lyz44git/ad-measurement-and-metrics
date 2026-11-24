@@ -1,0 +1,303 @@
+{
+ "pool_rows": 9689305,
+ "trim_r": [
+  0.82766739899694,
+  0.915386830408654
+ ],
+ "grid": [
+  {
+   "beta": 0.1,
+   "clip": [
+    0.02,
+    0.98
+   ],
+   "c": 0.16,
+   "log_rows": 1552207.6677208426,
+   "treated_share": 0.49878552312425944,
+   "policies": {
+    "all": {
+     "naive_error": 1.3200640763504428,
+     "ips_expected_error": -0.0012362184266627718,
+     "ips_se_share": 0.05110384772026746,
+     "ips_mae_share": 0.04077497109362211
+    },
+    "random_20": {
+     "naive_error": 1.4787514133896074,
+     "ips_expected_error": -0.0012362184266664356,
+     "ips_se_share": 0.12826198545341197,
+     "ips_mae_share": 0.1023382579311991
+    },
+    "response_20": {
+     "naive_error": 1.1731112943575628,
+     "ips_expected_error": -0.0012362184266606624,
+     "ips_se_share": 0.05533401378103064,
+     "ips_mae_share": 0.044150155283137336
+    },
+    "uplift_20": {
+     "naive_error": 0.8714523429691126,
+     "ips_expected_error": -0.001236218426663549,
+     "ips_se_share": 0.04937706407428826,
+     "ips_mae_share": 0.03939719708264843
+    }
+   }
+  },
+  {
+   "beta": 0.25,
+   "clip": [
+    0.02,
+    0.98
+   ],
+   "c": 0.17,
+   "log_rows": 1649251.9604746124,
+   "treated_share": 0.49788317358085016,
+   "policies": {
+    "all": {
+     "naive_error": 3.2061401077045586,
+     "ips_expected_error": -0.001255181454518639,
+     "ips_se_share": 0.0508116592319402,
+     "ips_mae_share": 0.040541838409941466
+    },
+    "random_20": {
+     "naive_error": 3.575832031388231,
+     "ips_expected_error": -0.0012551814545175288,
+     "ips_se_share": 0.1276310318309481,
+     "ips_mae_share": 0.10183482977725256
+    },
+    "response_20": {
+     "naive_error": 2.8076997438189193,
+     "ips_expected_error": -0.0012551814545159745,
+     "ips_se_share": 0.05512482429994879,
+     "ips_mae_share": 0.04398324622589977
+    },
+    "uplift_20": {
+     "naive_error": 2.1076199496424914,
+     "ips_expected_error": -0.0012551814545158635,
+     "ips_se_share": 0.04909478714659372,
+     "ips_mae_share": 0.039171972680170086
+    }
+   }
+  },
+  {
+   "beta": 0.5,
+   "clip": [
+    0.02,
+    0.98
+   ],
+   "c": 0.16,
+   "log_rows": 1552292.9397372624,
+   "treated_share": 0.4950954179080107,
+   "policies": {
+    "all": {
+     "naive_error": 5.981876856661276,
+     "ips_expected_error": -0.0012910834585142528,
+     "ips_se_share": 0.057643746180751444,
+     "ips_mae_share": 0.045993055104460716
+    },
+    "random_20": {
+     "naive_error": 6.602760413827037,
+     "ips_expected_error": -0.0012910834585181385,
+     "ips_se_share": 0.1449985652664215,
+     "ips_mae_share": 0.11569211656464433
+    },
+    "response_20": {
+     "naive_error": 5.032456301672931,
+     "ips_expected_error": -0.0012910834585121433,
+     "ips_se_share": 0.06295245114811106,
+     "ips_mae_share": 0.05022878883577444
+    },
+    "uplift_20": {
+     "naive_error": 3.8300070666242947,
+     "ips_expected_error": -0.0012910834585148079,
+     "ips_se_share": 0.05586075106228126,
+     "ips_mae_share": 0.04457043082744648
+    }
+   }
+  },
+  {
+   "beta": 1.0,
+   "clip": [
+    0.02,
+    0.98
+   ],
+   "c": 0.14,
+   "log_rows": 1358368.3047388836,
+   "treated_share": 0.48371195261820216,
+   "policies": {
+    "all": {
+     "naive_error": 9.785082290673454,
+     "ips_expected_error": -0.0013734159817913039,
+     "ips_se_share": 0.08920093130037443,
+     "ips_mae_share": 0.07117204589380582
+    },
+    "random_20": {
+     "naive_error": 10.374117142679799,
+     "ips_expected_error": -0.0013734159817928582,
+     "ips_se_share": 0.2250172467826126,
+     "ips_mae_share": 0.17953778712221483
+    },
+    "response_20": {
+     "naive_error": 7.509609852757624,
+     "ips_expected_error": -0.0013734159817897496,
+     "ips_se_share": 0.09901463102889949,
+     "ips_mae_share": 0.07900224539155123
+    },
+    "uplift_20": {
+     "naive_error": 5.79779313403639,
+     "ips_expected_error": -0.0013734159817888614,
+     "ips_se_share": 0.0873964166827323,
+     "ips_mae_share": 0.06973225154064608
+    }
+   }
+  },
+  {
+   "beta": 0.1,
+   "clip": [
+    0.1,
+    0.9
+   ],
+   "c": 0.16,
+   "log_rows": 1552207.6677208426,
+   "treated_share": 0.49878552312425944,
+   "policies": {
+    "all": {
+     "naive_error": 1.3200640763504428,
+     "ips_expected_error": -0.0012362184266627718,
+     "ips_se_share": 0.05110384772026746,
+     "ips_mae_share": 0.04077497109362211
+    },
+    "random_20": {
+     "naive_error": 1.4787514133896074,
+     "ips_expected_error": -0.0012362184266664356,
+     "ips_se_share": 0.12826198545341197,
+     "ips_mae_share": 0.1023382579311991
+    },
+    "response_20": {
+     "naive_error": 1.1731112943575628,
+     "ips_expected_error": -0.0012362184266606624,
+     "ips_se_share": 0.05533401378103064,
+     "ips_mae_share": 0.044150155283137336
+    },
+    "uplift_20": {
+     "naive_error": 0.8714523429691126,
+     "ips_expected_error": -0.001236218426663549,
+     "ips_se_share": 0.04937706407428826,
+     "ips_mae_share": 0.03939719708264843
+    }
+   }
+  },
+  {
+   "beta": 0.25,
+   "clip": [
+    0.1,
+    0.9
+   ],
+   "c": 0.17,
+   "log_rows": 1649251.9604746124,
+   "treated_share": 0.49788317358085016,
+   "policies": {
+    "all": {
+     "naive_error": 3.2061401077045586,
+     "ips_expected_error": -0.001255181454518639,
+     "ips_se_share": 0.0508116592319402,
+     "ips_mae_share": 0.040541838409941466
+    },
+    "random_20": {
+     "naive_error": 3.575832031388231,
+     "ips_expected_error": -0.0012551814545175288,
+     "ips_se_share": 0.1276310318309481,
+     "ips_mae_share": 0.10183482977725256
+    },
+    "response_20": {
+     "naive_error": 2.8076997438189193,
+     "ips_expected_error": -0.0012551814545159745,
+     "ips_se_share": 0.05512482429994879,
+     "ips_mae_share": 0.04398324622589977
+    },
+    "uplift_20": {
+     "naive_error": 2.1076199496424914,
+     "ips_expected_error": -0.0012551814545158635,
+     "ips_se_share": 0.04909478714659372,
+     "ips_mae_share": 0.039171972680170086
+    }
+   }
+  },
+  {
+   "beta": 0.5,
+   "clip": [
+    0.1,
+    0.9
+   ],
+   "c": 0.16,
+   "log_rows": 1552292.9397372624,
+   "treated_share": 0.4950954179080107,
+   "policies": {
+    "all": {
+     "naive_error": 5.981876856661276,
+     "ips_expected_error": -0.0012910834585142528,
+     "ips_se_share": 0.057643746180751444,
+     "ips_mae_share": 0.045993055104460716
+    },
+    "random_20": {
+     "naive_error": 6.602760413827037,
+     "ips_expected_error": -0.0012910834585181385,
+     "ips_se_share": 0.1449985652664215,
+     "ips_mae_share": 0.11569211656464433
+    },
+    "response_20": {
+     "naive_error": 5.032456301672931,
+     "ips_expected_error": -0.0012910834585121433,
+     "ips_se_share": 0.06295245114811106,
+     "ips_mae_share": 0.05022878883577444
+    },
+    "uplift_20": {
+     "naive_error": 3.8300070666242947,
+     "ips_expected_error": -0.0012910834585148079,
+     "ips_se_share": 0.05586075106228126,
+     "ips_mae_share": 0.04457043082744648
+    }
+   }
+  },
+  {
+   "beta": 1.0,
+   "clip": [
+    0.1,
+    0.9
+   ],
+   "c": 0.14,
+   "log_rows": 1358381.3981142333,
+   "treated_share": 0.482830544511777,
+   "policies": {
+    "all": {
+     "naive_error": 9.484486699143748,
+     "ips_expected_error": -0.0013830416971579718,
+     "ips_se_share": 0.08063142322460268,
+     "ips_mae_share": 0.06433456770647207
+    },
+    "random_20": {
+     "naive_error": 10.019136459251982,
+     "ips_expected_error": -0.0013830416971581938,
+     "ips_se_share": 0.20305825372727196,
+     "ips_mae_share": 0.16201704559258118
+    },
+    "response_20": {
+     "naive_error": 7.207912464715589,
+     "ips_expected_error": -0.0013830416971563064,
+     "ips_se_share": 0.08917881715004176,
+     "ips_mae_share": 0.07115440135468011
+    },
+    "uplift_20": {
+     "naive_error": 5.549185393473925,
+     "ips_expected_error": -0.0013830416971559734,
+     "ips_se_share": 0.07850389227630995,
+     "ips_mae_share": 0.06263704361019902
+    }
+   }
+  }
+ ],
+ "reference_ips_r_per_1000": {
+  "all": 6.430084516753419,
+  "random_20": 1.148158613222661,
+  "response_20": 5.701599758368565,
+  "uplift_20": 5.481247595850363
+ }
+}
