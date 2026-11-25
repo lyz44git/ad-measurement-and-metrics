@@ -191,13 +191,14 @@ Each of the following fell short of a threshold that was fixed before the result
 - Ranking segments by estimated lift did not reliably outperform ranking by response rate at a 30% budget, although it
   did at 10% and 20% ([01d](01_with_an_experiment/01d_private_segment_effects)).
 - The purchase model did not outperform a past-sales rule in ranking 12-month sales ([04](04_customer_metrics_retention)).
-- The effect on visits did not recover the size of the effect on conversions within ±20%, although it ranked
-  segments by their conversion effect ([03d](03_planning_a_test/03d_surrogate_outcome)).
+- An estimate built from the effect on visits did not recover the size of the effect on conversions within ±20%
+  (it gave 42% of it), although segments with larger visit effects also had larger conversion effects
+  ([03d](03_planning_a_test/03d_surrogate_outcome)).
 - A delayed-feedback model corrected the level of a conversion forecast but did not lower its log loss
   ([02f](02_without_an_experiment/02f_delayed_conversions)).
-- Combining the uncorrected model's ranking with the delay model's level did not lower it either; the level was
-  over-corrected. A second attempt written after this failure, with the level measured on the day's own predictions,
-  lowered it slightly ([02f](02_without_an_experiment/02f_delayed_conversions)).
+- Combining the uncorrected model's ranking with the delay model's level did not lower the log loss either, because
+  the level was over-corrected. A second attempt, written after this failure, took the level from the same day's
+  predictions and lowered the log loss slightly ([02f](02_without_an_experiment/02f_delayed_conversions)).
 
 Studies 02e and 02f each record earlier designs whose pre-specified rules were not met, and why the design changed;
 the list above holds the final designs.
