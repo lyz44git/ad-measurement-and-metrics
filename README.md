@@ -180,7 +180,7 @@ past sales performed better than the model ([04](04_customer_metrics_retention))
 
 <sub><b>Methods.</b> Two years of transactions (794,163 lines, 5,875 accounts; no ads in these data). The metric tables rebuilt in SQL match the Python results in all 92 cells.</sub>
 
-## 5. Nine pre-specified tests were not passed.
+## 5. Further discussion: pre-specified tests that were not passed.
 
 Each of the following fell short of a threshold that was fixed before the result was seen. They fall into five groups.
 
