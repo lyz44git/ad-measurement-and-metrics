@@ -191,3 +191,17 @@ def test_campaign_error_weights_by_conversions():
     # campaign 0: 1.5 / 3 -> 0.5 error, weight 3; campaign 1: 0.5 / 1 -> 0.5 error, weight 1
     assert abs(f3.campaign_error(p, y, camp, keep, 2) - 0.5) < 1e-12
     assert abs(f3.campaign_error(p, y, camp, np.array([True, False]), 2) - 0.5) < 1e-12
+
+
+# ----------------------------------------------------------------------------- follow-up 4 (run_followup4.py)
+
+def test_test_day_ratio_gives_each_campaign_the_delay_total_and_keeps_its_order():
+    import followup3_core as f3
+    rng = np.random.default_rng(4)
+    camp = rng.integers(0, 5, 400); p_seen = rng.uniform(0.005, 0.05, 400); p_delay = p_seen * rng.uniform(1.0, 1.4, 400)
+    k = f3.campaign_ratio(camp, p_delay, p_seen, 5)          # ratio taken on the impressions it is applied to
+    p = f3.corrected(p_seen, camp, k)
+    assert np.allclose(np.bincount(camp, p, 5), np.bincount(camp, p_delay, 5))
+    for c in range(5):
+        m = camp == c
+        assert (np.argsort(p[m]) == np.argsort(p_seen[m])).all()

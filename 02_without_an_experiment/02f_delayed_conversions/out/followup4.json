@@ -1,0 +1,341 @@
+{
+ "campaigns_scored": 148,
+ "share_of_test_conversions": 0.8409365166430901,
+ "test_impressions": 4500151,
+ "test_conversions": 173195,
+ "forecasts": {
+  "labels_seen": {
+   "calibration_ratio": {
+    "estimate": 0.8839114256590487,
+    "ci95": [
+     0.8772245980868508,
+     0.8899001239844071
+    ]
+   },
+   "log_loss": {
+    "estimate": 0.13923049547244737,
+    "ci95": [
+     0.13849699478109798,
+     0.14015520965991274
+    ]
+   },
+   "roc_auc": {
+    "estimate": 0.7929103233882138
+   },
+   "pr_auc": {
+    "estimate": 0.17949263946404417
+   },
+   "campaign_error": {
+    "estimate": 0.1609409563207916,
+    "ci95": [
+     0.15916617563941177,
+     0.17281185912228658
+    ]
+   }
+  },
+  "delay": {
+   "calibration_ratio": {
+    "estimate": 1.0189121361295763,
+    "ci95": [
+     1.0109974515363085,
+     1.0259875945598167
+    ]
+   },
+   "log_loss": {
+    "estimate": 0.13918685093174338,
+    "ci95": [
+     0.13848311470661015,
+     0.14002738246680965
+    ]
+   },
+   "roc_auc": {
+    "estimate": 0.7912255207913861
+   },
+   "pr_auc": {
+    "estimate": 0.17800163477236666
+   },
+   "campaign_error": {
+    "estimate": 0.13337062865794505,
+    "ci95": [
+     0.1346086505216233,
+     0.14836562446111676
+    ]
+   }
+  },
+  "reference": {
+   "calibration_ratio": {
+    "estimate": 0.9995858069065519,
+    "ci95": [
+     0.9921282280315264,
+     1.0064123964234004
+    ]
+   },
+   "log_loss": {
+    "estimate": 0.13860059646770811,
+    "ci95": [
+     0.13791109629215526,
+     0.13947375066977105
+    ]
+   },
+   "roc_auc": {
+    "estimate": 0.7946203007457044
+   },
+   "pr_auc": {
+    "estimate": 0.18135161155192395
+   },
+   "campaign_error": {
+    "estimate": 0.11690184054067837,
+    "ci95": [
+     0.11795900490192193,
+     0.13292043994311994
+    ]
+   }
+  },
+  "corrected_test_day": {
+   "calibration_ratio": {
+    "estimate": 1.018912136129576,
+    "ci95": [
+     1.0111251920571451,
+     1.025742117018675
+    ]
+   },
+   "log_loss": {
+    "estimate": 0.13916874454528336,
+    "ci95": [
+     0.1384546888822456,
+     0.14001922898269442
+    ]
+   },
+   "roc_auc": {
+    "estimate": 0.7914620267512235
+   },
+   "pr_auc": {
+    "estimate": 0.17800146632643618
+   },
+   "campaign_error": {
+    "estimate": 0.13337062865795263,
+    "ci95": [
+     0.1345983388030649,
+     0.1483327908451451
+    ]
+   }
+  },
+  "corrected_previous_day": {
+   "calibration_ratio": {
+    "estimate": 1.3099831373824953,
+    "ci95": [
+     1.3000441836625474,
+     1.318839510853654
+    ]
+   },
+   "log_loss": {
+    "estimate": 0.14154127188059143,
+    "ci95": [
+     0.1408792350235924,
+     0.14231938345772188
+    ]
+   },
+   "roc_auc": {
+    "estimate": 0.7892888215607919
+   },
+   "pr_auc": {
+    "estimate": 0.17389196056866973
+   },
+   "campaign_error": {
+    "estimate": 0.3034524785260541,
+    "ci95": [
+     0.29622439112043353,
+     0.31507328138769386
+    ]
+   }
+  },
+  "pooled_test_day": {
+   "calibration_ratio": {
+    "estimate": 1.0189121361295757,
+    "ci95": [
+     1.0111605216600599,
+     1.0258084429111545
+    ]
+   },
+   "log_loss": {
+    "estimate": 0.13899638238591808,
+    "ci95": [
+     0.1382756953996584,
+     0.1398721893921438
+    ]
+   },
+   "roc_auc": {
+    "estimate": 0.7927384602435147
+   },
+   "pr_auc": {
+    "estimate": 0.17908352288427073
+   },
+   "campaign_error": {
+    "estimate": 0.1248312563489311,
+    "ci95": [
+     0.12316707739323414,
+     0.1391879655412303
+    ]
+   }
+  }
+ },
+ "differences": {
+  "log_loss_corrected_test_day_minus_labels_seen": {
+   "estimate": -6.175092716401154e-05,
+   "ci95": [
+    -0.00011659830554417786,
+    -1.1354521635532898e-05
+   ]
+  },
+  "log_loss_corrected_test_day_minus_delay": {
+   "estimate": -1.8106386460020607e-05,
+   "ci95": [
+    -4.2347590980045675e-05,
+    7.543728362672403e-06
+   ]
+  },
+  "log_loss_corrected_test_day_minus_reference": {
+   "estimate": 0.0005681480775752423,
+   "ci95": [
+    0.0005302413877736861,
+    0.0006258633832124737
+   ]
+  },
+  "log_loss_corrected_previous_day_minus_labels_seen": {
+   "estimate": 0.0023107764081440607,
+   "ci95": [
+    0.002163222097377554,
+    0.002442267576892674
+   ]
+  },
+  "log_loss_corrected_previous_day_minus_delay": {
+   "estimate": 0.0023544209488480516,
+   "ci95": [
+    0.0022418343341488916,
+    0.0024520268907115665
+   ]
+  },
+  "log_loss_corrected_previous_day_minus_reference": {
+   "estimate": 0.0029406754128833146,
+   "ci95": [
+    0.0028370287262372124,
+    0.0030550521875648915
+   ]
+  },
+  "log_loss_pooled_test_day_minus_labels_seen": {
+   "estimate": -0.00023411308652929175,
+   "ci95": [
+    -0.00028361169028980266,
+    -0.00018307625967193473
+   ]
+  },
+  "log_loss_pooled_test_day_minus_delay": {
+   "estimate": -0.00019046854582530082,
+   "ci95": [
+    -0.00022840354255785207,
+    -0.0001531836439561729
+   ]
+  },
+  "log_loss_pooled_test_day_minus_reference": {
+   "estimate": 0.0003957859182099621,
+   "ci95": [
+    0.000357651161736381,
+    0.00045444800047227677
+   ]
+  },
+  "log_loss_delay_minus_labels_seen": {
+   "estimate": -4.364454070399093e-05,
+   "ci95": [
+    -0.00010552020618462901,
+    1.6619322325988482e-05
+   ]
+  },
+  "log_loss_delay_minus_reference": {
+   "estimate": 0.0005862544640352629,
+   "ci95": [
+    0.0005350226063331465,
+    0.0006454374106889128
+   ]
+  },
+  "campaign_error_delay_minus_labels_seen": {
+   "estimate": -0.02757032766284656,
+   "ci95": [
+    -0.03197350841882482,
+    -0.018173212998430964
+   ]
+  },
+  "campaign_error_corrected_test_day_minus_labels_seen": {
+   "estimate": -0.027570327662838984,
+   "ci95": [
+    -0.03193812722667979,
+    -0.018119125446933327
+   ]
+  },
+  "campaign_error_corrected_previous_day_minus_labels_seen": {
+   "estimate": 0.1425115222052625,
+   "ci95": [
+    0.126009539328097,
+    0.15416236126103613
+   ]
+  },
+  "campaign_error_pooled_test_day_minus_labels_seen": {
+   "estimate": -0.03610969997186052,
+   "ci95": [
+    -0.04302262278128198,
+    -0.026411045340946696
+   ]
+  }
+ },
+ "share_of_campaigns_smaller_error_than_labels_seen": {
+  "delay": 0.6756756756756757,
+  "reference": 0.6891891891891891,
+  "corrected_test_day": 0.6756756756756757,
+  "corrected_previous_day": 0.40540540540540543,
+  "pooled_test_day": 0.6486486486486487
+ },
+ "campaign_error_quantiles": {
+  "labels_seen": [
+   0.06850658275962218,
+   0.15024423404294318,
+   0.2533255053766901,
+   0.31390500182060005
+  ],
+  "delay": [
+   0.059005030699266964,
+   0.12350184442092788,
+   0.19040695935276367,
+   0.30374528307485865
+  ],
+  "reference": [
+   0.04636483030172728,
+   0.11726875884071708,
+   0.1620358903848668,
+   0.23439175415784058
+  ],
+  "corrected_test_day": [
+   0.05900503069921689,
+   0.12350184442091744,
+   0.19040695935276206,
+   0.3037452830748519
+  ],
+  "corrected_previous_day": [
+   0.10925396372295293,
+   0.22608673410375657,
+   0.4231337177143954,
+   0.617374937338243
+  ],
+  "pooled_test_day": [
+   0.06489852501452936,
+   0.12341946157868,
+   0.19668878898921485,
+   0.27725755963978377
+  ]
+ },
+ "decision": {
+  "corrected_ranker_improves_fit": {
+   "met": true,
+   "rule": "pooled log loss of the corrected ranker with the test-day ratio below the labels-seen network's (95% interval of the difference below zero)"
+  }
+ },
+ "seconds": 617
+}

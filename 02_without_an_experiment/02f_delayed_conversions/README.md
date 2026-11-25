@@ -2,15 +2,16 @@
 
 **[Explore this study interactively →](https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02f)**
 
-> **Takeaway.** The level, yes, overall and campaign by campaign; the overall fit, not measurably. A network retrained
+> **Takeaway.** The level, yes, overall and campaign by campaign; the overall fit, only slightly. A network retrained
 > each day on the conversions seen so far predicts 11.5% too few 14-day conversions on the following day, because
 > recent impressions whose conversions are still to come count as failures. A delayed-feedback network (Chapelle 2014)
 > in PyTorch, which learns the conversion probability and the share of conversions arriving on each of the 14 days,
 > predicts 1.8% too many, against 0.0% for a reference trained on complete labels. Campaign by campaign, where an
 > advertiser reads its cost per conversion, it lowers the forecast error from 16.0% to 13.3%, against a floor of
 > 11.7% for the reference. Both of these pre-specified rules were met. Its log loss is the same as the uncorrected
-> network's (a rule not met), and a follow-up that combined the uncorrected network's ranking with the delay model's
-> level over-corrected. Two earlier designs, on a cold start and a 7-day window, are below.
+> network's (a rule not met). Keeping the uncorrected network's ranking and giving it the delay model's level lowers
+> the log loss slightly, once that level is measured on the day's own predictions; a first version, which measured it
+> on the training impressions, over-corrected. Two earlier designs, on a cold start and a 7-day window, are below.
 
 ## Question
 
@@ -116,10 +117,49 @@ conversion-weighted mean of |predicted / actual − 1|:
   ratio of the two networks' mean predictions on that campaign's training impressions (median 1.19 to 1.40 across
   cutoffs). On the test day the labels-seen network was already less low than on its training impressions (0.885
   against labels 77% to 85% complete), so the ratio over-corrected: 13.7% too many conversions pooled, and a log loss
-  0.00056 above the labels-seen network's (interval above zero). A ratio taken on the test impressions' own
-  predictions, which needs no labels, would avoid that; it was not part of this plan and was not run.
+  0.00056 above the labels-seen network's (interval above zero). Follow-up 4 takes the ratio on the test day's own
+  predictions instead.
 - The bootstrap intervals of each campaign error on its own are shifted upward, because resampling adds noise to an
   absolute error; the comparison relies on the paired difference.
+
+## Follow-up 4: the corrected ranker, with its level measured where it is applied
+
+A second attempt at follow-up 3's rule 2, written after that rule failed and hashed before it ran
+([`design/followup_plan_4.md`](design/followup_plan_4.md), `logs/followup_plan_4_hash.txt`). Source:
+[`out/followup4.json`](out/followup4.json). The three networks are refitted with the same seeds and reproduce
+follow-up 3 to within 0.002 in predicted over actual. For each campaign on test day T, the ratio k_c is the delay
+network's total predicted conversions over the labels-seen network's, both summed over that campaign's impressions of
+day T; it uses the day's predictions, never its outcomes. Two variants were listed in the plan as reported, without a
+rule.
+
+| Forecast | Predicted / actual | Log loss above the reference (×10⁻³) | ROC AUC | Campaign error |
+|---|---|---|---|---|
+| Labels seen | 0.884 | 0.63 | 0.793 | 16.1% |
+| Delayed-feedback network | 1.019 | 0.59 | 0.791 | 13.3% |
+| **Ranker, the day's ratio by campaign (rule)** | **1.019** | **0.57** | **0.791** | **13.3%** |
+| Ranker, the day's ratio, one for all campaigns (reported) | 1.019 | 0.40 | 0.793 | 12.5% |
+| Ranker, the previous day's ratio by campaign (reported) | 1.310 | 2.94 | 0.789 | 30.3% |
+| Reference, complete labels | 1.000 | 0 | 0.795 | 11.7% |
+
+- **The rule was met, narrowly.** The ranker lowers the log loss by 0.00006 against the labels-seen network (95%
+  interval −0.00012 to −0.00001), about a tenth of the distance to the reference. It is not measurably better than
+  the delayed-feedback network itself (−0.00002; interval −0.00004 to +0.00001). Its total for each campaign equals
+  the delay network's by construction, so its campaign error is the same.
+- **One ratio for all campaigns does more.** Scaling all of the day's labels-seen predictions by a single ratio keeps
+  their ranking (ROC AUC 0.793) and takes the delay network's overall level. Its log loss is 0.00023 below the
+  labels-seen network's (interval −0.00028 to −0.00018) and 0.00019 below the delayed-feedback network's (−0.00023 to
+  −0.00015), closing 37% of the distance to the reference, and its campaign error is 12.5%. The delay model's overall
+  level helps more than its campaign-by-campaign levels. This variant was reported, not tested, and was chosen in
+  the plan without knowing how it would compare.
+- **A ratio from the previous day over-corrects.** On the last training day's impressions the two networks' ratio has
+  a median of 1.30 to 1.58 by cutoff, against 1.09 to 1.20 on the test day, and the forecast is 31% too high. The two
+  networks disagree most on the impressions whose labels were least complete in training, which is also why
+  follow-up 3's ratio over the training impressions over-corrected. One likely route is the day-of-week features,
+  through which the labels-seen network can learn that the weekday of the latest training day converts little; this
+  was not tested.
+- The gain in log loss is small, as expected from correcting the level of small probabilities. Follow-up 3's rule 2
+  stays listed as not met; this is a second attempt on data already seen, so it is weaker evidence than a rule set
+  before any run.
 
 ## How this design came about
 
@@ -157,6 +197,7 @@ same log, chosen with the first two results known, so it is not an independent r
 ```bash
 python code/run_delay_v3.py /path/to/derived/criteo_attr.parquet out   # this design, about 13 minutes on an Apple M3 Ultra (MPS)
 python code/run_followup3.py /path/to/derived/criteo_attr.parquet out  # follow-up 3, about 12 minutes
+python code/run_followup4.py /path/to/derived/criteo_attr.parquet out  # follow-up 4, about 10 minutes
 python code/run_delay_v2.py /path/to/derived/criteo_attr.parquet out   # second design, about 25 minutes
 python code/run_delay.py /path/to/derived/criteo_attr.parquet out      # first design, about 25 minutes
 python code/run_followup.py /path/to/derived/criteo_attr.parquet out   # first follow-up, about 9 minutes
@@ -166,8 +207,9 @@ python code/run_followup2.py /path/to/derived/criteo_attr.parquet out  # second 
 `tests/` checks on small simulated logs that features and histories use only earlier impressions, that the rolling
 window drops impressions older than 7 days, that labels after the cutoff are hidden, that both delayed-feedback losses
 match their formulas, that the delay models remove the under-prediction of a naive model on censored labels, that the
-grouped ROC and PR AUC match scikit-learn with ties and weights, and that the corrected ranker and the campaign error
-of follow-up 3 match hand calculations.
+grouped ROC and PR AUC match scikit-learn with ties and weights, that the corrected ranker and the campaign error
+of follow-up 3 match hand calculations, and that follow-up 4's ratio gives each campaign the delay network's total
+while keeping the order of its impressions.
 
 ## Scope
 

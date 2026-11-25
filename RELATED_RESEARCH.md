@@ -142,7 +142,8 @@ fits the same likelihood in PyTorch on Criteo's attribution log, at the impressi
 [Yoshikawa and Imai (2018)](https://arxiv.org/abs/1802.00255) replace the exponential delay with a non-parametric
 one, which is the form of study 02f's final design: under daily retraining on a 14-day label it moves the forecast
 from 11.5% too few conversions to 1.8% too many, and campaign by campaign from a 16.0% error to 13.3%, but does
-not lower the log loss. An earlier cold-start design of the
+not lower the log loss; giving the uncorrected network's ranking the delay model's level lowers it slightly. An
+earlier cold-start design of the
 study showed the limit of any parametric tail: with two weeks of data, delays longer than two weeks have to be
 assumed.
 

@@ -106,7 +106,9 @@ network that also learns how conversions are spread over the 14 days predicted 1
 trained on complete labels, which met the threshold set in advance. Campaign by campaign, where an advertiser reads
 its cost per conversion, it lowered the forecast error from 16.0% to 13.3%, against 11.7% with complete labels, also
 meeting its threshold. It did not improve the log loss: it corrects the level, which a bid is priced on, and ranks
-impressions slightly less well. Waiting for complete labels instead, by leaving out the last two weeks, ranks much
+impressions slightly less well. Keeping the uncorrected network's ranking and giving it the delay model's level,
+measured on the day's own predictions, lowered the log loss slightly, in a second attempt written after a first
+combination over-corrected. Waiting for complete labels instead, by leaving out the last two weeks, ranks much
 worse ([02f](02_without_an_experiment/02f_delayed_conversions)).
 
 <a href="https://lyz44git.github.io/ad-measurement-and-metrics/02.html#s02e"><img src="figures/figure3b.png" alt="Two panels: error of one log's off-policy estimates against the experiment's value of a targeting policy; predicted over actual conversions on nine test days for a model trained on the labels seen, a delay model and a reference with complete labels." width="100%"></a>
@@ -194,7 +196,8 @@ Each of the following fell short of a threshold that was fixed before the result
 - A delayed-feedback model corrected the level of a conversion forecast but did not lower its log loss
   ([02f](02_without_an_experiment/02f_delayed_conversions)).
 - Combining the uncorrected model's ranking with the delay model's level did not lower it either; the level was
-  over-corrected ([02f](02_without_an_experiment/02f_delayed_conversions)).
+  over-corrected. A second attempt written after this failure, with the level measured on the day's own predictions,
+  lowered it slightly ([02f](02_without_an_experiment/02f_delayed_conversions)).
 
 Studies 02e and 02f each record earlier designs whose pre-specified rules were not met, and why the design changed;
 the list above holds the final designs.

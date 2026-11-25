@@ -677,14 +677,16 @@ def p_delay_daily(ax, letter, title="Predicted over actual, 14-day label", src="
 
 
 def p_delay_fit(ax, letter, title="Fit and ranking, 14-day label"):
-    """Follow-up 3 of 02f: pooled log loss above the network trained on complete labels, and ROC AUC."""
-    F = load(f"{S02F}/out/followup3.json")["forecasts"]; ref = F["reference"]["log_loss"]["estimate"]
-    items = [("labels_seen", "labels seen", GREY), ("delay", "delay model", NAVY), ("corrected_ranker", "ranker, corrected level", BLUE)]
+    """Follow-up 4 of 02f: pooled log loss above the network trained on complete labels, and ROC AUC, for the two
+    networks and the labels-seen ranking given the delay model's level from the day's predictions."""
+    F = load(f"{S02F}/out/followup4.json")["forecasts"]; ref = F["reference"]["log_loss"]["estimate"]
+    items = [("labels_seen", "labels seen", GREY), ("delay", "delay model", NAVY),
+             ("corrected_test_day", "ranker, ratio by campaign", BLUE), ("pooled_test_day", "ranker, one ratio", BLUE)]
     for i, (k, lab, col) in enumerate(items):
         v = 1000 * (F[k]["log_loss"]["estimate"] - ref)
         ax.barh(len(items) - 1 - i, v, height=0.55, color=col, lw=0, zorder=2)
         ax.text(v + 0.03, len(items) - 1 - i, f"+{v:.2f}  ·  AUC {F[k]['roc_auc']['estimate']:.3f}", va="center", fontsize=7.6, color=INK)
-    ax.set_yticks(range(len(items)), [i[1] for i in items][::-1]); ax.set_xlim(0, 2.0); ax.set_ylim(-0.6, len(items) - 0.4)
+    ax.set_yticks(range(len(items)), [i[1] for i in items][::-1]); ax.set_xlim(0, 1.2); ax.set_ylim(-0.6, len(items) - 0.4)
     for t in ax.get_yticklabels():
         t.set_color(INK); t.set_fontsize(8)
     ax.grid(axis="x", color=GRID); ax.grid(axis="y", visible=False); clean(ax, x=False)
@@ -699,7 +701,7 @@ def p_delay_campaign(ax, letter, title="Error of each campaign's forecast"):
     """Follow-up 3 of 02f: conversion-weighted mean of |predicted / actual - 1| over campaigns with at least 200 test
     conversions, with 95% intervals; the reference trained on complete labels gives the floor."""
     f = load(f"{S02F}/out/followup3.json"); F = f["forecasts"]
-    keys = ["labels_seen", "delay", "corrected_ranker", "reference"]
+    keys = ["labels_seen", "delay", "reference"]
     v = [100 * F[k]["campaign_error"]["estimate"] for k in keys]
     dotrows(ax, [F3_NAMES[k][0] for k in keys], v, v, v, [F3_NAMES[k][1] for k in keys], lambda u: f"{u:.1f}%", (0, 22), bold=["delay model"])
     ax.set_xlabel(f"Weighted mean |predicted / actual − 1|, {f['campaigns_scored']} campaigns"); panel(ax, letter, title)

@@ -222,6 +222,13 @@ def added_studies():
             "lo": r(1000 * (P[k]["log_loss"]["ci95"][0] - P["reference"]["log_loss"]["estimate"]), 3),
             "hi": r(1000 * (P[k]["log_loss"]["ci95"][1] - P["reference"]["log_loss"]["estimate"]), 3),
             "auc": r(P[k]["roc_auc"]["estimate"], 4)} for k, lab in labels if k != "reference"]
+    f4 = load("02_without_an_experiment/02f_delayed_conversions/out/followup4.json")["forecasts"]   # follow-up 4, refitted
+    ref4 = f4["reference"]["log_loss"]["estimate"]
+    fit += [{"key": k, "label": lab, "ll": r(1000 * (f4[k]["log_loss"]["estimate"] - ref4), 3),
+             "lo": r(1000 * (f4[k]["log_loss"]["ci95"][0] - ref4), 3), "hi": r(1000 * (f4[k]["log_loss"]["ci95"][1] - ref4), 3),
+             "auc": r(f4[k]["roc_auc"]["estimate"], 4)}
+            for k, lab in [("corrected_test_day", "Labels-seen ranking, delay level by campaign"),
+                           ("pooled_test_day", "Labels-seen ranking, one delay ratio")]]
     oc = load("02_without_an_experiment/02e_off_policy_evaluation/out/ope_v3.json")
     pol = {"all": "All users", "response_20": "Response 20%", "uplift_20": "Uplift 20%", "random_20": "Random 20%"}
     est_names = [("naive", "Unweighted comparison"), ("dm", "Direct method"), ("ips_known", "IPS, logged propensity"), ("ips_estimated", "IPS, estimated propensity"),

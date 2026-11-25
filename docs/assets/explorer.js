@@ -1095,8 +1095,8 @@ if (has("c-02f-cal") && S2f) (function () {
 })();
 if (has("c-02f-tail") && S2f && S2f.fit) (function () {
   // fit and ranking of the final design: log loss above the reference, with ROC AUC in the label
-  const Bd = S2f, cls = { labels_seen: "grey", complete_only: "blue", delay: "navy" };
-  const short = { labels_seen: "Labels seen", complete_only: "Complete only", delay: "Delay model" };
+  const Bd = S2f, cls = { labels_seen: "grey", complete_only: "blue", delay: "navy", corrected_test_day: "blue", pooled_test_day: "blue" };
+  const short = { labels_seen: "Labels seen", complete_only: "Complete only", delay: "Delay model", corrected_test_day: "Ratio by campaign", pooled_test_day: "One ratio" };
   const rows = Bd.fit.map(r => ({ label: r.label, short: short[r.key], v: r.ll, lo: r.lo, hi: r.hi, strong: r.key === "delay", text: `+${r.ll.toFixed(2)} · AUC ${r.auc.toFixed(3)}`,
     fcls: "f-" + cls[r.key], scls: "s-" + cls[r.key], tip: `${r.label}<br>log loss above the reference: ${r.ll.toFixed(2)} ×10⁻³<br>ROC AUC ${r.auc.toFixed(3)} (reference ${Bd.auc_ref.toFixed(3)})` }));
   dotRows(has("c-02f-tail"), { rows, dom: [0, 8], ticks: [0, 2, 4, 6, 8], label: 250, rh: 40, top: 22, right: 120, intro: true });
