@@ -184,20 +184,20 @@ past sales performed better than the model ([04](04_customer_metrics_retention))
 
 Each of the following fell short of a threshold that was fixed before the result was seen. They fall into five groups.
 
-- **Ranking models against simple rules (three tests).** The uplift model did not outperform a simple response model
+- **Ranking models against simple rules.** The uplift model did not outperform a simple response model
   in ranking users for targeting ([01a](01_with_an_experiment/01a_ad_incrementality)); ranking segments by estimated
   lift beat ranking by response rate at 10% and 20% budgets but not reliably at 30%
   ([01d](01_with_an_experiment/01d_private_segment_effects)); and the purchase model did not outperform a past-sales
   rule in ranking 12-month sales ([04](04_customer_metrics_retention)).
-- **Marketing mix models (two tests).** Adding media variables did not reliably improve a revenue forecast, and fitting
+- **Marketing mix models.** Adding media variables did not reliably improve a revenue forecast, and fitting
   all brands in one model did not improve the recovery of channel returns
   ([02c](02_without_an_experiment/02c_marketing_mix_modeling)).
-- **Attribution and bidding (one test).** Changing the attribution rule did not reduce a bidder's captured credit by
+- **Attribution and bidding.** Changing the attribution rule did not reduce a bidder's captured credit by
   the 5% set as the threshold ([02d](02_without_an_experiment/02d_attribution_and_bidding)).
-- **A proxy outcome (one test).** An estimate built from the effect on visits gave 42% of the effect on conversions,
+- **A proxy outcome.** An estimate built from the effect on visits gave 42% of the effect on conversions,
   outside the ±20% margin, although segments with larger visit effects also had larger conversion effects
   ([03d](03_planning_a_test/03d_surrogate_outcome)).
-- **Fit of a delayed-conversion model (two tests).** The delayed-feedback model corrected the level of the forecast
+- **Fit of a delayed-conversion model.** The delayed-feedback model corrected the level of the forecast
   but did not lower its log loss, and combining the uncorrected model's ranking with the delay model's level did not
   lower it either, because the level was over-corrected. A second attempt, written after that failure, took the level
   from the same day's predictions and lowered the log loss slightly
